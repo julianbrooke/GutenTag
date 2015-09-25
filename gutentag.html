@@ -1,0 +1,716 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" href="../gutentag.css" type="text/css" /> 
+<title>GutenTag</title>
+	<script language="javascript" type="text/javascript" src="../gutentag_new.js">
+	</script>
+<link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css' />
+<link rel="shortcut icon" href="favicon.png" />
+</head>
+
+<body onload="start_up();">
+<div id="wrapper">
+<div id="gutentaglogo"><img src="../images/gutentaglogo.png" height="130" width="500" /></div>
+<div class="loadsaved" id="load" onclick="getElementById('loadfilename').className= '';"><span>Load Saved Parameters</span><br /> <select id="loadfilename" name="loadfilename" onchange="load_parameters()" class="hidden"> 
+        			<option>&lt;None&gt;</option>
+        			<!-- saved parameters -->
+         </select></div>
+
+<div class="connector small"></div>
+
+<div id="subcorpora">
+
+
+                           
+
+</div>
+
+<div id="decisionfork">
+	<img id="decisionforkimage" src="../images/decisionfork.png" width="285" height="145" />
+	<div id="linetoaddsubcorpus"></div>
+	<div id="addsubcorpus" onclick="add_subcorpus();">Add a Subcorpus</div>
+	<div id="exportbutton" onclick="activate_export();">Export</div>
+	<div id="analyzebutton" onclick="activate_analyze();">Analyze</div>
+</div>
+
+<div id="exportoptions" class="hidden">
+<div class="exportheader"><span>Export Options</span></div>
+
+<form action="" id="export_form">
+
+<div class="subdefine" id="exportformat">
+        <div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">+</div><p>Format</p></div>
+        <div class="defineframe hidden">
+        	<div class="defineframebaby">                                                                                                                                                                
+                    <input type="radio" name="output_format" value="plain" onclick="document.getElementById('exportlexical').className='subdefine hidden'';" checked="checked" />Plain Text (UTF-8) 
+                    <input type="radio" name="output_format" value="TEI" onclick="document.getElementById('exportlexical').className='subdefine';"  />TEI XML 
+        		</div>
+          </div>
+
+        
+</div>
+<div class="subdefine" id="exportswitches">
+ 
+        <div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">+</div><p>Word Options</p></div>
+        <div class="defineframe hidden">
+                	<div class="defineframebaby">
+                	<table class="exportswitches">
+                        <tr>
+                        <td>
+                        Lemmatization
+                        </td>
+                        <td>
+                                <input type="radio" name="lemmatized" value="true"/>On
+                                <input type="radio" name="lemmatized" value="false" checked="checked"/>Off
+                        </td>
+                        </tr>
+                        <tr>
+                        <td>
+                        Part of Speech tagging:
+                        </td>
+                        <td>
+                                <input type="radio" name="tagged" value="true"/>On
+                                <input type="radio" name="tagged" value="false" checked="checked" />Off
+                        </td>
+                        </tr>
+                     </table>        
+              </div>
+              </div>
+
+
+        
+</div>
+
+<div class="subdefine hidden" id="exportlexical">
+
+ 
+        <div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">+</div> <p>Add Lexical Tags</p></div>
+        <div class="defineframe hidden">
+                	<div class="defineframebaby">
+                	<table>
+                	                    			<tr>
+          			<td>
+
+                           Person Names:
+                                                   </td>
+                        <td>
+                                <input type="radio" name="persName" value="true"/>Yes
+                                <input type="radio" name="persName" value="false" checked="checked" />No
+                        </td>
+                        </tr>
+                                </table>
+          <table class="linebyline" id="exportlexicontable">
+
+
+
+        </table>
+        <div class="addline" data="0" id="exportlexiconaddbutton" onclick="add_lexical_tag('export');">+</div>
+        </div>
+        </div>
+        
+        </div>
+         
+<div class="subdefine" id="exportoutput">
+	
+        <div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">-</div><p>Output</p></div>
+	<div class="defineframe" id="obd1">
+	<div class="defineframebaby">
+        <table class="linebyline">
+    	<tr>
+ 		<td><p>Maximum number of texts:</p>
+        </td>
+        <td><input type="text" name="maxnum" value=""/>
+        </td>
+         <td>
+		<input type="checkbox" name="randomize_order" value="" checked /> Randomize order of texts selected </td>
+        </td>
+        </tr>
+        <tr>
+ 		<td><p>Output directory (will be created):</p>
+        </td>
+        <td><input type="text" name="output_dir" value=""/>
+        </td>
+        </tr>
+        </table>
+    </div>
+    </div>
+</div>
+    </form>
+    
+
+        <div class="exportfooter"></div>
+</div>
+
+
+<div id="exportend" class="hidden">
+
+
+<div class="connector-arrow"><img src="../images/arrowdown100.png" width="18" height="100" /></div>
+<div class="endtimes"><div class="finalexportbutton" onclick="do_export();">Export</div><div class="saveparams" id="save1" onclick="getElementById('savefilename1').className= '';">Save Parameters<br /> <input type="text" size="9" class ="hidden" id="savefilename1" name="savefilename1" value=""/></div></div>
+</div>
+
+
+<div id="analyzeoptions"  class="hidden">
+
+<form action="" id="analyze_form">
+
+<div class="analyzeheader"><span>Analysis Options</span></div>
+<div class="subdefine" id="analysis1">
+ 
+ 
+        <div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">+</div> <p>Add Lexical Tags</p></div>
+        <div class="defineframe hidden">
+                	<div class="defineframebaby">
+                	
+                		<table>
+                	                    			<tr>
+          			<td>
+
+                           Person Names:
+                                                   </td>
+                        <td>
+                                <input type="radio" name="persName" value="true"/>Yes
+                                <input type="radio" name="persName" value="false" checked="checked" />No
+                        </td>
+                        </tr>
+                                </table>
+
+          <table class="linebyline" id="analysislexicontable">
+        </table>
+        <div class="addline" data="0" id="analysislexiconaddbutton" onclick="add_lexical_tag('analysis');">+</div>
+        </div>
+       
+        </div>
+        
+        <div class="subdefine" id="analysisoutput">
+	
+        <div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">-</div><p>Output</p></div>
+	<div class="defineframe" id="obd1">
+	<div class="defineframebaby">
+        <table class="linebyline">
+    	<tr>
+ 		<td><p>Maximum number of texts:</p>
+        </td>
+        <td><input type="text" name="maxnum" value=""/>
+        </td>
+        <td>
+		<input type="checkbox" name="randomize_order" value="" checked /> Randomize order of texts selected </td>
+        </td>
+        </tr>
+        <tr>
+ 		<td><p>Output file:</p>
+        </td>
+        <td><input type="text" name="output_file" value=""/>
+        </td>
+        </tr>
+        </table>
+    </div>
+    </div>
+</div>
+    </form>
+    
+        </div>
+               
+
+</form>  
+<div class="analyzefooter"></div>
+</div>
+
+<div id="analyzeend">
+
+<div class="connector-arrow"><img src="../images/arrowdown100.png" width="18" height="100" /></div>
+<div class="endtimes"><div class="finalanalyzebutton" onclick="do_analysis();">Analyze</div><div class="saveparams" id="save2" onclick="getElementById('savefilename2').className= '';">Save Parameters<br /> <input type="text" size="9" class ="hidden" id="savefilename2" name="savefilename2" value=""/></div></div>
+</div>
+</div>
+
+<p>&nbsp;</p>
+
+</div>
+</div>
+</div>
+
+
+<div class ="hidden" id="templates">
+
+
+<div class="activesubcorpus" id="subcorpustemplate">
+<div class="corpusheader" onclick="toggle_active(this);"><span class="corpusheader">Define Subcorpus </span></div>
+<form action="" id='subcorpus_form'>
+<div class="subdefine" id="genre">
+
+        
+        <div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">-</div><p>Genre</p></div>
+        <div class="defineframe"  id="obd1">
+                	<div class="defineframebaby">
+          
+                       <table>
+                               
+                    <tr>
+                            <td><input type="checkbox" name="poetry"  onclick="toggle_poetry_macro(this.form);" value=""/>Poetry  </td>
+                            <td><input type="checkbox" name="play"  onclick="toggle_drama_macro(this.form);" value=""/>Drama</td>
+                            <td><input type="checkbox" name="fiction" onclick="toggle_prose_macro(this.form);" value=""/>Prose fiction</td>
+                    <td><input type="checkbox" name="nonfiction" onclick="toggle_prose_macro(this.form);"  value=""/>Prose non-fiction </td>
+                    
+                    </tr>
+                       </table>
+        </div>
+        </div>
+        
+</div>
+
+<div class="subdefine" id="author">
+
+        <div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">+</div><p>Author</p></div>
+        <div class="defineframe hidden">
+                	<div class="defineframebaby">
+    
+                                	<table class="linebyline">
+                                	<tr>
+                             		<td>
+                                      Author Name:
+                                    </td>
+                                    <td>
+                                        <input type="text" name="author_name" value=""/>
+                            
+                                     or use user-defined list:
+                                    	 <select name="author_list">
+                                    	  <option>None</option>
+                                    	    <!-- user lists -->
+                                    	 </select>
+                                    <td>
+                                    </tr>
+                                    <tr>
+                                    <td>
+                                    Author Birth:
+                                    </td>
+                                    <td> 
+                                    from
+                                    	<input type="text" name="author_birth_start"   size="4" maxlength="4"/>
+                                    to
+                                    	<input type="text" name="author_birth_end"   size="4" maxlength="4"/>
+                                    </td>    
+                                    
+                                    </tr>
+                            	<tr>
+                            	<td>
+                                    Author Death:
+                                    </td>
+                                    <td> 
+                                    from
+                                    	<input type="text" name="author_death_start"   size="4" maxlength="4"/>
+                                    to
+                                    	<input type="text" name="author_death_end"   size="4" maxlength="4"/>
+                                    </td>    
+                                    
+                                    </tr>
+                               
+                             	<td>  
+                             	        <span title="Guessed based on first name">Author Gender*:</span>
+                                    </td>                  
+                                    
+                                    
+                                    <td> 
+                                    <input type="radio" name ="gender" value="both"  checked>  Either
+                            		<input type="radio" name ="gender" value="male"> Just male
+                            		<input type="radio" name ="gender" value="female">  Just female
+                                   </td>
+                                    </tr>             
+                                        
+                                    </table>
+  
+	               </div>
+        </div>
+</div>
+<div class="subdefine" id="text">
+
+		<div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">+</div><p>Text</p></div>
+        <div class="defineframe hidden">
+        	<div class="defineframebaby">
+                <table class="linebyline">
+                
+                    	<tr>
+ 		<td>
+          Title of the text:
+        </td>
+        <td>
+            <input type="text" name="text_title" value=""/>
+
+         or use user-defined list:
+        	 <select name="title_list">
+        	  <option>None</option>
+        	   <!-- user lists -->
+        	 </select>
+        </td>
+        
+        
+        </tr>
+        
+        <tr>
+                <td> <span title="Only English supported for genre/structural tagging">Language*:</span></td>
+        <td> <select name="lang"> 
+        			<option value="English">English</option>
+        			<option value="French">French</option>
+        			<option value="Spanish">Spanish</option>
+        			<option value="German">German</option>
+        			<option value="Italian">Italian</option>
+         </select>
+        </td>
+        
+        </tr>
+        <tr>
+        <td>
+                <span title="Incomplete, derived automatically from texts">Date of Publication*:</span>
+        </td>
+        
+          <td> 
+        from
+        	<input type="text" name="publication_date_start"   size="4" maxlength="4"/>
+        to
+        	<input type="text" name="publication_date_end"   size="4" maxlength="4"/>
+
+        </td>    
+
+        </tr>
+
+
+        <tr>
+        <td>
+                <span title="Incomplete, derived automatically from texts">Country of Publication*:</span>
+        </td>
+        
+        <td> <select name="publication_country"> 
+        			<option>Any</option>
+        			<option value="US">U.S.A.</option>
+        			<option value="UK">the UK</option>
+        			<option value="CAN">Canada</option>
+        			<option value="AUS">Australia</option>
+        			<option value="NZ">New Zealand</option>
+        			 <option value="IR">Ireland</option>
+         </select>
+        </td>
+
+        </tr>
+  
+  
+          <tr>
+        <td>
+                <span title="Incomplete">Library of Congress Classification*:</span>
+        </td>
+        
+        <td> <select name="LoC_class"> 
+                	<option>No Restrictions</option>
+        			<option value="PR">PR</option>
+        			<option value="PS">PS</option>
+        			<option value="PN">PN</option> 
+        			<option value="PE">PE</option>
+        			<option value="PZ">PZ</option>
+        			<option value="PQ">PQ</option>
+        			<option value="PT">PT</option>
+        			<option value="PG">PG</option>
+        			<option value="PJ">PJ</option>
+        			<option value="PL">PL</option>
+        			<option value="A">A</option>
+        			<option value="B">B</option>
+        			<option value="C">C</option>
+        			<option value="D">D</option>
+        			<option value="E">E</option>
+        			<option value="F">F</option>
+        			<option value="G">G</option>
+        			<option value="H">H</option>
+        			<option value="J">J</option>    
+        			<option value="K">K</option>   
+        			<option value="L">L</option>   
+        			<option value="M">M</option>   	
+         			<option value="N">N</option>
+         			<option value="Q">Q</option>
+         			 <option value="R">R</option>
+        			<option value="S">S</option> 
+         			<option value="T">T</option> 
+         			<option value="U">U</option> 
+         			<option value="V">V</option>     
+         			<option value="Z">Z</option>    		
+         </select>
+        </td>
+        </tr>      
+
+
+          <tr>
+        <td>
+                <span title="Incomplete">Library of Congress Subject*:</span>
+        </td>
+         <td>
+            <input type="text" name="LoC_subject" name="" value=""/>
+		</td>
+        </tr>           
+                </table>
+                
+			</div>
+            </div>
+			
+
+</div>
+
+<div class="subdefine" id="withintext">
+    
+
+        <div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">+</div><p>Within-Text</p></div>
+        <div class="defineframe hidden">
+                	<div class="defineframebaby">
+        
+        
+        	<div class="withintext" >
+        		<div class="withintextheader">
+        				<p>General</p>
+                                <select name="general_macro" onchange="update_check_boxes(this);"">
+                                        <option value="1">Everything In Document</option>
+                                        <option value="2">All Major Content</option>
+                                        <option value="3">Body Only, Excluding Front and Back Matter</option>
+                                </select>
+        		</div>
+        		<div class="withintextoptions hidden">
+        			<table>
+                    	 <tr>
+                                <td>
+                                    
+                                        <input type="checkbox" name="front" value="" checked/>Front<br /> 
+                                        <input type="checkbox" name="docTitle" value="" checked/>Title Page<br />
+                                   
+                                </td>
+                                <td>
+                                        <input type="checkbox" name="div:preface" value="" checked/>Preface<br /> 
+                                        <input type="checkbox" name="contents" value="" checked/>Table of Contents<br />
+                                    
+                                </td>
+                                  <td>
+                                        <input type="checkbox" name="div:introduction" value="" checked/> Introduction<br />  
+                                        <input type="checkbox" name="body" value="" checked/>Body<br />
+                                    
+                                </td>
+                                  <td>
+                                        <input type="checkbox" name="head" value="" checked/>Headers<br />  
+                                        <input type="checkbox" name="back" value="" checked/>Back<br />
+                                    
+                                </td>
+                                
+                                  <td>
+                                        <input type="checkbox" name="afterword" value="" checked/>Afterword<br />  
+                                        <input type="checkbox" name="endnotes" value="" checked/>Notes<br />
+                                    
+                                </td>
+                                
+                           </tr>
+                	</table>
+                	
+        		</div>
+        	</div>
+            <div class="withintext hidden">
+        		<div class="withintextheader">
+        				<p>Prose Options</p>
+                                 <select name="prose_macro" onclick="update_check_boxes(this);">
+                                        <option value="4">All body text</option>
+                                        <option value="5">Character speech only</option>
+                                        <option value="6">Narration only</option>
+        						</select>
+        		</div>
+        		<div class="withintextoptions hidden">
+        			<table>
+                    	 <tr>
+                                <td>
+                                     	 <input type="checkbox" name="p|prose" value="" checked />Paragraphs<br /> 
+							
+                                   
+                                </td>
+                                
+                                 <td>
+                                
+                                <input type="checkbox" name="said" value="" checked />Said<br /> 
+                                
+                                </td>
+                                
+                                  <td>
+                                        <input type="checkbox" name="div:prologue" value="" checked />Prologues<br /> 
+                                                                            
+                                </td>
+                                <td>                              
+                          			  <input type="checkbox" name="div:epilogue|prose" value=""checked />Epilogues<br />
+                                    
+                                </td>
+                                
+                           </tr>
+                	</table>
+        		</div>
+        	</div>
+            
+            <div class="withintext hidden">
+        		<div class="withintextheader">
+        				<p>Poetry Options</p>
+                               <select name="poetry_macro" onclick="update_check_boxes(this);">
+                    				<option value="7">All body text</option>
+                       	     		<option value="8">Verse only</option>
+        						</select>
+        		</div>
+        		<div class="withintextoptions hidden">
+        			<table>
+                    	 <tr>
+                                <td>
+                                        <input type="checkbox" name="lg" value="" checked />Stanzas<br /> 
+                                        
+                                  </td>
+                                  <td>
+                            			<input type="checkbox" name="p|poetry" value="" checked/>Paragraphs<br />
+                                    
+                                </td>
+                                
+                           </tr>
+                	</table>
+        		</div>
+        	</div>
+            
+            <div class="withintext hidden">
+        		<div class="withintextheader">
+        				<p>Drama Options</p>
+                                 <select name="drama_macro" onclick="update_check_boxes(this);">
+                            			<option value="9">All body text</option>
+                            			<option value="10">Character speech only</option>
+  								<option value="11">Direction only</option>
+        						  </select>
+        		</div>
+        		<div class="withintextoptions hidden">
+        			<table>
+                    	 <tr>
+                                <td>
+                                        <input type="checkbox" name="castList" value="" checked/>Cast/Character List<br /> 
+                            			<input type="checkbox" name="speaker" value="" checked/>Speakers<br />
+                                   
+                                </td>
+                                <td>
+                                        <input type="checkbox" name="set" value="" checked/>Scene Description<br />  
+                            			<input type="checkbox" name="stage" value="" checked/>Stage Direction<br />
+                                    
+                                </td>
+                                  <td>
+                                        <input type="checkbox" name="s" value="" checked />Speech<br />
+                                      <td>                              
+                          			  <input type="checkbox" name="div:epilogue|play" value=""checked />Epilogues<br />
+                                    
+                                </td>                              
+                                </td>
+                                
+                           </tr>
+                	</table>
+        		</div>
+
+        	</div>
+        	</div>
+</div>
+
+</div>
+
+<div class="subdefine">
+
+<div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">+</div><p>Lexical Filter</p></div>
+        <div class="defineframe hidden">
+                	<div class="defineframebaby">
+    	<table class="linebyline">
+    	<tr>
+ 		<td><p>Limit subcorpus to texts containing the word or phrase: </p>
+        </td>
+        <td><input type="text" name="lexicalfilter1" value=""/>
+        </td>
+        </tr>
+        </table>
+        <div class="addline" data="1" onclick="add_lexical_filter(this);">+</div>
+        </div>
+        </div>
+
+</div>
+<div class="corpusfooter"></div>
+</form>
+</div>
+
+
+
+<table class="linebyline hidden">
+    	<tr id="lexicalfiltertemplate">
+ 		<td><p>Limit subcorpus to texts containing the word or phrase: </p>
+        </td>
+        <td><input type="text" name="lexicalfilter1" value=""/>
+        </td>
+        </tr>
+        </table>
+
+
+<table class="linebyline hidden">
+    	<tr id="lexicaltagtemplate">
+ 		<td><select name="lexicaltagmain" onchange="reveal_sublexicon(this);">
+ 			<option value="none">Select a Lexicon</option>
+ 			<option value="GI">General Inquirer</option>
+                 <option value="MRC">MRC Psycholinguistic Database</option>
+                 <option value="sixstyleplus">6-Style Lexicon (plus polarity)</option>
+                 <!-- user lexicons -->
+                 </select>
+        </td>
+        <td>
+        <select name="GIlexicaltag" class="hidden">
+         <option value="Positiv">Positiv</option>
+		<option value="Negativ">Negativ</option>
+		<option value="Pstv">Pstv</option>
+		<option value="Affil">Affil</option>
+		<option value="Ngtv">Ngtv</option>
+		<option value="Hostile">Hostile</option>
+		<option value="Strong">Strong</option>
+		<option value="Power">Power</option>
+		<option value="Weak">Weak</option>
+		<option value="Active">Active</option>
+		<option value="Passive">Passive</option>
+		<option value="Virtue">Virtue</option>
+		<option value="Vice">Vice</option>
+		<option value="Ovrst">Ovrst</option>
+		<option value="ECON">ECON</option>
+		<option value="POLIT">POLIT</option>
+		<option value="Role">Role</option>
+		<option value="SocRel">SocRel</option>
+		<option value="HU">HU</option>
+		<option value="Object">Object</option>
+		<option value="ComForm">ComForm</option>
+		<option value="IAV">IAV</option>
+		<option value="DAV">DAV</option>
+		<option value="IndAdj">IndAdj</option>
+		<option value="PowTot">PowTot</option>
+		<option value="EnlOth">EnlOth</option>
+		<option value="EnlTot">EnlTot</option>
+     	</select>
+     	
+
+        <select name="MRClexicaltag" class="hidden">
+        	<option value="familiarity">Familiarity</option>
+        	<option value="concreteness">Concreteness</option>
+        	<option value="imagery">Imagery</option>
+        	<option value="meaningfulness">Meaningfulness</option>
+        	 <option value="age_of_acquisition">Age of Acquisition</option>        	
+     	</select>     
+     	
+        <select name="sixstylepluslexicaltag" class="hidden">
+        	<option value="literary">Literary</option>
+        	 <option value="abstract">Abstract</option>
+        	 <option value="objective">Objective</option>
+        	 
+          	<option value="colloquial">Colloquial</option>
+        	 <option value="concrete">Concrete</option>
+        	 <option value="subjective">Subjective</option>      
+        	 <option value="polarity">Polarity</option>    
+        	 </select>   
+        
+        </td>
+        </tr>
+        </table>
+
+<div class="connector" id="start"></div>
+
+
+</div>
+
+</body>
+</html>
