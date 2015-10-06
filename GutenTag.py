@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-version = 0.1.1
+version = "0.1.1"
 
 standalone = False
 online = False
@@ -256,7 +256,7 @@ class TextCleaner:
             if m:
                 best_points[1] = m.start()
                 i = 0
-                while all_junk_indicies[i] < best_points[1]:
+                while all_junk_indicies[i] < best_points[1] - 100:
                     i += 1
                 best_points[0] = all_junk_indicies[i-1]
             else:
@@ -737,7 +737,7 @@ def has_most_features(index,features,feature_dict):
 
 class StructureTagger:
 
-    table_of_contents = set(["contents","table of contents","index"])
+    table_of_contents = set(["contents","table of contents"])
 
     numbers = {"one":1,"two":2,"three":3,"four":4,"five":5,"six":6,"seven":7,
                "eight":8,"nine":9,"ten":10,"eleven":11,"twelve":12,"thirteen":13,
@@ -750,9 +750,10 @@ class StructureTagger:
     ordinals = {"first":1,"second":2,"third":3,"forth":4,"fifth":5,"sixth":6,"seventh":7,"eighth":8,"ninth":9,"prima":1,"primus":1,"secundus":2,"tertius":3,"quartus":4,"quintus":5,"sextus":6}
 
     list_of_illustrations = set(["illustrations","list of illustrations", "table of illustrations", "portraits"])
+    endnotes = set(["endnotes","notes", "note", "bibliographical note"])
 
-    stage_words = set(["enter","exit","curtain","exeunt"])
-    setting_words = set(["setting","scene","the time","the setting","the place"])
+    stage_start =  re.compile("enter|exit|curtain|exeunt")
+    setting_start = re.compile("setting|the time|the setting|the place|the scene")
     setting_phrase = re.compile("takes place|is set in|the setting is|the setting of the play|the action ")
     cities = ["London","New York","Oxford","Cambridge","Boston","Philadelphia","San Francisco","Toronto","Los Angeles","Chicago","Sydney","Auckland","Dublin"]
     countries = ["U.S.A","U.S.","United States","United States of America","America","Canada","England","Britan","United Kingdom", "U.K.", "Australia", "New Zealand"]
@@ -849,6 +850,18 @@ class StructureTagger:
         feature_dict["parens_after_capital"] = set()
         feature_dict["setting_phrase"] = set()
         feature_dict["ends_with_sent_punct"] = set()
+        feature_dict["not_front_lines"] = {}
+        feature_dict["double_act_or_scene"] = set()
+
+
+
+        has_front_header = False
+        in_front_section = False
+        has_front_indicator = False
+        paragraph_line_count = 0
+        not_front_lines = 0
+        seen_act = False
+        seen_scene = False
         
             
         title = self.non_letters.sub("",global_tags["Title"][0].lower())  
@@ -863,6 +876,18 @@ class StructureTagger:
                     feature_dict[blank_count] = set()
                 feature_dict[blank_count].add(i)
                 feature_dict["blank_set"].add(blank_count)
+                if not has_front_indicator and not has_front_header and not in_front_section:
+                    not_front_lines += paragraph_line_count
+                feature_dict["not_front_lines"][i] = not_front_lines
+                paragraph_line_count = 0
+                has_front_indicator = False
+                if blank_count > 1:
+                    in_front_section = False
+            if has_front_header:
+                if not text_lines[i].isupper():
+                    has_front_header = False
+                    in_front_section = True
+            paragraph_line_count += 1
             blank_count = 0
             indents = self.indents.search(text_lines[i])
             if indents:
@@ -874,6 +899,7 @@ class StructureTagger:
                 feature_dict["single_line_para"].add(i)
             if text_lines[i].isupper():
                 feature_dict["upper_case"].add(i)
+                in_front_section = False
             try:
                 first_letter = self.first_letter.search(text_lines[i]).group(0)
             except:
@@ -885,9 +911,11 @@ class StructureTagger:
             if text_lines[i].startswith("                     ") or  text_lines[i].strip().startswith("--"):
                 feature_dict["attribution"].add(i)                
             if (i == 0 or text_lines[i-1] in feature_dict["blank_lines"]) and text_lines[i].startswith("To ") or text_lines[i].startswith("TO "):
+                #has_front_indicator = True
                 feature_dict["dedication"].add(i) 
 
             if text_lines[i].startswith("By"):
+                has_front_indicator = True
                 feature_dict["by"].add(i)
 
 
@@ -908,32 +936,42 @@ class StructureTagger:
             
             if text_lines[i].startswith("Illustrated by") or text_lines[i].startswith("Illustrations by"):
                 feature_dict["illustrated"].add(i)
+                has_front_indicator = True
+                
             if line.startswith("preface") or line.startswith("to the reader") or line.endswith("to the reader") or (line.startswith("history of") and "history of" not in global_tags["Title"][0].lower()):
                 feature_dict["preface"].add(i)
+                has_front_header = True
             if line.startswith("introduction") or line.startswith("foreword"):
                 feature_dict["introduction"].add(i)
-            for feature in ["prologue","epilogue","appendix","afterword","glossary","bibliography","index","endnotes","afterword"]:
+                has_front_header = True
+            for feature in ["prologue","epilogue","appendix","afterword","glossary","bibliography","index","afterword"]:
                 if line == feature or (line.startswith(feature) and i in feature_dict["upper_case"]):
                     feature_dict[feature].add(i)
 
-
-            
-
-            if line.startswith("notes") or line.startswith("note:"):
+            if line in self.endnotes or line.startswith("notes on"):
                 feature_dict["endnotes"].add(i)
+                print global_tags
+                print "has endnote"
+                sys.stdout.flush()
             if line.startswith("dust jacket"):
                 feature_dict["dust_jacket"].add(i)
-            if line in self.table_of_contents or line.startswith("contents of"):
+                has_front_header = True
+            if line in self.table_of_contents or line.startswith("contents of") or (line == "index" and i < len(text_lines)/3):
                 feature_dict["table_of_contents"].add(i)
+                has_front_header = True
             if global_tags["Author"] and global_tags["Author"][0].lower() in line:
+                has_front_indicator = True
                 feature_dict["author"].add(i)
             only_letter_line = self.non_letters.sub("",line.lower())
-            if (len(only_letter_line) > 5 and only_letter_line in title or title > 10 and title in only_letter_line):
+            if (len(only_letter_line) > 5 and only_letter_line in title or (only_letter_line.startswith(title))):
                 feature_dict["title"].add(i)
+                has_front_indicator = True
             if self.published.search(line):
                 feature_dict["publisher"].add(i)
+                has_front_indicator = True
             if self.dedication.search(line):
                 feature_dict["dedication"].add(i)
+                has_front_indicator = True
 
             if line == "the end" or line == "fin" or line == "finis":
                 feature_dict["the_end"].add(i)
@@ -943,16 +981,15 @@ class StructureTagger:
                     feature_dict["series"].add(i)
             if self.city.search(line):
                 feature_dict["city"].add(i)
+                #has_front_indicator = True
 
             if self.copy_right.search(line):
                 feature_dict["copy_right"].add(i)
+                has_front_indicator = True
 
             if i - 1 in feature_dict["blank_lines"] and (line.startswith('"') and (line.endswith('"') or (i+1 < len(text_lines) and text_lines[i+1].endswith('"') or (i+2 < len(text_lines) and text_lines[i+2].endswith('"'))))):
                 feature_dict["quoted"].add(i)
                                
-
-            if self.city.search(line):
-                feature_dict["city"].add(i)
 
             if line and line[-1] in self.sent_punct:
                 feature_dict["ends_with_sent_punct"].add(i)
@@ -998,7 +1035,7 @@ class StructureTagger:
                         except:
                             pass
 
-            if line.isdigit():
+            if line.isdigit() and int(line) < 100:
                 if "digit_only" not in feature_dict:
                     feature_dict["digit_only"] = {}
                 try:
@@ -1020,6 +1057,7 @@ class StructureTagger:
 
             if self.year.search(line):
                 feature_dict["year"].add(i)
+                has_front_indicator = True
                 if len(line) == 4:
                     feature_dict["year_only"].add(i)
 
@@ -1051,12 +1089,14 @@ class StructureTagger:
                      else:
                          found_scene = False
                  if self.characters.search(line):
+                     has_front_header = True
                      feature_dict["character_list"].add(i)
                      #print "character_list"
                      #print line
                      #print i
 
                  if self.performance.search(line):
+                     has_front_indicator = True
                      feature_dict["performance"].add(i)
                      #print "performance"
                      #print line
@@ -1068,10 +1108,17 @@ class StructureTagger:
                      first_word = first_word.group(1)
                      if len(first_word) > 1 and first_word.isupper():
                         feature_dict["starts_capitalized"].add(i)
-                     if first_word.lower() in self.stage_words:
-                         feature_dict["stage_word"].add(i)
-                     if first_word.lower() in self.setting_words:
-                         feature_dict["setting_word"].add(i)
+                     #if first_word.lower() in self.stage_words:
+                     #    feature_dict["stage_word"].add(i)
+                     #if first_word.lower() in self.setting_words:
+                     #    feature_dict["setting_word"].add(i)
+
+                 if self.setting_start.match(line) or line == "scene":
+                    has_front_header = True
+                    feature_dict["setting_word"].add(i)
+
+                 if self.stage_start.match(line):
+                    feature_dict["stage_word"].add(i)
 
                  if self.setting_phrase.search(line):
                     feature_dict["setting_phrase"].add(i)
@@ -1138,18 +1185,28 @@ class StructureTagger:
                          if found_act:
                              feature_dict["act"][i] = matches[0]
                              #print "added act"
+                             if seen_act:
+                                 feature_dict["double_act_or_scene"].add(i)
+                                 has_front_indicator = True
+                             seen_act = True
                          if found_scene:
                              if found_act and len(matches) >= 2:
                                  feature_dict["scene"][i] = matches[1]
                              else:
                                  feature_dict["scene"][i] = matches[0]
+                             if seen_scene:
+                                 feature_dict["double_act_or_scene"].add(i)
+                                 has_front_indicator = True
+                             seen_scene = True
                              #print "added scene"
-                             
+                 else:
+                     seen_act = False
+                     seen_scene = False
                                         
                                       
                                        
 
-        if len(feature_dict["chapter"]) < 3:
+        if global_tags["Genre"] == "fiction" and len(feature_dict["chapter"]) < 3:
             #print "no chapters"
             #print "roman_only" in feature_dict 
             if "wordnum_only" in feature_dict and len(feature_dict["wordnum_only"]) > 5:
@@ -1164,8 +1221,29 @@ class StructureTagger:
         return feature_dict
 
 
+
+
+    common_front_elements = ["author","title","publisher","by","performance","setting_word","double_act_or_scene"] #"dedication"
+
+    long_front_elements = ["table_of_contents","list_of_illustrations","preface","introduction","character_list"]
+
+    body_elements = ["prologue"]
+
+
+
+
+    def find_title(self,feature_dict):
+        last_title = 0
+        for title_loc in feature_dict["title"]:
+            if title_loc > 0 and title_loc in feature_dict["upper_case"] and title_loc -1 in feature_dict["blank_lines"] and title_loc +1 in feature_dict["blank_lines"]:
+                if title_loc > last_title:
+                    last_title = title_loc
+        return last_title
+
+
     def get_front_score(self,feature_dict,loc,blanks,global_tags,start_index,end_index):
-        score = min(0, -(loc-start_index) + 200)
+        #score = min(0, -(loc-start_index) + 200)
+        score = 0
         score_dict = {}
         #print "loc here"
         #print loc
@@ -1173,7 +1251,7 @@ class StructureTagger:
         #print feature_dict["performance"]
         #print "character_list"
         #print feature_dict["character_list"]
-        for feature_type in ["author","title","dedication","publisher","by","performance"]:
+        for feature_type in self.common_front_elements: # "dedication"
             if feature_type not in feature_dict or len(feature_dict[feature_type]) > 20:
                 continue
             for index in feature_dict[feature_type]:
@@ -1183,24 +1261,24 @@ class StructureTagger:
                     #print feature_type
                     #print index
                     #print loc
-                    score += 20
+                    score += 10
                     score_dict[feature_type] = score_dict.get(feature_type,0) + 1
 
-        for feature_type in ["table_of_contents","preface","list_of_illustrations","introduction","character_list","setting_word"]:
+        for feature_type in self.long_front_elements:
             if feature_type not in feature_dict or len(feature_dict[feature_type]) > 20:
                 continue
             for index in feature_dict[feature_type]:
                 if index < start_index or index >= end_index:
                     continue
-                if index + 5 < loc:
+                if index + 3 < loc:
                     #print feature_type
                     #print index
                     #print loc
-                    score += 20
+                    score += 50
                     score_dict[feature_type] = score_dict.get(feature_type,0) + 1
 
 
-        for feature_type in ["prologue"]:
+        for feature_type in self.body_elements:
             if feature_type not in feature_dict or len(feature_dict[feature_type]) > 20:
                 continue
             for index in feature_dict[feature_type]:
@@ -1224,7 +1302,7 @@ class StructureTagger:
             
 
         if global_tags["Genre"] == "play":
-            div_types = ["act","text"]#,"scene"]
+            div_types = []#["act","text"]#,"scene"]
         else:
             div_types = ["chapter","book","part","text"]
         for div in div_types:
@@ -1259,8 +1337,9 @@ class StructureTagger:
                                 score += 100
                         else:
                             score += 20
-        if not filter(lambda x: start_index <= x < end_index, feature_dict["table_of_contents"]) and not filter(lambda x: start_index <= x < end_index, feature_dict["list_of_illustrations"]) and not filter(lambda x: start_index <= x < end_index, feature_dict["preface"]) and not filter(lambda x: start_index <= x < end_index, feature_dict["introduction"]):
-            score -= ((loc-start_index) - 10)*0.25
+
+        score -= feature_dict["not_front_lines"][loc]*2
+        sys.stdout.flush()
         #print "chapter_score"
         #print chapter_score
         score += 10*blanks
@@ -1281,7 +1360,8 @@ class StructureTagger:
         best_loc = -1
         best_score = -9999
         #print "start find front"
-        while i < len(to_check) and (to_check[i] > 1 or best_score < 0):
+        print global_tags
+        while i < len(to_check):# and (to_check[i] > 1):
             for index in feature_dict[to_check[i]]:
                 #print "checking index"
                 #print index
@@ -1292,12 +1372,31 @@ class StructureTagger:
                 #    print "scoring"
                 #    print index
                 #    print score
+                
                 if score > best_score:
                     best_score = score
                     best_loc = index
             i += 1
-        return best_loc
-                                                                        
+
+        if best_loc - start_index < 300:
+            print "wining scoring"
+            print best_loc
+            sys.stdout.flush()
+
+
+        title_loc = self.find_title(feature_dict)
+        if title_loc > best_loc and (title_loc - start_index)/float(end_index - start_index) < 0.33:
+            return title_loc
+            print "used title loc"
+            #i = title_loc + 1
+            #while i in feature_dict["blank_lines"]:
+            #    i += 1
+            #return i
+        else:
+            return best_loc
+
+        #return best_loc
+    
 
     def remove_out_of_order(self,start,end,feature_dict,div_type):
         to_sort = []
@@ -1455,10 +1554,10 @@ class StructureTagger:
 
 
 
-    elements_mapping = {"dust_jacket":"div:dustjacket","year_only":"docDate","illustrated":"byLine","chapter":"contents","table_of_contents":"contents","dedication":"div:dedication", "introduction":"div:introduction","preface":"div:preface","publisher":"docImprint","by":"docTitle","year":"docImprint","illustration":"div:frontispiece","list_of_illustrations":"div:illustrations","quoted":"epigraph", "attribution":"epigraph","author":"docTitle","title":"docTitle","year":"docImprint","copy_right":"docImprint","city":"docImprint","series":"div:otherbooks","appendix":"div:appendix", "afterword":"div:afterword","endnotes":"div:endnotes","glossary":"div:glossary","bibliography":"div:bibliography","index":"div:index","character_list":"castList","performance":"performance","setting_word":"set","setting_phrase":"set","act":"contents"}
+    elements_mapping = {"dust_jacket":"div:dustjacket","year_only":"docDate","illustrated":"byLine","chapter":"contents","table_of_contents":"contents","dedication":"div:dedication", "introduction":"div:introduction","preface":"div:preface","publisher":"docImprint","by":"docTitle","year":"docImprint","illustration":"div:frontispiece","list_of_illustrations":"div:illustrations","quoted":"epigraph", "attribution":"epigraph","author":"docTitle","title":"docTitle","year":"docImprint","copy_right":"docImprint","city":"docImprint","series":"div:otherbooks","appendix":"div:appendix", "afterword":"div:afterword","endnotes":"div:endnotes","glossary":"div:glossary","bibliography":"div:bibliography","index":"div:index","character_list":"castList","performance":"performance","setting_word":"set","setting_phrase":"set","act":"contents", "the_end":"head"}
 
     weak_match = set(["dedication","quoted","year","by","attribution","city","performance","setting_word"])
-    strong_match = ["series","dust_jacket","year_only","illustrated","introduction","preface","publisher","title","author","copy_right","illustration","list_of_illustrations","chapter","appendix", "afterword","endnotes","glossary","bibliography","index","character_list","act", "setting_phrase","table_of_contents"]
+    strong_match = ["series","dust_jacket","year_only","illustrated","introduction","preface","publisher","title","author","copy_right","illustration","list_of_illustrations","chapter","appendix", "afterword","endnotes","glossary","bibliography","index","character_list","act", "setting_phrase","table_of_contents","the_end"]
     multi_paragraph = set(["div:dustjacket","contents","div:introduction","div:preface","div:illustrations","div:otherbooks","div:appendix", "div:afterword","div:endnotes","div:glossary","div:bibliography","div:index","castList"])
     superceded = {"docTitle":set(["div:otherbooks","contents","castList","div:preface","div:introduction"]),"div:introduction":set(["contents"]),"div:preface":set(["contents"]),"docImprint":set(["performance"])}
     not_in_front = set(["div:appendix", "div:afterword","div:endnotes","div:glossary","div:bibliography","div:index"])
@@ -1514,7 +1613,7 @@ class StructureTagger:
                         line_tag_list[i] = self.elements_mapping[element]
                         weakly_tagged_line.discard(i)
                         i -= 1
-            for element in self.strong_match: # first, expand to lines
+            for element in self.strong_match: # then extend
                 if self.elements_mapping[element] in self.multi_paragraph:
                     for index in feature_dict[element]:
                         #if element == "series":
@@ -1531,9 +1630,6 @@ class StructureTagger:
                             continue
                         index = i - 1
 
-                        #if self.elements_mapping[element] == "contents":
-                        #    print "here at content"
-
                         next_para_index = None # go to next paragraph if multi_paragraph element
                         if index + 1 in feature_dict["blank_lines"]:
                             if index + 2 in feature_dict["blank_lines"] and index + 3 not in feature_dict["blank_lines"]:
@@ -1541,12 +1637,13 @@ class StructureTagger:
                             elif index + 2 not in feature_dict["blank_lines"]:
                                 next_para_index = index + 2
 
+
                         if next_para_index:
                             while next_para_index not in feature_dict["blank_lines"] and next_para_index < bf_range[1]:
                                 #print "added tag to next paragraph"
                                 line_tag_list[next_para_index] = self.elements_mapping[element]
                                 weakly_tagged_line.discard(next_para_index)
-                                next_para_index += 1                    
+                                next_para_index += 1
             
  
 
@@ -1573,6 +1670,7 @@ class StructureTagger:
                     
                     if last_line_tag in self.multi_paragraph and (blank_count <= 1 and (i in weakly_tagged_line or (line_tag_list[i] in self.superceded and last_line_tag in self.superceded[line_tag_list[i]]))):
                         line_tag_list[i] = last_line_tag
+                        
                     last_line_tag = line_tag_list[i]
                 else:
                     if last_line_tag:
@@ -1602,7 +1700,7 @@ class StructureTagger:
                     plike_start[i] = new_tag
                     current_tag = (line_tag_list[i],new_tag)
             if current_tag:
-                plike_end[i] = current_tag[1]
+                plike_end[bf_range[1]] = current_tag[1]
 
 
     speaker_re_line = re.compile("^ *([^\(\[\r]+)(.+)")
@@ -1811,25 +1909,25 @@ class StructureTagger:
             end_index = feature_dict["total_length"]
         total_length = end_index - start_index
         best_back = end_index
-        max_back = end_index - int(total_length*0.2)
+        max_back = end_index - int(total_length*0.3)
         #print "at find back"
         #print feature_dict["upper_case"]
         #print feature_dict["chapter"]
 
         if feature_dict["epilogue"]:
             for index in feature_dict["epilogue"]:
-                if best_back > index > max_back:
+                if best_back > index > max_back and index in feature_dict["upper_case"]:
                     max_back = index + 10
 
         if feature_dict["chapter"]:
             for index in feature_dict["chapter"]:
-                if best_back > index > max_back:
+                if best_back > index > max_back and index in feature_dict["upper_case"]:
                     max_back = index + 10
 
         if "curtain" in feature_dict and feature_dict["curtain"]:
             for index in feature_dict["curtain"]:
-                if best_back > index > max_back:
-                    max_back = index + 1                
+                if best_back > index > max_back and  index in feature_dict["upper_case"]:
+                    max_back = index + 1
 
         has_definite_feature = False
         for feature in ["appendix","the_end","afterword","endnotes","glossary","bibliography","index","illustrations"]:
@@ -1842,21 +1940,22 @@ class StructureTagger:
                         else:
                             best_back = index
         blank_count = 0
-        if not has_definite_feature:
+        if not has_definite_feature and not global_tags["Genre"] == "nonfiction":
 
             for i in range(max(max_back,end_index - 100),best_back):
                 if i in feature_dict["blank_lines"]:
                     blank_count +=1
                 else:
-                    if blank_count == 4:
+                    if blank_count == 4 and not (global_tags["Genre"] == "poetry"):
                         best_back = i
                         break
                     blank_count = 0
 
-                if i in feature_dict["upper_case"] and not global_tags["Genre"] == "play":
+                if i in feature_dict["upper_case"] and (not global_tags["Genre"] == "play") and not (global_tags["Genre"] == "poetry"):
                     best_back = i
                     break
             #print best_back
+
                         
         if best_back < end_index:
             return best_back
@@ -1932,25 +2031,39 @@ class StructureTagger:
                 i = header_index +1
                 while i in feature_dict["blank_lines"] or i in feature_dict["ends_with_page"]:
                     i += 1
-                while i not in feature_dict["blank_lines"]:
-                    if i in feature_dict["act"] or i in feature_dict["scene"] or i in feature_dict["chapter"] or i in feature_dict["part"] or i in feature_dict["book"] or i in feature_dict["starts_with_roman"]:
+                while not (i in feature_dict["blank_lines"] and i + 1 in feature_dict["blank_lines"]):
+                    if i in feature_dict["act"] or i in feature_dict["scene"] or i in feature_dict["chapter"] or i in feature_dict["part"] or i in feature_dict["book"] or i in feature_dict["starts_with_roman"] or i in feature_dict["blank_lines"]:
                         pass
-                    else:
+                    else:       
                         content_lines.append(text_lines[i])
                     i+= 1
-            titles = []
-            if content_lines:
-                for content_line in content_lines:
-                    if "  " in content_line and content_line[content_line.rfind("  ") + 2:].isdigit():
-                        titles.append(content_line[:content_line.rfind("  ")].strip().lower())
-            #print "here are the titles"
-            #print titles
-            feature_dict["text"] = {}
-            for i in range(len(text_lines)):
-                if i -1 in feature_dict["blank_lines"] and i + 1 in feature_dict["blank_lines"] and text_lines[i].lower() in titles:
-                    text_index = titles.index(text_lines[i].lower())
-                    feature_dict["text"][i] = text_index
-            #print feature_dict["text"]
+
+                start_search = i
+
+                titles = []
+                if content_lines:
+                    for content_line in content_lines:
+                        if "  " in content_line and content_line[content_line.rfind("  ") + 2:].isdigit():
+                            titles.append(content_line[:content_line.rfind("  ")].strip().lower())
+                        else:
+                            titles.append(content_line.strip().lower())
+                #print "here are the titles"
+                #print titles
+                feature_dict["text"] = {}
+                if titles > 1:
+                    for i in range(start_search,len(text_lines)):
+                        if i -1 in feature_dict["blank_lines"] and i + 1 in feature_dict["blank_lines"] and text_lines[i].lower() in titles:
+                            print i
+                            print text_lines[i].lower()
+                            text_index = titles.index(text_lines[i].lower())
+                            feature_dict["text"][i] = text_index
+                if len(feature_dict["text"]) == 1:
+                    feature_dict["text"] = {}
+                else:
+                    print "here I am"
+                    print titles
+                    print feature_dict["text"]
+                    sys.stdout.flush()
             
      
     def find_break_cast_index(self,item):
@@ -2005,11 +2118,17 @@ class StructureTagger:
     def is_verse(self,feature_dict,start,end):
         if end - start < 2:
             return False
+        upper_count = 0
+        lower_count = 0
         for i in range(start,end):
-            if i not in feature_dict["starts_upper"]:
-                return False
-        for i in range(start,end):
-            if i not in feature_dict["ends_with_sent_punct"]:
+            if i in feature_dict["starts_upper"]:
+                upper_count += 1
+            elif i in feature_dict["starts_lower"]:
+                lower_count += 1
+        if (upper_count <= 3 and lower_count) or (upper_count > 3 and lower_count >= upper_count): #allow for occasional wrap arounds, etc.
+            return False
+        for i in range(start,end - 1):
+            if i not in feature_dict["ends_with_sent_punct"] and i + 1 in feature_dict["starts_upper"]:
                 return True
         return False
 
@@ -2038,21 +2157,24 @@ class StructureTagger:
         plike_start_lines = {} #plike means are replacement for p, may require
         plike_end_lines = {}     #special tokenization/further decomposition
         start_lines = defaultdict(list)
-        end_lines = defaultdict(list) 
-        front_index = self.find_front(feature_dict,global_tags)
+        end_lines = defaultdict(list)
+        if feature_dict["text"]:
+            front_index = min(feature_dict["text"])
+        else:
+            front_index = self.find_front(feature_dict,global_tags)
         text_tag = Tag(-1,-1,"text",None)
         text_tag.depth = 0
-        front_tag = Tag(-1,-1,"front",None)
-        body_tag = Tag(-1,-1,"body",None)
-        front_tag.depth = 1
+        body_tag = Tag(-1,-1,"body",None)       
         body_tag.depth = 1
-        back_index = self.find_back(feature_dict,front_index,global_tags)
-        start_lines[0].append(front_tag)
+        if front_index:
+            front_tag = Tag(-1,-1,"front",None)
+            front_tag.depth = 1
+            start_lines[0].append(front_tag)
+            end_lines[front_index].append(front_tag)
+            
         start_lines[0].append(text_tag)
-        end_lines[front_index].append(front_tag)
         start_lines[front_index].append(body_tag)
-        #print "the back is"
-        #print back_index
+        back_index = self.find_back(feature_dict,front_index,global_tags)
         if back_index:
             back_tag = Tag(-1,-1,"back",None)
             back_tag.depth = 1
@@ -2080,8 +2202,6 @@ class StructureTagger:
             for i in range(len(breaks) - 1):
                 text_tag = Tag(-1,-1,"text",None)
                 text_tag.depth = 2
-                front_tag = Tag(-1,-1,"front",None)
-                front_tag.depth = 3
                 body_tag = Tag(-1,-1,"body",None)
                 body_tag.depth = 3
                 start = breaks[i]
@@ -2090,11 +2210,16 @@ class StructureTagger:
                 #print start
                 #print end
                 start_lines[start].append(text_tag)
-                start_lines[start].append(front_tag)
                 local_front = self.find_front(feature_dict,global_tags,start_index=start,end_index=end)
+                if local_front > start:
+                    front_tag = Tag(-1,-1,"front",None)
+                    front_tag.depth = 3
+                    start_lines[start].append(front_tag)
+                    end_lines[local_front].append(front_tag)
+                    
                 #print "local front"
                 #print local_front
-                end_lines[local_front].append(front_tag)
+
                 start_lines[local_front].append(body_tag)
                 local_back =  self.find_back(feature_dict,front_index,global_tags,start_index=start,end_index=end)
                 if local_back:
@@ -2171,6 +2296,7 @@ class StructureTagger:
         new_start = True
         in_plike = False
         depth = 0
+        has_contents = False
         #if 31464 in plike_start_lines:
         #    print "yes, has 31464"
 
@@ -2227,36 +2353,38 @@ class StructureTagger:
                         else:
                             seen_content=True
 
-                elif plike_end_lines[i].tag == "contents":
+                elif plike_end_lines[i].tag == "contents" or (plike_end_lines[i].tag == "div" and plike_end_lines[i].attributes["type"] == "illustrations") or (plike_end_lines[i].tag == "div" and plike_end_lines[i].attributes["type"] == "index"):
                     plike_end_lines[i].plike = False
                     item_index = set()
-                    for div_type in ["chapter","part","book","wordnum_only","roman_only", "digit_only","starts_with_roman"]:
-                        if div_type in feature_dict:
-                            temp_index = set()
-                            for index in feature_dict[div_type]:
-                                if start_line < index < i:
-                                    temp_index.add(index)
-                            #print div_type
-                            #print temp_index                            
-                            if len(temp_index) > 1:
-                                item_index.update(temp_index)
+                    if plike_end_lines[i].tag == "contents":
+                            
+                        for div_type in ["chapter","part","book","wordnum_only","roman_only", "digit_only","starts_with_roman"]:
+                            if div_type in feature_dict:
+                                temp_index = set()
+                                for index in feature_dict[div_type]:
+                                    if start_line < index < i:
+                                        temp_index.add(index)
+                                #print div_type
+                                #print temp_index                            
+                                if len(temp_index) > 1:
+                                    item_index.update(temp_index)
 
-                    for div_type in ["act","scene"]:
-                        if div_type in feature_dict:
-                            temp_index = set()
-                            for index in feature_dict[div_type]:
-                                if start_line <= index < i:
-                                    temp_index.add(index)
-                            #print div_type
-                            #print temp_index                            
-                            if len(temp_index) > 1:
-                                item_index.update(temp_index)
+                        for div_type in ["act","scene"]:
+                            if div_type in feature_dict:
+                                temp_index = set()
+                                for index in feature_dict[div_type]:
+                                    if start_line <= index < i:
+                                        temp_index.add(index)
+                                #print div_type
+                                #print temp_index                            
+                                if len(temp_index) > 1:
+                                    item_index.update(temp_index)
 
-                    if len(item_index) > 2:
-                        for feature in ["introduction","appendix","index","prologue","epilogue","preface","glossary","bibliography"]:
-                            for index in feature_dict[feature]:
-                                if start_line < index < i:
-                                    item_index.add(index)                            
+                        if len(item_index) > 2:
+                            for feature in ["introduction","appendix","index","prologue","epilogue","preface","glossary","bibliography"]:
+                                for index in feature_dict[feature]:
+                                    if start_line < index < i:
+                                        item_index.add(index)                            
                                 
                     if not item_index or len(item_index) == 1:
                         temp_index = set()
@@ -2275,18 +2403,14 @@ class StructureTagger:
                                 item_index.add(j)
                     item_index.difference_update(feature_dict["ends_with_page"])
                     if not item_index:
-                        if text_lines[i]:
-                            start_line = i
-                            new_start = False
-                        else:
-                            start_line = -1
-                            new_start = True
+                        plike_end_lines[i].tag = "head"
+                        plike_end_lines[i].depth = depth
+                        plike_end_lines[i].plike = True
+                        plike_end_lines[i].start = len(tokens)
+                        self.no_sent_tokenize(text_lines,start_line,i,tokens)
+                        plike_end_lines[i].end = len(tokens)
                     else:
                         item_index = list(item_index)
-                        #print "item index"
-                        #print item_index
-                        #print start_line
-                        #print i
                         item_index.sort()
                         if start_line not in feature_dict["act"] and start_line not in feature_dict["scene"]:
                             head_tag = Tag(len(tokens),-1,"head",None)
@@ -2309,46 +2433,88 @@ class StructureTagger:
                         self.no_sent_tokenize(text_lines,item_index[-1],i,tokens)
                         item_tag.end = len(tokens)
                         tags.append(item_tag)
-                        list_tag = Tag(list_start,len(tokens),"list",{"type":"contents"})
+                        if plike_end_lines[i].tag == "contents":
+                            list_tag = Tag(list_start,len(tokens),"list",{"type":"contents"})
+                            has_contents = True
+                        elif plike_end_lines[i].attributes["type"] == "illustrations":
+                            list_tag = Tag(list_start,len(tokens),"list",{"type":"illustrations"})
+                        elif plike_end_lines[i].attributes["type"] == "index":
+                            list_tag = Tag(list_start,len(tokens),"list",{"type":"index"})
                         list_tag.depth = depth + 1
                         tags.append(list_tag)
                 elif plike_end_lines[i].tag == "sp":
 
                     plike_end_lines[i].start = len(tokens)
                     plike_end_lines[i].plike = False
-                    speaker_tag = Tag(len(tokens),-1,"speaker",None)
-                    speaker_tag.depth = depth + 1
-                    speaker_tag.plike = True
                     speaker_span = "\r".join(text_lines[start_line:i])
                     #print speaker_span
+                    inserted_speaker = False
 
                     match = speaker_re.search(speaker_span)
                     if match:
 
-                        sents = self.tokenizer.tokenize_span(match.group(1).strip(": .][()_"))
-                        for sent in sents:
-                            tokens.extend(sent)
                         the_rest = match.group(2).lstrip("._ ")
-                        speaker_tag.end = len(tokens)
-                        tags.append(speaker_tag)
-
                         the_rest = the_rest.strip()
+                        if the_rest:
 
-                        if self.is_drama_verse(the_rest):
-                            lg_tag = Tag(len(tokens),-1,"lg",None)
-                            lg_tag.plike = False
-                            lg_tag.depth = depth + 1
+                            speaker_tag = Tag(len(tokens),-1,"speaker",None)
+                            speaker_tag.depth = depth + 1
+                            speaker_tag.plike = True
+
+                            sents = self.tokenizer.tokenize_span(match.group(1).strip(": .][()_"))
+                            for sent in sents:
+                                tokens.extend(sent)
                             
-                            the_rest = the_rest.split("\r\r")
-                            for span in the_rest:
-                                match = self.stage_re.search(span)
-                                while match:
-                                    speech = match.group(1)
-                                    stage = match.group(2).strip("_ ")
-                                    span = match.group(3).lstrip(". _")
-                                    speech = speech.rstrip(" _\r").lstrip(":. _\r")
-                                    if speech:
-                                        verse_lines = speech.split("\r")
+                            speaker_tag.end = len(tokens)
+                            tags.append(speaker_tag)
+                            inserted_speaker = True
+
+                            if self.is_drama_verse(the_rest):
+                                lg_tag = Tag(len(tokens),-1,"lg",None)
+                                lg_tag.plike = False
+                                lg_tag.depth = depth + 1
+                                
+                                the_rest = the_rest.split("\r\r")
+                                for span in the_rest:
+                                    match = self.stage_re.search(span)
+                                    while match:
+                                        speech = match.group(1)
+                                        stage = match.group(2).strip("_ ")
+                                        span = match.group(3).lstrip(". _")
+                                        speech = speech.rstrip(" _\r").lstrip(":. _\r")
+                                        if speech:
+                                            verse_lines = speech.split("\r")
+                                            for verse_line in verse_lines:
+                                                sents = self.tokenizer.tokenize_span(verse_line)
+                                                line_start_index = len(tokens)
+                                                for sent in sents:
+                                                    tokens.extend(sent)
+                                                tags.append(Tag(line_start_index,len(tokens),"l",None))
+                                                tags[-1].depth = depth + 2
+                                                tags[-1].plike = True
+                                        stage = stage.strip()
+                                        stage_tag = Tag(len(tokens),-1,"stage",None)
+                                        sents = self.tokenizer.tokenize_span(stage.replace("\r"," "))
+                                        for sent in sents:
+                                            tokens.extend(sent)
+                                        stage_tag.end = len(tokens)
+                                        stage_tag.depth = depth + 2
+                                        stage_tag.plike = True
+                                        tags.append(stage_tag)
+                                        match = self.stage_re.match(span)
+                                    span = span.strip()
+                                    if "[" in span:
+                                        stage_tag = Tag(len(tokens),-1,"stage",None)
+                                        sents = self.tokenizer.tokenize_span(span[span.find("[")+1:].replace("\r"," "))
+                                        for sent in sents:
+                                            tokens.extend(sent)
+                                        stage_tag.end = len(tokens)
+                                        #stage_tag.depth = depth + 2
+                                        tags.append(stage_tag)
+                                        span = span[:span.find("[")].rstrip()
+
+                                    if span:
+                                        verse_lines = span.split("\r")
                                         for verse_line in verse_lines:
                                             sents = self.tokenizer.tokenize_span(verse_line)
                                             line_start_index = len(tokens)
@@ -2357,96 +2523,62 @@ class StructureTagger:
                                             tags.append(Tag(line_start_index,len(tokens),"l",None))
                                             tags[-1].depth = depth + 2
                                             tags[-1].plike = True
-                                    stage = stage.strip()
-                                    stage_tag = Tag(len(tokens),-1,"stage",None)
-                                    sents = self.tokenizer.tokenize_span(stage.replace("\r"," "))
-                                    for sent in sents:
-                                        tokens.extend(sent)
-                                    stage_tag.end = len(tokens)
-                                    stage_tag.depth = depth + 2
-                                    stage_tag.plike = True
-                                    tags.append(stage_tag)
-                                    match = self.stage_re.match(span)
-                                span = span.strip()
-                                if "[" in span:
-                                    stage_tag = Tag(len(tokens),-1,"stage",None)
-                                    sents = self.tokenizer.tokenize_span(span[span.find("[")+1:].replace("\r"," "))
-                                    for sent in sents:
-                                        tokens.extend(sent)
-                                    stage_tag.end = len(tokens)
-                                    #stage_tag.depth = depth + 2
-                                    tags.append(stage_tag)
-                                    span = span[:span.find("[")].rstrip()
 
-                                if span:
-                                    verse_lines = span.split("\r")
-                                    for verse_line in verse_lines:
-                                        sents = self.tokenizer.tokenize_span(verse_line)
-                                        line_start_index = len(tokens)
+                                lg_tag.end = len(tokens)
+                                tags.append(lg_tag)   
+
+                            else:                      
+                                p_tag = Tag(len(tokens),-1,"p",None)
+                                p_tag.plike = True
+                                p_tag.depth = depth + 1
+                                the_rest = the_rest.split("\r\r")
+                                for span in the_rest:
+                                    match = self.stage_re.search(span)
+                                    while match:
+                                        speech = match.group(1)
+                                        stage = match.group(2).strip("_ ")
+                                        span = match.group(3).lstrip(". _")
+                                        speech = speech.rstrip(" _").lstrip(":. _")
+                                        if speech:
+                                            sents = self.tokenizer.tokenize_span(speech.replace("\r"," "))
+                                            sent_start_index = len(tokens)
+                                            for sent in sents:
+                                                tokens.extend(sent)
+                                                tags.append(Tag(sent_start_index,len(tokens),"s",None))
+                                                #tags[-1].depth = depth + 2
+                                                sent_start_index = len(tokens)
+                                        stage = stage.strip()
+                                        stage_tag = Tag(len(tokens),-1,"stage",None)
+                                        sents = self.tokenizer.tokenize_span(stage.replace("\r"," "))
                                         for sent in sents:
                                             tokens.extend(sent)
-                                        tags.append(Tag(line_start_index,len(tokens),"l",None))
-                                        tags[-1].depth = depth + 2
-                                        tags[-1].plike = True
+                                        stage_tag.end = len(tokens)
+                                        #stage_tag.depth = depth + 2
+                                        tags.append(stage_tag)
+                                        match = self.stage_re.match(span)
+                                    span = span.strip()
+                                    if "[" in span:
+                                        stage_tag = Tag(len(tokens),-1,"stage",None)
+                                        sents = self.tokenizer.tokenize_span(span[span.find("[")+1:].replace("\r"," "))
+                                        for sent in sents:
+                                            tokens.extend(sent)
+                                        stage_tag.end = len(tokens)
+                                        #stage_tag.depth = depth + 2
+                                        tags.append(stage_tag)
+                                        span = span[:span.find("[")].rstrip()
 
-                            lg_tag.end = len(tokens)
-                            tags.append(lg_tag)
-
-                    
-                        
-
-                        else:                      
-                            p_tag = Tag(len(tokens),-1,"p",None)
-                            p_tag.plike = True
-                            p_tag.depth = depth + 1
-                            the_rest = the_rest.split("\r\r")
-                            for span in the_rest:
-                                match = self.stage_re.search(span)
-                                while match:
-                                    speech = match.group(1)
-                                    stage = match.group(2).strip("_ ")
-                                    span = match.group(3).lstrip(". _")
-                                    speech = speech.rstrip(" _").lstrip(":. _")
-                                    if speech:
-                                        sents = self.tokenizer.tokenize_span(speech.replace("\r"," "))
+                                    if span:
+                                        sents = self.tokenizer.tokenize_span(span.replace("\r"," ").rstrip(" _").lstrip(":. _"))
                                         sent_start_index = len(tokens)
                                         for sent in sents:
                                             tokens.extend(sent)
                                             tags.append(Tag(sent_start_index,len(tokens),"s",None))
                                             #tags[-1].depth = depth + 2
                                             sent_start_index = len(tokens)
-                                    stage = stage.strip()
-                                    stage_tag = Tag(len(tokens),-1,"stage",None)
-                                    sents = self.tokenizer.tokenize_span(stage.replace("\r"," "))
-                                    for sent in sents:
-                                        tokens.extend(sent)
-                                    stage_tag.end = len(tokens)
-                                    #stage_tag.depth = depth + 2
-                                    tags.append(stage_tag)
-                                    match = self.stage_re.match(span)
-                                span = span.strip()
-                                if "[" in span:
-                                    stage_tag = Tag(len(tokens),-1,"stage",None)
-                                    sents = self.tokenizer.tokenize_span(span[span.find("[")+1:].replace("\r"," "))
-                                    for sent in sents:
-                                        tokens.extend(sent)
-                                    stage_tag.end = len(tokens)
-                                    #stage_tag.depth = depth + 2
-                                    tags.append(stage_tag)
-                                    span = span[:span.find("[")].rstrip()
+                                p_tag.end = len(tokens)
+                                tags.append(p_tag)
 
-                                if span:
-                                    sents = self.tokenizer.tokenize_span(span.replace("\r"," ").rstrip(" _").lstrip(":. _"))
-                                    sent_start_index = len(tokens)
-                                    for sent in sents:
-                                        tokens.extend(sent)
-                                        tags.append(Tag(sent_start_index,len(tokens),"s",None))
-                                        #tags[-1].depth = depth + 2
-                                        sent_start_index = len(tokens)
-                            p_tag.end = len(tokens)
-                            tags.append(p_tag)
-
-                    else: #fall back to stage if can't find speaker
+                    if not inserted_speaker: #fall back to stage no speaker or speech
                         plike_end_lines[i].tag = "stage"
                         sents =self.tokenizer.tokenize_span(" ".join(text_lines[start_line:i]).strip(" ()_[]"))
                         for sent in sents:
@@ -2605,7 +2737,7 @@ class StructureTagger:
                 
             elif i == len(text_lines) or (not text_lines[i] and not new_start and not in_plike):
                 if i == start_line + 1 and start_line in feature_dict["upper_case"] and start_line not in feature_dict["illustration"]:
-                    if global_tags["Genre"] == "poetry":
+                    if global_tags["Genre"] == "poetry" and start_line not in feature_dict["title"]:
                         if part_tag:
                             if len(stanzas) > part_start_stanzas:
                                 part_tag.end = len(tokens)
@@ -2713,11 +2845,23 @@ class StructureTagger:
                                 sentence_count = self.paragraph_tokenize(text_lines,start_line,i,tokens,tags,paragraph_count,sentence_count)
                             tags[-1].depth = depth
                             tags[-1].plike = True
+
+
+                                                
                     else:
                         if start_line in feature_dict["illustration"]:
                             self.illustration_tokenize(text_lines,start_line,i,tokens,tags)
                         elif start_line in feature_dict["footnote"]:
                             self.footnote_tokenize(text_lines,start_line,i,tokens,tags)
+                            
+                        #elif global_tags["Genre"] == "play" and front_index < i < back_index: # no ps in plays
+                        #     stage_tag = Tag(len(tokens),-1,"stage",None)
+                        #     sents =self.tokenizer.tokenize_span(" ".join(text_lines[start_line:i]).strip(" ()_[]"))
+                        #     for sent in sents:
+                        #        tokens.extend(sent)
+                        #     stage_tag.end = len(tokens)
+                        #     tags.append(stage_tag)
+
                         else:
                             sentence_count = self.paragraph_tokenize(text_lines,start_line,i,tokens,tags,paragraph_count,sentence_count)
                             paragraph_count += 1
@@ -3296,6 +3440,113 @@ class LexicalTagger:
             text.tokens = lemma_tokens
         return text
  
+
+TEI_header_template = u''' <teiHeader>
+  <fileDesc>
+   <titleStmt>
+    <title>**TITLE OF TEXT**</title>
+    <author>**AUTHOR OF TEXT**</author>
+    <respStmt>
+     <resp>TEI generated by GutenTag v**version num** (http://www.cs.toronto.edu/~jbrooke/gutentag)</resp>
+     <resp>Source text from Project Gutenberg (http://www.gutenberg.org)</resp>
+    </respStmt>
+   </titleStmt>
+   <publicationStmt>
+    <distributor>GutenTag</distributor>
+    <availability>
+     <p>GutenTag claims no copyright over this text, which is derived from a text from Project Gutenberg. The standard Project Gutenberg statement follows:</p>
+     <p>This eBook is for the use of anyone anywhere at no cost and with almost no restrictions whatsoever.  You may copy it, give it away or re-use it under the terms of the Project Gutenberg License included at www.gutenberg.org</p>
+    </availability>
+   </publicationStmt>
+   <sourceDesc>
+    <biblStruct>
+     <monogr>
+      <author>
+       <forename>**AUTHOR FIRST NAME**</forename>
+       <surname>**AUTHOR LAST NAME**</surname> 
+       <sex>**AUTHOR GENDER, M or F or NA**</sex>
+       <birth>
+        <date>**AUTHOR BIRTH DATE, IN FORMAT YYYY-MM-DD**</date>
+        <country>**COUNTRY OF AUTHOR BIRTH**</country>
+        <settlement>**CITY/TOWN OF AUTHOR BIRTH**</settlement>
+       </birth>
+       <death>
+        <date>**AUTHOR DEATH DATE, IN FORMAT YYYY-MM-DD**</date>
+        <country>**COUNTRY OF AUTHOR DEATH**</country>
+        <settlement>**CITY/TOWN OF AUTHOR DEATH**</settlement>
+       </death>
+      </author>
+      <title>**TITLE OF TEXT**</title>
+      <imprint>
+       <pubPlace>
+        <country>**COUNTRY WHERE TEXT WAS PUBLISHED**</country>
+        <settlement>**CITY WHERE TEXT WAS PUBLISHED**</settlement>
+       </pubPlace>
+       <publisher>**NAME OF PUBLISHER**</publisher>
+       <date>**YEAR OF PUBLICATION**</date>
+      </imprint>
+     </monogr>
+    </biblStruct>
+   </sourceDesc>
+  </fileDesc>
+  <profileDesc>
+   <langUsage>
+    <language ident="**2-letter language code**">**SPELL OUT LANGUAGE NAME**</language>
+   </langUsage>
+   <textClass>
+    <keywords scheme="#lcsh">
+     <term>**LOC SUBJECT KEYWORD**</term>
+    </keywords>
+    <classCode scheme="#lc">**LOC CODE**</classCode>
+   </textClass>
+  </profileDesc>
+ </teiHeader>
+'''
+
+header_pairs = [["**TITLE OF TEXT**","Title"],["**AUTHOR OF TEXT**","Author"],["**AUTHOR BIRTH DATE, IN FORMAT YYYY-MM-DD**","Author Birth"],["**AUTHOR DEATH DATE, IN FORMAT YYYY-MM-DD**","Author Death"],["**AUTHOR FIRST NAME**","Author Given"],["**AUTHOR LAST NAME**","Author Surname"],["**COUNTRY WHERE TEXT WAS PUBLISHED**","Publication Country"],["**YEAR OF PUBLICATION**","Publication Date"],["**LOC CODE**","LoC Class"],["**SPELL OUT LANGUAGE NAME**", "Language"]]
+
+blanks = ["**NAME OF PUBLISHER**","**CITY WHERE TEXT WAS PUBLISHED**","**CITY/TOWN OF AUTHOR DEATH**","**COUNTRY OF AUTHOR DEATH**","**CITY/TOWN OF AUTHOR BIRTH**","**COUNTRY OF AUTHOR BIRTH**"]
+
+language_lookup = {"English":"en","French":"fr","German":"de","Spanish":"es","Chinese":"zh","Dutch":"nl","Italian":"it","Japanese":"ja","Danish":"da","Norweigan":"no","Swedish":"sv","Finnish":"fi"}
+
+def output_header(fout, tag_dict):
+
+    TEI_header = TEI_header_template.replace("**version num**",version)
+    for pair in header_pairs:
+        if pair[1] in tag_dict and tag_dict[pair[1]]:
+            if pair[1] == "Publication Date":
+                TEI_header = TEI_header.replace(pair[0],tag_dict[pair[1]])
+            elif "Birth" in pair[1] or "Death" in pair[1]:
+                TEI_header = TEI_header.replace(pair[0],str(tag_dict[pair[1]][0]))
+            else:
+                TEI_header = TEI_header.replace(pair[0],tag_dict[pair[1]][0])
+        else:
+            blanks.append(pair[0])
+    for blank in blanks:
+        TEI_header = TEI_header.replace(blank,"")
+    if "Author Gender" in tag_dict and tag_dict["Author Gender"]:
+        if tag_dict["Author Gender"][0] == 'male':
+            TEI_header = TEI_header.replace("**AUTHOR GENDER, M or F or NA**","M")
+        else:
+            TEI_header = TEI_header.replace("**AUTHOR GENDER, M or F or NA**","F")
+    else:
+        TEI_header = TEI_header.replace("**AUTHOR GENDER, M or F or NA**","NA")
+    if tag_dict["Language"][0] in language_lookup:
+        TEI_header = TEI_header.replace("**2-letter language code**",language_lookup[tag_dict["Language"][0]])
+    else:
+        TEI_header = TEI_header.replace("**2-letter language code**", "en")
+        
+    if "Subject" in tag_dict and tag_dict["Subject"]:
+        subjects = "".join(["     <term>%s</term>\n" % subject for subject in tag_dict["Subject"]])
+        TEI_header = TEI_header.replace("     <term>**LOC SUBJECT KEYWORD**</term>\n",subjects)        
+    else:
+        TEI_header = TEI_header.replace("     <term>**LOC SUBJECT KEYWORD**</term>\n","")
+        
+        
+    fout.write(TEI_header)
+  
+
+
 def split_overlapping_tags(text):
     new_tags = []
     end_indicies = {}
@@ -3371,6 +3622,17 @@ def split_overlapping_tags(text):
     text.tags.extend(new_tags)
 
 
+def remove_useless_tags(tags,options):  #this prevents display bug
+    not_wanted = []
+    for i in range(len(tags)):
+        tag = tags[i]
+        if tag.get_single_tag() in options["not_display_tags"] and not tag.get_single_tag() in options["not_wanted_tags"]:
+            not_wanted.append(i)
+    not_wanted.sort(reverse=True)
+    for index in not_wanted:
+        del tags[index]
+
+
 # wanted_tags : tags that have been explicitly selected for inclusions
 # not_wanted_tags : tags that have explicitly selected to not be included
 # not_display_tags: tags that are not visible
@@ -3406,105 +3668,8 @@ def remove_from_tag_path(tag_path,options,genre):
     tag_path.pop()
     return check_tag_path(tag_path,options,genre)
 
-TEI_header_template = u''' <teiHeader>
-  <fileDesc>
-   <titleStmt>
-    <title>**TITLE OF TEXT**</title>
-    <author>**AUTHOR OF TEXT**</author>
-    <respStmt>
-     <resp>TEI generated by GutenTag v**version num** (http://www.cs.toronto.edu/~jbrooke/gutentag)</resp>
-     <resp>Source text from Project Gutenberg (http://www.gutenberg.org)</resp>
-    </respStmt>
-   </titleStmt>
-   <publicationStmt>
-    <distributor>GutenTag</distributor>
-    <availability>
-     <p>GutenTag claims no copyright over this text, which is derived from a text from Project Gutenberg. The standard Project Gutenberg statement follows:</p>
-     <p>This eBook is for the use of anyone anywhere at no cost and with almost no restrictions whatsoever.  You may copy it, give it away or re-use it under the terms of the Project Gutenberg License included at www.gutenberg.org</p>
-    </availability>
-   </publicationStmt>
-   <sourceDesc>
-    <biblStruct>
-     <monogr>
-      <author>
-       <forename>**AUTHOR FIRST NAME**</forename>
-       <surname>**AUTHOR LAST NAME**</surname> 
-       <sex>**AUTHOR GENDER, M or F or NA**</sex>
-       <birth>
-        <date>**AUTHOR BIRTH DATE, IN FORMAT YYYY-MM-DD**</date>
-        <country>**COUNTRY OF AUTHOR BIRTH**</country>
-        <settlement>**CITY/TOWN OF AUTHOR BIRTH**</settlement>
-       </birth>
-       <death>
-        <date>**AUTHOR DEATH DATE, IN FORMAT YYYY-MM-DD**</date>
-        <country>**COUNTRY OF AUTHOR DEATH**</country>
-        <settlement>**CITY/TOWN OF AUTHOR DEATH**</settlement>
-       </death>
-      </author>
-      <title>**TITLE OF TEXT**</title>
-      <imprint>
-       <pubPlace>
-        <country>**COUNTRY WHERE TEXT WAS PUBLISHED**</country>
-        <settlement>**CITY WHERE TEXT WAS PUBLISHED**</settlement>
-       </pubPlace>
-       <publisher>**NAME OF PUBLISHER**</publisher>
-       <date>**YEAR OF PUBLICATION**</date>
-      </imprint>
-     </monogr>
-    </biblStruct>
-   </sourceDesc>
-  </fileDesc>
-  <profileDesc>
-   <langUsage>
-    <language ident="**2-letter language code**">**SPELL OUT LANGUAGE NAME**</language>
-   </langUsage>
-   <textClass>
-    <keywords scheme="#lcsh">
-     <term>**LOC SUBJECT KEYWORD**</term>
-    </keywords>
-    <classCode scheme="#lc">**LOC CODE**</classCode>
-   </textClass>
-  </profileDesc>
- </teiHeader>
-'''
 
-header_pairs = [["**TITLE OF TEXT**","Title"],["**AUTHOR OF TEXT**","Author"],["**AUTHOR BIRTH DATE, IN FORMAT YYYY-MM-DD**","Author Birth"],["**AUTHOR DEATH DATE, IN FORMAT YYYY-MM-DD**","Author Death"],["**AUTHOR FIRST NAME**","Author Given"],["**AUTHOR LAST NAME**","Author Surname"],["**COUNTRY WHERE TEXT WAS PUBLISHED**","Publication Country"],["**YEAR OF PUBLICATION**","Publication Date"],["**LOC CODE**","LoC Class"],["**SPELL OUT LANGUAGE NAME**", "Language"]]
 
-blanks = ["**NAME OF PUBLISHER**","**CITY WHERE TEXT WAS PUBLISHED**","**CITY/TOWN OF AUTHOR DEATH**","**COUNTRY OF AUTHOR DEATH**","**CITY/TOWN OF AUTHOR BIRTH**","**COUNTRY OF AUTHOR BIRTH**"]
-
-language_lookup = {"English":"en","French":"fr","German":"de","Spanish":"es","Chinese":"zh","Dutch":"nl","Italian":"it","Japanese":"ja","Danish":"da","Norweigan":"no","Swedish":"sv","Finnish":"fi"}
-
-def output_header(fout, tag_dict):
-
-    TEI_header = TEI_header_template
-    for pair in header_pairs:
-        if pair[1] in tag_dict and tag_dict[pair[1]]:
-            if pair[1] == "Publication Date":
-                TEI_header = TEI_header.replace(pair[0],tag_dict[pair[1]])
-            elif "Birth" in pair[1] or "Death" in pair[1]:
-                TEI_header = TEI_header.replace(pair[0],str(tag_dict[pair[1]][0]))
-            else:
-                TEI_header = TEI_header.replace(pair[0],tag_dict[pair[1]][0])
-        else:
-            blanks.append(pair[0])
-    for blank in blanks:
-        TEI_header = TEI_header.replace(blank,"")
-    if "Author Gender" in tag_dict:
-        if tag_dict["Author Gender"][0] == 'male':
-            TEI_header = TEI_header.replace("**AUTHOR GENDER, M or F or NA**","M")
-        else:
-            TEI_header = TEI_header.replace("**AUTHOR GENDER, M or F or NA**","F")
-    if tag_dict["Language"][0] in language_lookup:
-        TEI_header = TEI_header.replace("**2-letter language code**",language_lookup[tag_dict["Language"][0]])
-    if "Subject" in tag_dict and tag_dict["Subject"]:
-        subjects = "".join(["     <term>%s</term>\n" % subject for subject in tag_dict["Subject"]])
-        TEI_header = TEI_header.replace("     <term>**LOC SUBJECT KEYWORD**</term>\n",subjects)        
-    else:
-        TEI_header = TEI_header.replace("     <term>**LOC SUBJECT KEYWORD**</term>\n","")
-        
-        
-    fout.write(TEI_header)
-  
 
                  
 def output_text(text,fout,options,tag_dict):
@@ -3517,6 +3682,7 @@ def output_text(text,fout,options,tag_dict):
             fout.write(" ".join(text.tokens))
             return len(text.tokens) > 0
     else:
+        remove_useless_tags(text.tags,options)
         split_overlapping_tags(text)
     span_start = 0
     end_indicies = {}
@@ -4064,6 +4230,8 @@ class GutentagWebserver(BaseHTTPRequestHandler):
                     cgi_dict[pair[0]] = unquote(pair[1]).decode("utf-8").replace("+"," ")
                 
                 if "results_page.cgi" in self.path:
+                    #print cgi_dict["data"]
+                    #sys.stdout.flush()
                     options = json.loads(cgi_dict["data"])
                     if not online and "save_filename" in options and options["save_filename"]:
                         try:
@@ -4099,8 +4267,8 @@ class GutentagWebserver(BaseHTTPRequestHandler):
 
                             self.wfile.write("<br /> <br /> <br />")
 
-                            self.wfile.write('<div class="activesubcorpus"> <div class="corpusheader"><span class="corpusheader">Subcorpus %d (<span id="resultcount%d">0</span>)</span></div> <div class="subdefine" id="subdefine%d">' % (i,i,i))
-                            self.wfile.write('</div></div>')
+                            self.wfile.write('<div class="activesubcorpus"> <div class="corpusheader"><span class="corpusheader">Subcorpus %d (<span id="resultcount%d">0</span>)</span></div> <div class="subdefine"> <div class="defineframe"> <div class="outputlist" id="subdefine%d">' % (i,i,i))
+                            self.wfile.write('</div></div></div></div>')
 
                         self.wfile.write(text[1])
 
@@ -4177,9 +4345,9 @@ def start_socketserver():
         fout.close()
     server.serve_forever()
 
-### this API for people who want to access Gutentag directly in python
+### this API is for people who want to access Gutentag directly in python
 
-class Gutentag_API:
+class GT_API:
 
     def __init__(self, corpus_path,options_path):
         f = open(options_path)
@@ -4195,7 +4363,7 @@ class Gutentag_API:
             del info["text"]
             yield text, info
 
-    def cycle_through_all_tags(self):
+    def cycle_through_all_info(self):
         for info in self.gt.get_all_tags():
             yield info
     
@@ -4231,119 +4399,3 @@ if __name__ == "__main__":
     main_Q.put(-1)
     mainprocess.join()
     print "Exited"
-
-
-
-
-    '''
-    options = {}
-    
-    options["corpus_dir"] = "./smallgut"
-    #options["mode"] = "output_to_file" #"output_one" #"genre_training"
-    options["mode"] = "tag_genres_and_get_pub_info"
-    options["output_dir"] = "subcorpus"
-    options["output_file"] = "fiction_structure.txt" #"text_structure.txt" "play_structure.txt" "poetry_structure.txt"
-    options["output_format"] = "tokens" #"TEI" #
-    options["output_mode"] = "multiple"
-    options["tagged"] = False
-    options["text_restrictions"] = {}
-    #gr = GutenTag("/p/cl/Gutenberg2010/pgdvd042010")
-    #options["text_restrictions"] = {"Language":"English", "Num":set([5729,7120,30305,10810,23384,14150,21236,17277,16347,16629,20147,22258,22186,15627,22841,8228, 12270,11717,22244,20444])} #fiction
-    #tag_restrictions = {"Language":"English", "Num":set([13894,19393,21849,21937,13039,11999,18792,16753,18131,12794,12141])} # plays
-    #tag_restrictions = {"Language":"English", "Num":set([9653,20504,9043,16126,15211,10089,9777,15001,19833])} # poems
-    #tag_restrictions = {"Language":"English", "LoC Class":"literature", "Subject":""}
-    options["tags_wanted"] = set(["p"])
-    options["tags_not_wanted"] = set(["front","back"])
-    #options["maxnum"] = 20
-    if not os.path.exists(options["output_dir"]):
-        os.mkdir(options["output_dir"])
-    gr = GutenTag(options)
-    count = 0
-    if options["mode"] == "get_samples":
-        plays = []
-        poetry = []
-        fiction = []
-        nonfiction = []
-
-        random.seed(5)
-    #fout = codecs.open("guten_titles.txt","w",encoding="utf-8")
-    start = time.time()
-    if options["mode"] == "tag_genres_and_get_pub_info":
-        genre_lookup_dict = {}
-        pub_date_lookup_dict = {}
-        pub_country_lookup_dict = {}
-    
-    for tags in gr.iterate_over_texts():
-        #print tags
-        if "Genre" not in tags:
-            continue
-        num = tags["Num"]
-        #print options
-        if options["mode"] == "tag_genres_and_get_pub_info":
-            genre_lookup_dict[num] = tags["Genre"]
-            if "Publication Date" in tags:
-                pub_date_lookup_dict[num] = tags["Publication Date"]
-            if "Publication Country" in tags:
-                pub_country_lookup_dict[num] = tags["Publication Country"] 
-
-        if options["mode"] == "get_samples":
-            if tags["Genre"] == "fiction":
-                fiction.append(num)
-            if tags["Genre"] == "nonfiction":
-                nonfiction.append(num)
-            elif tags["Genre"] == "poetry":
-                poetry.append(num)
-            elif tags["Genre"] == "play":
-                plays.append(num)
-
-            print tags
-
-            if len(fiction) >= 20 and len(nonfiction) >= 10 and len(poetry) >= 10 and len(plays) >= 10:
-                break
-            
-
-        count += 1
-
-    final = time.time() - start
-    print "total time"
-    print final
-
-
-
-
-    #print wanted
-    #fout.close()
-
-
-
-
-    if options["mode"] == "tag_genres_and_get_pub_info":
-        print "here"
-        print pub_country_lookup_dict
-        fout = open("GT_textinfo.dat", "wb")
-        cPickle.dump(genre_lookup_dict,fout,-1)
-        cPickle.dump(pub_date_lookup_dict,fout,-1)
-        cPickle.dump(pub_country_lookup_dict,fout,-1)
-        fout.close()
-
-    if options["mode"] == "get_samples":
-
-        print len(fiction)
-        print len(nonfiction)
-        print len(poetry)
-        print len(plays)
-
-        fout = open("guten_genre_text.txt","w")
-        fout.write("fiction\n")
-        fout.write("\n".join(random.sample(fiction,20)))
-        fout.write("nonfiction\n")
-        fout.write("\n".join(random.sample(nonfiction,10)))
-        fout.write("poetry\n")
-        fout.write("\n".join(random.sample(poetry,10)))
-        fout.write("plays\n")
-        fout.write("\n".join(random.sample(plays,10)))
-        fout.close()
-
-    '''
-
-

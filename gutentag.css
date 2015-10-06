@@ -206,6 +206,22 @@ div.subdefineheader p {
 	left:15px;
 	width:750px;
 }
+div.outputframe {
+	margin:0;
+	border:0;
+	padding:0;
+	position:relative;
+	left:0px;
+	background:#fff;
+}
+div.outputlist {
+	margin:15px 30px 15px 30px;
+	background:#FFF;
+	text-align:left;
+	font-family:'Lato', Helvetica, sans-serif;
+	font-size:115%;
+	line-height:25px;
+}
 div.subdefineheader p:hover {
 	cursor:pointer;
 }

@@ -80,12 +80,12 @@ function animateTogglePanel(panelContent)
 	
 	// make sure the content is visible before getting its height
 	panelContent.style.display = "block";
-	//if (PANEL_NORMAL_CLASS == "") {
-	//	panelContent.className = PANEL_COLLAPSED_CLASS;
-	//}
-	//else {
+	if (PANEL_NORMAL_CLASS == "") { // is a big box, must hide text
+		panelContent.className = PANEL_COLLAPSED_CLASS;
+	}
+	else { // small box, display text
 	  panelContent.className = PANEL_NORMAL_CLASS;
-	//}
+	}
 	
 	
 	// get the height of the content
