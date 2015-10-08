@@ -994,13 +994,13 @@ function load_parameters() {
 		 }
 		 remove_all_lexical_tags(data['mode']); 
 
-		 for (var i = 1; i <= data['lexical_tags'].length; i++) {
+		 for (var j = 1; j <= data['lexical_tags'].length; j++) {
 		  element = add_lexical_tag(data['mode'])                 
-		  if (data['lexical_tags'][i-1].lastIndexOf("user_lexicon", 0) === 0) {
-		  		selectElement(element.children[0].children[0], data['lexical_tags'][i-1].split("|")[1])
+		  if (data['lexical_tags'][j-1].lastIndexOf("user_lexicon", 0) === 0) {
+		  		selectElement(element.children[0].children[0], data['lexical_tags'][j-1].split("|")[1])
 		  }
 		  else {
-		  		var stuff = data['lexical_tags'][i-1].split("|")
+		  		var stuff = data['lexical_tags'][j-1].split("|")
 		  		var main_lex = stuff[0]
 		  		var sub_lex = stuff[1]
 		  		selectElement(element.children[0].children[0], main_lex)

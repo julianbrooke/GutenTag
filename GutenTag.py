@@ -753,7 +753,7 @@ class StructureTagger:
     endnotes = set(["endnotes","notes", "note", "bibliographical note"])
 
     stage_start =  re.compile("enter|exit|curtain|exeunt")
-    setting_start = re.compile("setting|the time|the setting|the place|the scene")
+    setting_start = re.compile("setting|the time|the setting|the place|the scene|scene:|scene\.")
     setting_phrase = re.compile("takes place|is set in|the setting is|the setting of the play|the action ")
     cities = ["London","New York","Oxford","Cambridge","Boston","Philadelphia","San Francisco","Toronto","Los Angeles","Chicago","Sydney","Auckland","Dublin"]
     countries = ["U.S.A","U.S.","United States","United States of America","America","Canada","England","Britan","United Kingdom", "U.K.", "Australia", "New Zealand"]
@@ -884,7 +884,7 @@ class StructureTagger:
                 if blank_count > 1:
                     in_front_section = False
             if has_front_header:
-                if not text_lines[i].isupper():
+                if not text_lines[i].isupper() or (i < len(text_lines) -1 and text_lines[i+1]):
                     has_front_header = False
                     in_front_section = True
             paragraph_line_count += 1
@@ -899,7 +899,8 @@ class StructureTagger:
                 feature_dict["single_line_para"].add(i)
             if text_lines[i].isupper():
                 feature_dict["upper_case"].add(i)
-                in_front_section = False
+                if (i > 0 and not text_lines[i - 1]) and (i < len(text_lines) - 1 and not text_lines[i + 1]):
+                    in_front_section = False
             try:
                 first_letter = self.first_letter.search(text_lines[i]).group(0)
             except:
@@ -973,7 +974,7 @@ class StructureTagger:
                 feature_dict["dedication"].add(i)
                 has_front_indicator = True
 
-            if line == "the end" or line == "fin" or line == "finis":
+            if (line == "the end" or line == "fin" or line == "finis") and i in feature_dict["upper_case"] and i - 1 in feature_dict["blank_lines"]:
                 feature_dict["the_end"].add(i)
 
             if self.series.search(line):
@@ -1114,7 +1115,7 @@ class StructureTagger:
                      #    feature_dict["setting_word"].add(i)
 
                  if self.setting_start.match(line) or line == "scene":
-                    has_front_header = True
+                    has_front_indicator = True
                     feature_dict["setting_word"].add(i)
 
                  if self.stage_start.match(line):
@@ -1230,8 +1231,6 @@ class StructureTagger:
     body_elements = ["prologue"]
 
 
-
-
     def find_title(self,feature_dict):
         last_title = 0
         for title_loc in feature_dict["title"]:
@@ -1342,7 +1341,7 @@ class StructureTagger:
         sys.stdout.flush()
         #print "chapter_score"
         #print chapter_score
-        score += 10*blanks
+        score += 10*min(blanks,3)
         return score
 
 
@@ -1368,10 +1367,10 @@ class StructureTagger:
                 if index < start_index or index >= end_index:
                     continue
                 score = self.get_front_score(feature_dict,index,to_check[i], global_tags,start_index,end_index)
-                #if index - start_index < 300:
-                #    print "scoring"
-                #    print index
-                #    print score
+                if index - start_index < 300:
+                    print "scoring"
+                    print index
+                    print score
                 
                 if score > best_score:
                     best_score = score
@@ -1556,8 +1555,8 @@ class StructureTagger:
 
     elements_mapping = {"dust_jacket":"div:dustjacket","year_only":"docDate","illustrated":"byLine","chapter":"contents","table_of_contents":"contents","dedication":"div:dedication", "introduction":"div:introduction","preface":"div:preface","publisher":"docImprint","by":"docTitle","year":"docImprint","illustration":"div:frontispiece","list_of_illustrations":"div:illustrations","quoted":"epigraph", "attribution":"epigraph","author":"docTitle","title":"docTitle","year":"docImprint","copy_right":"docImprint","city":"docImprint","series":"div:otherbooks","appendix":"div:appendix", "afterword":"div:afterword","endnotes":"div:endnotes","glossary":"div:glossary","bibliography":"div:bibliography","index":"div:index","character_list":"castList","performance":"performance","setting_word":"set","setting_phrase":"set","act":"contents", "the_end":"head"}
 
-    weak_match = set(["dedication","quoted","year","by","attribution","city","performance","setting_word"])
-    strong_match = ["series","dust_jacket","year_only","illustrated","introduction","preface","publisher","title","author","copy_right","illustration","list_of_illustrations","chapter","appendix", "afterword","endnotes","glossary","bibliography","index","character_list","act", "setting_phrase","table_of_contents","the_end"]
+    weak_match = set(["dedication","quoted","year","by","attribution","city","performance"])
+    strong_match = ["series","dust_jacket","year_only","illustrated","introduction","preface","publisher","title","author","copy_right","illustration","list_of_illustrations","chapter","appendix", "afterword","endnotes","glossary","bibliography","index","character_list","act", "setting_phrase","table_of_contents","the_end","setting_word"]
     multi_paragraph = set(["div:dustjacket","contents","div:introduction","div:preface","div:illustrations","div:otherbooks","div:appendix", "div:afterword","div:endnotes","div:glossary","div:bibliography","div:index","castList"])
     superceded = {"docTitle":set(["div:otherbooks","contents","castList","div:preface","div:introduction"]),"div:introduction":set(["contents"]),"div:preface":set(["contents"]),"docImprint":set(["performance"])}
     not_in_front = set(["div:appendix", "div:afterword","div:endnotes","div:glossary","div:bibliography","div:index"])
@@ -4132,7 +4131,7 @@ def main_guten_process(main_Q,result_Q):
 class GutentagRequestHandler(SocketServer.BaseRequestHandler):
    
     def handle(self):
-        self.data = self.request.recv(1024).strip()
+        self.data = self.request.recv(4096).strip()
         if self.data.startswith("id:"):
             ID = self.data.split(":")[1]
             while not result_Q.empty():
@@ -4230,8 +4229,6 @@ class GutentagWebserver(BaseHTTPRequestHandler):
                     cgi_dict[pair[0]] = unquote(pair[1]).decode("utf-8").replace("+"," ")
                 
                 if "results_page.cgi" in self.path:
-                    #print cgi_dict["data"]
-                    #sys.stdout.flush()
                     options = json.loads(cgi_dict["data"])
                     if not online and "save_filename" in options and options["save_filename"]:
                         try:
@@ -4267,8 +4264,8 @@ class GutentagWebserver(BaseHTTPRequestHandler):
 
                             self.wfile.write("<br /> <br /> <br />")
 
-                            self.wfile.write('<div class="activesubcorpus"> <div class="corpusheader"><span class="corpusheader">Subcorpus %d (<span id="resultcount%d">0</span>)</span></div> <div class="subdefine"> <div class="defineframe"> <div class="outputlist" id="subdefine%d">' % (i,i,i))
-                            self.wfile.write('</div></div></div></div>')
+                            self.wfile.write('<div class="connector small"></div><div class="activesubcorpus"> <div class="corpusheader"><span class="corpusheader">Subcorpus %d (<span id="resultcount%d">0</span>)</span></div> <div class="subdefine"> <div class="defineframe"> <div class="outputlist" id="subdefine%d">' % (i,i,i))
+                            self.wfile.write('</div></div></div><div class="corpusfooter"></div></div>')
 
                         self.wfile.write(text[1])
 
