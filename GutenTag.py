@@ -2077,7 +2077,7 @@ class StructureTagger:
                     head_tag.plike = True
                     last_break = start_line
                     for j in range(start_line,i + 1):
-                        if not text_lines[j] or j == i:
+                        if j == len(text_lines) or not text_lines[j] or j == i:
                             if at_head:
                                 self.no_sent_tokenize(text_lines,last_break,j,tokens)
                                 head_tag.end = len(tokens)
@@ -2098,7 +2098,7 @@ class StructureTagger:
                                     tags[-1].plike = True
                                     last_break = j
                                     seen_content = False
-                            while not text_lines[last_break]:
+                            while last_break < len(text_lines) and not text_lines[last_break]:
                                 last_break += 1
                                 
                         else:
@@ -3379,7 +3379,10 @@ def output_text(text,fout,options,tag_dict):
             return len(text.tokens) > 0
     else:
         remove_useless_tags(text.tags,options)
-        split_overlapping_tags(text)
+        try:
+            split_overlapping_tags(text)
+        except:
+            print tag_dict  # there's a bug here that needs to be fixed
     span_start = 0
     end_indicies = {}
     start_indicies = {}
@@ -3559,8 +3562,8 @@ def guten_process(options,sendQ,returnQ,output_lock,fout):
         text, tag_dict = tagger.process_text(tag_dict)
         options["not_wanted_tags"] = set(options["subcorpus" + str(tag_dict["subcorpus"]) + "_restrictions"]["not_wanted_tags"])
         options["wanted_tags"] = set(options["subcorpus" + str(tag_dict["subcorpus"]) + "_restrictions"]["wanted_tags"])
-                 
         if text:
+            
             if options["mode"] == "export":
                 if online:
                     fout = StringIO.StringIO()
@@ -3573,7 +3576,7 @@ def guten_process(options,sendQ,returnQ,output_lock,fout):
                         if options["num_subcorpora"] > 1:
                             filename = "sub" + str(tag_dict["subcorpus"]) + "_" + filename
                         filename = filename[:50] +tag_dict["Num"]
-                        fout = codecs.open(options["output_dir"] + "/" + filename + ".txt","w",encoding="utf-8")
+                        fout = codecs.open(options["output_dir"] + "/" + filename + ".xml","w",encoding="utf-8")
                     elif options["output_mode"] == "single":
                         output_lock.acquire()
 
@@ -3594,7 +3597,7 @@ def guten_process(options,sendQ,returnQ,output_lock,fout):
                 if not result:
                     tag_dict = False
                     if not online and options["output_mode"] == "multiple":
-                        os.remove(options["output_dir"] + "/" + filename + ".txt")
+                        os.remove(options["output_dir"] + "/" + filename + ".xml")
                     
             elif options["mode"] == "analyze":
                 do_analysis(text,options,tag_dict)
@@ -3761,12 +3764,13 @@ class GutenTag:
                 if i %1000 == 0 and self.options["mode"] != "get_texts":
                     tag_dict["notactive"] = True
                     yield tag_dict
-                    
-            tag_dict = self.returnQ.get()
-            active -= 1
-            if tag_dict:
-                count += 1
-                yield tag_dict
+
+            if active == len(self.worker_threads):             
+                tag_dict = self.returnQ.get()
+                active -= 1
+                if tag_dict:
+                    count += 1
+                    yield tag_dict
 
         if i == len(filenames):
             while active > 0 and ("maxnum" not in self.options or count < self.options["maxnum"]):
@@ -3918,10 +3922,6 @@ class GutentagWebserver(BaseHTTPRequestHandler):
                         self.wfile.write('<div class="hidden" id="user_id" data="%s"> </div>' % page_id)
 
                         for i in range(1, num_subcorpora + 1):
-
-
-
-                            self.wfile.write("<br /> <br /> <br />")
 
                             self.wfile.write('<div class="connector small"></div><div class="activesubcorpus"> <div class="corpusheader"><span class="corpusheader">Subcorpus %d (<span id="resultcount%d">0</span>)</span></div> <div class="subdefine"> <div class="defineframe"> <div class="outputlist" id="subdefine%d">' % (i,i,i))
                             self.wfile.write('</div></div></div><div class="corpusfooter"></div></div>')
