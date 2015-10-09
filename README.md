@@ -4,9 +4,9 @@ GutenTag
 Introduction
 ------------
 
-The GutenTag project is project aimed at assisting with computational analysis of the Project Gutenberg text corpus, particularly by those working in the digital humanities. For more information on the goals of the project, please visit the main website (www.projectgutentag.org) or read the paper which introduced it [1].
+The GutenTag project is project aimed at assisting with computational analysis of the Project Gutenberg text corpus, particularly by those working in the digital humanities. For more information on the goals of the project, please visit the main website [1] or read the paper which introduced it [2].
 
-The current version of GutenTag takes the form of a downloadable tool (though there is a web demo, and there is the possibility future iterations might be primarily or entirely web-based), and assumes that you already have a copy of the Project Gutenberg corpus (2010 image), which is available officially on the Project Gutenberg website, and unofficially here; our version is smaller because we have removed files that are not useful for text analysis, but it is still a fairly large download of over 4 gigabytes. Once you have the corpus (and have unzipped it, if necessary) and can access it from within GutenTag, you shouldn't need to modify it yourself.
+The current version of GutenTag takes the form of a downloadable tool (though there is a web demo, and there is the possibility future iterations might be primarily or entirely web-based), and assumes that you already have a copy of the Project Gutenberg corpus (2010 image), which is available officially on the Project Gutenberg website[3], and unofficially here [4]; our version is smaller because we have removed files that are not useful for text analysis, but it is still a fairly large download of over 4 gigabytes. Once you have the corpus (and have unzipped it, if necessary) and can access it from within GutenTag, you shouldn't need to modify it yourself.
 
 Our goal is to help the full range of users that might be interested in accessing GutenTag's functionality. There are thus three distinct ways to run GutenTag, depending on your situation (and the version you have downloaded): 
 
@@ -14,13 +14,13 @@ Our goal is to help the full range of users that might be interested in accessin
 2. You can run the python script
 3. You import GutenTag into other python code and access its functionality through an API.
 
-The first two are functionally equivalent in the sense that both access the GutenTag web interface. The main difference is that the python script requires you have Python (2.7) [2] and NLTK (3.0) [3] installed, whereas the exectuable is standalone and does not require any additional software. We have not built an executable for Linux, so Linux users should use the python script. If you are accessing through an API, you can mostly skip the next section, though even API users may use the web interface for the purposes of creating configuration files which access specific subcorpora or do XML (TEI) tagging.
+The first two are functionally equivalent in the sense that both access the GutenTag web interface. The main difference is that the python script requires you have Python (2.7) [5] and NLTK (3.0) [6] installed, whereas the exectuable is standalone and does not require any additional software. We have not built an executable for Linux, so Linux users should use the python script. If you are accessing through an API, you can mostly skip the next section, though even API users may use the web interface for the purposes of creating configuration files which access specific subcorpora or do XML (TEI) tagging.
              
                      
 The GutenTag HTML interface
 ---------------------------
 
-When you run GutenTag (either by clicking on it or running it from the command line), a brower window should open automatically. The first time you run GutenTag, it will prompt you for the location of the directory which contains the Project Gutenberg corpus: on a GUI like Windows or Mac OS X, you can usually grab the exact full path from a file finder/explorer window opened to that directory using copy and paste. (If you download the slimmed-down Project Gutenberg from our website, and place it in the main GutenTag directory in a folder called "smallgut," the path you need to enter will simply be "smallgut/" [without quotation marks]). Click check to see if you've done this right, at which point it will prompt you to refresh your browser.
+When you run GutenTag (either by clicking on it or running it from the command line), a brower window should open automatically. The first time you run GutenTag, it will prompt you for the location of the directory which contains the Project Gutenberg corpus: on a GUI like Windows or Mac OS X, you can usually grab the exact full path from a file finder/explorer window opened to that directory using copy and paste. (If you download the slimmed-down Project Gutenberg from our website, and place it (after unzipping) in a directory parallel to (in the same folder as) the GutenTag directory, the path you need to enter will simply be "../smallgut/" [without quotation marks]). Click check to see if you've done this right, at which point it will prompt you to refresh your browser.
 
 The main page of the interface allows you to configure everything about a particular run of GutenTag. By clicking on the first button on the screen, you can load an existing (previously saved) parameter file from a list, which will then populate the HTML form with those previous settings. At the bottom of the screen, there is a corresponding button that allows you to enter a filename to save your parameters; these will be available when you start your next run of GutenTag. If you wish, you can also run GutenTag from the command line with the -c command (configure), which will allow you to save the parameter file without actually runing GutenTag. The saved parameter files can be found in the saved_parameters subdirectory.
 
@@ -30,7 +30,7 @@ For texts and authors, you can create a predefined list which is accessible thro
 
 The "Within-Text" filter allows you to exclude particular parts of the texts that meet your search criteria. The most common use of this will be to exclude material outside the main body of the text (that is, exclude front matter such as editorial introductions and coverpages, back matter such as indices, appendices, and sections of endnotes), though you can select specific sections to include or delete. For instance, for fiction you can include only narration or only character speech, and for plays you can include only character speech or only stage directions, etc. The default setting is to include everything. If you want to select a specific set of tags outside of the preset options, first select one of the presets from the drop down menu and then modify them manually by checking or unchecking the box.  
 
-There are two major modes in GutenTag: Export and Analyze. Export creates a new text corpus designed to your specifications; Analyze gets statistics about the tags in your subcorpus directly, without the need to save anything. Both modes allow you to include additional lexical tags which are either displayed in the XML (if in TEI mode; see below) or counted. GutenTag includes three major lexical resources: a subset of the tags from the General Inquirer [4], the ratings from the MRC psycholinguistic database [5], and a "6-style" lexical model created automatically from the Project Gutenberg corpus using automated methods [6,7], as well as sentiment polarity ratings [7]. Users can also define their lexical tags by putting files into the "user_lexicons" directory, which will be accesible through the interface. The format for this is a text file with one word/phrase per line or, optionally, with a tab delimited value for each entry. In Analyze mode, the result for discrete tags will be the number of tags divided by the total number of tokens across all texs, while for tags with values the output is the sum of all the values divided by the number of tokens in each subcorpus.                                                                                                                                          
+There are two major modes in GutenTag: Export and Analyze. Export creates a new text corpus designed to your specifications; Analyze gets statistics about the tags in your subcorpus directly, without the need to save anything. Both modes allow you to include additional lexical tags which are either displayed in the XML (if in TEI mode; see below) or counted. GutenTag includes three major lexical resources: a subset of the tags from the General Inquirer [7], the ratings from the MRC psycholinguistic database [8], and a "6-style" lexical model created automatically from the Project Gutenberg corpus using automated methods [9,10], as well as sentiment polarity ratings [10]. Users can also define their lexical tags by putting files into the "user_lexicons" directory, which will be accesible through the interface. The format for this is a text file with one word/phrase per line or, optionally, with a tab delimited value for each entry. In Analyze mode, the result for discrete tags will be the number of tags divided by the total number of tokens across all texs, while for tags with values the output is the sum of all the values divided by the number of tokens in each subcorpus.                                                                                                                                          
 
 You can choose multiple subcorpora in a single run by clicking the Add Subcorpora button under the first subcorpus box. There are two uses for this: first, you can use this to create a single corpus defined in incompatible ways (for instance, a corpus with female authors from the 19th century and male authors from the 18th). In Analyze mode, often you want to be able to compare results directly across subcorpora; this provides an easy way to do that. However, anything that could be accomplished with multiple subcorpora can also be accomplished by running GutenTag multiple times.
 
@@ -46,7 +46,7 @@ To access the API, copy the GutenTag.py script as well as the resources director
 
 `gt = GutenTag.GT_API(corpus_path, parameter_path)`
 
-The corpus_path is the path to the Project Gutenberg corpus. In order to use the API, you need to have an existing parameter file which includes all your settings for GutenTag (this is preferable to having an extrodinarily long argument list). We provide a default one in the saved_parameters directory "allEnglish" which would allow you to iterate through all the English texts in the corpus. You can create your own by modifying an existing file (it is in human-readable JSON format) or using the main GutenTag HTML interface with the -c command.
+The corpus_path is the path to the Project Gutenberg corpus. In order to use the API, you need to have an existing parameter file which includes all your settings for GutenTag (this is preferable to having an extrodinarily long argument list). We provide a default one in the saved_parameters directory called "allEnglish" which would allow you to iterate through all the English texts in the corpus (if you only want a small subset, though, we recommend you create your own parameter file, it will be signfiicantly faster). You can create your own by modifying an existing file (it is in human-readable JSON format) or using the main GutenTag HTML interface with the -c command (see explanation above)
 
 There are three methods available through GT_API:
 
@@ -62,5 +62,26 @@ This iterator function cycles through the info dictionaries for all the texts in
 
 If the user wishes to output a text/info pair from cycle_through_texts() into the TEI (XML) format, this function can be called. A string corresponding to a TEI version of the text will be returned.
 
+Contact
+-----------------------
 
+GutenTag is a work in progress, and will be for the foreseeable future. We welcome bug reports, requests for particular features, suggestions for or implementations of relevant (i.e. potentially useful for literary analysis) tagging algorithms, and general feedback. Please e-mail projectgutentag@gmail.com.
+
+
+References and links
+-----------------------
+
+1. http://www.projectgutentag.org
+2. Julian Brooke, Adam Hammond, and Graeme Hirst. 2015. GutenTag: An NLP-driven tool for digital humanities research in the Project Gutenberg corpus. In
+Proceedings of the 4nd Workshop on Computational Literature for Literature (CLfL ’15).
+3. http://www.gutenberg.org/wiki/Gutenberg:The_CD_and_DVD_Project
+4. http://www.projectgutentag.org/smallgut.zip
+5. http://www.python.org
+6. Steven Bird, Ewan Klein, and Edward Loper. 2009. Natural Language Processing with Python. O’Reilly Media Inc.
+7. Philip J. Stone, Dexter C. Dunphy, Marshall S. Smith, and Daniel M. Ogilivie. 1966. The General Inquirer: A Computer Approach to Content Analysis. MIT Press.
+8. Max Coltheart. 1980. MRC Psycholinguistic Database User Manual: Version 1. Birkbeck College
+9. Julian Brooke and Graeme Hirst. 2013. Hybrid models for lexical acquisition of correlated styles. In Proceedings of the 6th International Joint Conference on
+Natural Language Processing (IJCNLP ’13).
+10. Julian Brooke and Graeme Hirst. 2014. Supervised ranking of co-occurrence profiles for acquisition of continuous lexical attributes. In Proceedings of The 25th International Conference on Computational Linguistics (COLING 2014).
+.
 

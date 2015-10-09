@@ -23,10 +23,6 @@ if standalone:
     if 'posix' in sys.builtin_module_names:
         import posix
         posix.chdir(my_path)
-#else:
-#    from nltk import pos_tag
-#    from nltk.stem.wordnet import WordNetLemmatizer
-
 
 import zipfile
 import cPickle
@@ -111,6 +107,8 @@ def convert_roman(string):
     return result
 
 
+
+# This class deals with functions for reading Project Gutenberg metadata
 class MetadataReader:
 
     wanted_tags = set(["Author","Title", "LoC Class", "Subject", "Language"])
@@ -216,6 +214,7 @@ class MetadataReader:
         return href,charset,tag_dict
 
 
+# this class cleans away Project Gutenberg headers and footers, including copyright and transcriber notes
 class TextCleaner:
     junk_indicators = ("project gutenberg"," etext"," e-text",
                             "http:","distributed proofreading",
@@ -238,13 +237,10 @@ class TextCleaner:
         lower_text = text.lower()
         all_junk_indicies = [0, len(text)]
         for junk_indicator in self.junk_indicators:
-            #print junk_indicator
-            #print len([m.start() for m in re.finditer(junk_indicator,lower_text)])
             all_junk_indicies.extend([m.start() for m in re.finditer(junk_indicator,lower_text)])
         all_junk_indicies.sort()
         best_points = None
         best_length = 0
-        #print all_junk_indicies
         for i in range(len(all_junk_indicies) - 1):
             if all_junk_indicies[i+1] - all_junk_indicies[i] > best_length:
                 best_points = [all_junk_indicies[i],all_junk_indicies[i+1]]
@@ -272,7 +268,9 @@ class TextCleaner:
             i -= 1
 
         return text[result:text.rfind("\n", 0, best_points[1])].strip()
-            
+
+
+# This guesses at the gender of a person based on their name         
 class GenderClassifier:
     def __init__(self):
         f = open("resources/femaleFirstNames.txt")
@@ -292,6 +290,10 @@ class GenderClassifier:
             return "female"
         else:
             return "male"
+
+
+# this class wraps everything related to genre classification. Not actually
+# functional because genres are pre-calculated using separate script
 
 class GenreClassifier:
 
@@ -534,7 +536,9 @@ class GenreClassifier:
 
 
 
-
+# Tokenizer built on top of NLTK tokenizer does a few special things to work
+# better with PG texts (for instance, preserves hyphenated words and direction
+# of quotes)
 class Tokenizer:
     
     base_contractions = ["s", "ll", "d", "re", "m", 've']
@@ -566,12 +570,9 @@ class Tokenizer:
         self.right_double_quote = re.compile('([^ ])"($|[\s])')
         self.left_bracket = re.compile('([,-])\[')
         self.right_bracket = re.compile('\]([,-])')      
-        #if standalone:
         f = open('resources/english.pickle')
         self.sentence_tokenizer = cPickle.load(f)
         f.close()
-        #else:
-        #    self.sentence_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
         self.word_tokenizer = regexp.WordPunctTokenizer()
 
 
@@ -583,41 +584,13 @@ class Tokenizer:
         return self.left_bracket.sub(u'\\1 [',self.right_bracket.sub(u'] \\1',raw_text))
 
     def tokenize_span(self,raw_text):
-        new_text = self.fix_quotes(raw_text)   #raw_text.replace("\n"," "))
+        new_text = self.fix_quotes(raw_text)
         new_text = self.fix_brackets(raw_text)
         new_text = new_text.replace("_","")
-        #print new_text
         all_sentences = []
-        #for line in new_text.split("\n"):
         sentences = self.sentence_tokenizer.tokenize(new_text)
-        #print sentences
         new_sentences = []
         i = 0
-        '''
-        for sentence in sentences:
-            if new_sentences:
-                if sentence.startswith(u'”') or sentence.startswith(u'’'):
-                    if new_sentences[-1].endswith("?") or new_sentences[-1].endswith("!"):
-                        if (len(sentence) > 5 and sentence[2].islower()) or u"“" in sentence or len(sentence) < 15:
-                            new_sentences[-1] += " " + sentence
-                            continue
-                    new_sentences[-1] += " " + sentence[0]
-                    sentence = sentence[1:]
-                prev_space = new_sentences[-1].rfind(" ")
-                if prev_space == -1:
-                    last_word = new_sentences[-1]
-                else:
-                    last_word = new_sentences[-1][prev_space + 1:]
-                    
-                if last_word in self.abbreviations or (last_word.endswith(".") and last_word.isupper()): 
-                    new_sentences[-1] += sentence
-                else:
-                    new_sentences.append(sentence)
-            else:
-                new_sentences.append(sentence)
-        sentences = new_sentences
-        '''
-        #print sentences
         for sentence in sentences:
             sentence = self.word_tokenizer.tokenize(sentence.strip().replace("--",u"—").replace("-", "hYpppHeN"))
             i = 0
@@ -647,9 +620,14 @@ class Tokenizer:
             if "hYpppHeN" in sentence[-1]:
                 sentence[-1] = sentence[-1].replace("hYpppHeN", "-")
             all_sentences.append(sentence)
-        #print all_sentences
         return all_sentences
 
+
+# This class is GutenTag's basic tag representation: a tag consists of a two
+# indicies indicating the start and end of the tag (in a list of tokens), the
+# main tag, and then a dictionary of attributes.Depth and plike are used for
+# indentation issues in TEI output (depth indicates the level of indentation,
+# if applicable, plike tags are indented but the tags inside them are not)
 
 class Tag:
 
@@ -700,6 +678,10 @@ class Tag:
         else:
             return self.tag
 
+
+# the representation of a text, just a collection of tokens and tags (in
+# no particular order)
+
 class Text:
 
     def __init__(self,tokens,tags):
@@ -734,6 +716,16 @@ def has_most_features(index,features,feature_dict):
         return True
     else:
         return False
+
+
+# Wraps everything related to structural tagging. The main logic is
+# 1. Extract line-by-line features from text
+# 2. Decide on front/back boundaries based on those features (and text boundaries if multiple texts)
+# 3. Go through front and back parts of text and create initial tags for relevant
+# elements (this involves spreading line features across lines and paragraphs)
+# 4. Go through body, and find large structural elements (chapters, etc.)
+# 5. Go through entire text, tokenizing paragraphs and other elements (including
+# (those identified in 3 and 4) and creating text representation 
 
 class StructureTagger:
 
@@ -831,7 +823,6 @@ class StructureTagger:
         feature_dict["single_line_para"] = set()
         feature_dict["indents"] = {}
         feature_dict["ends_with_page"] = set()
-        #if global_tags["Genre"] == "play":
         feature_dict["act"] = {}
         feature_dict["scene"] = {}
         feature_dict["character_list"] = set()
@@ -854,13 +845,12 @@ class StructureTagger:
         feature_dict["double_act_or_scene"] = set()
 
 
-
         has_front_header = False
         in_front_section = False
         has_front_indicator = False
         paragraph_line_count = 0
-        not_front_lines = 0
-        seen_act = False
+        not_front_lines = 0 # counts lines up to this point which don't seem like
+        seen_act = False    # part of front
         seen_scene = False
         
             
@@ -951,9 +941,6 @@ class StructureTagger:
 
             if line in self.endnotes or line.startswith("notes on"):
                 feature_dict["endnotes"].add(i)
-                print global_tags
-                print "has endnote"
-                sys.stdout.flush()
             if line.startswith("dust jacket"):
                 feature_dict["dust_jacket"].add(i)
                 has_front_header = True
@@ -998,8 +985,6 @@ class StructureTagger:
             if i in feature_dict["starts_upper"]:
                 for div in ["chapter","book","part"]:
                     if line.startswith(div + " "):
-                        #print "in chapter"
-                        #print line
                         try:
         
                             after_chapter = self.next_word.search(line)
@@ -1008,11 +993,9 @@ class StructureTagger:
                             else:
                                 after_chapter = ""
                             after_chapter = after_chapter.strip(".")
-                            #print after_chapter
                             if after_chapter.isdigit():
                                 chapter_num = int(after_chapter)
                             elif is_roman(after_chapter.upper()):
-                                #print "here!!!!"
                                 chapter_num = convert_roman(after_chapter.upper())
                             elif after_chapter in self.numbers:
                                 chapter_num = self.numbers[after_chapter]
@@ -1029,9 +1012,6 @@ class StructureTagger:
                                 chapter_num = "?"
 
                             if chapter_num != "?":
-                                #if div == "part":
-                                #    print "found part"
-                               #     print line
                                 feature_dict[div][i] = chapter_num
                         except:
                             pass
@@ -1076,7 +1056,6 @@ class StructureTagger:
                      if self.act.search(line):
                         if line.find("act") < 12 and ("ACT" in text_lines[i] or "Act" in text_lines[i]):
                             found_act = True
-                            #print "found act"
                         else:
                             found_act = False
                      else:
@@ -1084,7 +1063,6 @@ class StructureTagger:
                      if self.scene.search(line):
                          if (found_act or line.find("scen") < 12) and ("SCEN" in text_lines[i] or "Scen" in text_lines[i]):
                              found_scene = True
-                             #print "found scene"
                          else:
                              found_scene = False
                      else:
@@ -1092,16 +1070,11 @@ class StructureTagger:
                  if self.characters.search(line):
                      has_front_header = True
                      feature_dict["character_list"].add(i)
-                     #print "character_list"
-                     #print line
-                     #print i
+
 
                  if self.performance.search(line):
                      has_front_indicator = True
                      feature_dict["performance"].add(i)
-                     #print "performance"
-                     #print line
-                     #print i
 
 
                  first_word = self.first_word.search(text_lines[i])
@@ -1109,10 +1082,6 @@ class StructureTagger:
                      first_word = first_word.group(1)
                      if len(first_word) > 1 and first_word.isupper():
                         feature_dict["starts_capitalized"].add(i)
-                     #if first_word.lower() in self.stage_words:
-                     #    feature_dict["stage_word"].add(i)
-                     #if first_word.lower() in self.setting_words:
-                     #    feature_dict["setting_word"].add(i)
 
                  if self.setting_start.match(line) or line == "scene":
                     has_front_indicator = True
@@ -1125,20 +1094,12 @@ class StructureTagger:
                     feature_dict["setting_phrase"].add(i)
 
                  if self.early_period.search(text_lines[i]) and i in feature_dict["starts_upper"]:
-                    #print "early delim"
-                    #print text_lines[i]
                     feature_dict["early_period"].add(i)
                     if self.text_after_delim.search(text_lines[i]):
-                        #print "text_after_delim"
-                        #print text_lines[i]
                         feature_dict["text_after_delim"].add(i)
                  if self.early_colon.search(text_lines[i]) and i in feature_dict["starts_upper"]:
-                    #print "early delim"
-                    #print text_lines[i]
                     feature_dict["early_colon"].add(i)
                     if self.text_after_delim.search(text_lines[i]):
-                        #print "text_after_delim"
-                        #print text_lines[i]
                         feature_dict["text_after_delim"].add(i)
                  if text_lines[i].strip().startswith("_") and text_lines[i].strip().endswith("_"):
                     feature_dict["surrounded_by_underscore"].add(i)
@@ -1154,8 +1115,6 @@ class StructureTagger:
 
                  if found_act or found_scene:
                      matches = self.low_numbers.findall(line)
-                     #print line
-                     #print matches
                      if matches:
                          good_matches = []
                          for match in matches:
@@ -1179,13 +1138,8 @@ class StructureTagger:
                                  matches[j] = self.ordinals[matches[j]]
                              else:
                                  matches[j] = convert_roman(matches[j].upper())
-                                 #if matches[j] == 0:
-                                 #    print "converted to zero!!!"
-                                 #    print matches[j]
-                                 #    print matches
                          if found_act:
                              feature_dict["act"][i] = matches[0]
-                             #print "added act"
                              if seen_act:
                                  feature_dict["double_act_or_scene"].add(i)
                                  has_front_indicator = True
@@ -1199,21 +1153,16 @@ class StructureTagger:
                                  feature_dict["double_act_or_scene"].add(i)
                                  has_front_indicator = True
                              seen_scene = True
-                             #print "added scene"
                  else:
                      seen_act = False
                      seen_scene = False
                                         
                                       
-                                       
-
+        # No explicit chapters, use any regular numbers                                      
         if global_tags["Genre"] == "fiction" and len(feature_dict["chapter"]) < 3:
-            #print "no chapters"
-            #print "roman_only" in feature_dict 
             if "wordnum_only" in feature_dict and len(feature_dict["wordnum_only"]) > 5:
                 feature_dict["chapter"] = feature_dict["wordnum_only"]
             if "roman_only" in feature_dict and len(feature_dict["roman_only"]) > 5:
-                #print "has roman"
                 feature_dict["chapter"] = feature_dict["roman_only"]
             if "digit_only" in feature_dict and len(feature_dict["digit_only"]) > 5:
                 feature_dict["chapter"] = feature_dict["digit_only"]                        
@@ -1241,25 +1190,15 @@ class StructureTagger:
 
 
     def get_front_score(self,feature_dict,loc,blanks,global_tags,start_index,end_index):
-        #score = min(0, -(loc-start_index) + 200)
         score = 0
         score_dict = {}
-        #print "loc here"
-        #print loc
-        #print "performance"
-        #print feature_dict["performance"]
-        #print "character_list"
-        #print feature_dict["character_list"]
-        for feature_type in self.common_front_elements: # "dedication"
+        for feature_type in self.common_front_elements:
             if feature_type not in feature_dict or len(feature_dict[feature_type]) > 20:
                 continue
             for index in feature_dict[feature_type]:
                 if index < start_index or index >= end_index:
                     continue
                 if index < loc:
-                    #print feature_type
-                    #print index
-                    #print loc
                     score += 10
                     score_dict[feature_type] = score_dict.get(feature_type,0) + 1
 
@@ -1270,9 +1209,6 @@ class StructureTagger:
                 if index < start_index or index >= end_index:
                     continue
                 if index + 3 < loc:
-                    #print feature_type
-                    #print index
-                    #print loc
                     score += 50
                     score_dict[feature_type] = score_dict.get(feature_type,0) + 1
 
@@ -1288,16 +1224,11 @@ class StructureTagger:
                     score_dict[feature_type] = score_dict.get(feature_type,0) + 1
             
 
-        #print score_dict
-                    
-                    #print feature_type
-                    #print 20
         for index in feature_dict["upper_case"]:
             if index < start_index or index >= end_index:
                 continue
             if index < loc:
                 score += 1
-                #print "upper case"
             
 
         if global_tags["Genre"] == "play":
@@ -1318,9 +1249,7 @@ class StructureTagger:
             for chapter in chapter_dict:
                 if len(chapter_dict[chapter]) >= 2:
                     if min(chapter_dict[chapter]) < loc <= max(chapter_dict[chapter]):
-                        #print "added chapter to score"
-                        #print chapter
-                        #print global_tags["Title"]
+                        # head/body break should be between first (TOC) and last (text) instace of chapter, if possible
                         
                         if div == "text":
                             if start_index == 0: # only do this for main text:
@@ -1329,6 +1258,7 @@ class StructureTagger:
                             score += 20
                         chapter_score += 1
                 elif len(chapter_dict[chapter]) == 1:
+                    #if there's only one, then front/body break should come before
                     if loc <= min(chapter_dict[chapter]):
                         chapter_score += 1
                         if div == "text":
@@ -1339,8 +1269,6 @@ class StructureTagger:
 
         score -= feature_dict["not_front_lines"][loc]*2
         sys.stdout.flush()
-        #print "chapter_score"
-        #print chapter_score
         score += 10*min(blanks,3)
         return score
 
@@ -1358,56 +1286,31 @@ class StructureTagger:
         i = 0
         best_loc = -1
         best_score = -9999
-        #print "start find front"
-        print global_tags
-        while i < len(to_check):# and (to_check[i] > 1):
+        while i < len(to_check):
             for index in feature_dict[to_check[i]]:
-                #print "checking index"
-                #print index
                 if index < start_index or index >= end_index:
                     continue
                 score = self.get_front_score(feature_dict,index,to_check[i], global_tags,start_index,end_index)
-                if index - start_index < 300:
-                    print "scoring"
-                    print index
-                    print score
                 
                 if score > best_score:
                     best_score = score
                     best_loc = index
             i += 1
 
-        if best_loc - start_index < 300:
-            print "wining scoring"
-            print best_loc
-            sys.stdout.flush()
-
 
         title_loc = self.find_title(feature_dict)
         if title_loc > best_loc and (title_loc - start_index)/float(end_index - start_index) < 0.33:
             return title_loc
-            print "used title loc"
-            #i = title_loc + 1
-            #while i in feature_dict["blank_lines"]:
-            #    i += 1
-            #return i
         else:
             return best_loc
-
-        #return best_loc
     
 
     def remove_out_of_order(self,start,end,feature_dict,div_type):
         to_sort = []
-        #print feature_dict[div_type]
-        #print start
-        #print end
         for index in feature_dict[div_type]:
             if start <= index < end:
                 to_sort.append((index,feature_dict[div_type][index]))
         to_sort.sort()
-        #print "acts in order"
-        #print to_sort
         i = len(to_sort) - 1
         to_remove = set()
         while i >= 0 :
@@ -1416,8 +1319,6 @@ class StructureTagger:
                     to_remove.add(to_sort[i][0])
                     to_sort = to_sort[:i] + to_sort[i+1:]
             i -= 1
-        #print "to remove"
-        #print to_remove
         for index in to_remove:
             del feature_dict[div_type][index]
             
@@ -1425,11 +1326,6 @@ class StructureTagger:
 
     def find_chapters_and_parts(self,front,back,feature_dict,start_lines,end_lines,plike_start,plike_end, global_tags):
 
-        #chapter_dict = {}
-        #for index in feature_dict["chapter"]:
-        #    if feature_dict["chapter"][index] not in chapter_dict: 
-        #        chapter_dict[feature_dict["chapter"][index]] = set()
-        #    chapter_dict[feature_dict["chapter"][index]].add(index)
         if global_tags["Genre"] == "play":
             div_types = ["act","scene"]
             self.remove_out_of_order(front,back,feature_dict,"act")
@@ -1437,7 +1333,6 @@ class StructureTagger:
             return {}
         else:
             div_types = ["part","book","chapter"]
-        #print "starting acts"
         done = set()
         spans = {}
         all_indicies = set()
@@ -1450,9 +1345,6 @@ class StructureTagger:
         if feature_dict["epilogue"]:
             possible_epilogues = filter( lambda x: front <= x < back and x/(back-front) > 0.90,feature_dict["epilogue"]) 
             if possible_epilogues:
-                #print "has an epilogue"
-                #print max(possible_epilogues)
-
                 heading_tag = Tag(-1,-1,"head",None)
                 heading_tag.plike = True
                 div_tag = Tag(-1,-1,"epilogue",None)
@@ -1470,21 +1362,13 @@ class StructureTagger:
         for div_type in div_types:
             
             if div_type in feature_dict and len(feature_dict[div_type]) > 1:
-                #print "okay ,here"
                 indicies = feature_dict[div_type].keys()
                 indicies.sort()
                 for index in indicies:
-                    #print index
-                    #print front
-                    #print back
-                    if index < front or (back and index >= back): #or (div_type,feature_dict[div_type][index]) in done:
+                    if index < front or (back and index >= back):
                         continue
                     else:
                         
-                        
-                        #done.add((div_type,feature_dict[div_type][index]))
-                        #print "made it this far"
-                        #try:
                         closest_div = default_closest_div
 
                         if div_type == "chapter" or div_type == "scene":
@@ -1506,11 +1390,8 @@ class StructureTagger:
                                 i += 1
 
                         if closest_div - index < 10:
-                            continue #probably an error
+                            continue
 
-                        #print "inserting a section tag"
-                        #print div_type
-                        #print (index,closest_div)
                         all_indicies.add(index)
                         if div_type not in spans:
                             spans[div_type] = set()
@@ -1531,8 +1412,6 @@ class StructureTagger:
         if feature_dict["prologue"]:
             possible_prologues = filter( lambda x: front <= x < back and x/(back-front) < 0.10,feature_dict["prologue"]) 
             if possible_prologues:
-                #print "has a prologue"
-                #print min(possible_prologues)
                 
                 heading_tag = Tag(-1,-1,"head",None)
                 heading_tag.plike = True
@@ -1571,7 +1450,7 @@ class StructureTagger:
         for bf_range in ranges:
             line_tag_list = {}
             weakly_tagged_line = set()
-            for element in self.weak_match:
+            for element in self.weak_match: # first do weak matches, extend to paragraph
                 for index in feature_dict[element]:
                     if index < bf_range[0] or index > bf_range[1] or index in line_tag_list or (bf_range[2] and self.elements_mapping[element] in self.not_in_front) or (not bf_range[2] and self.elements_mapping[element] in self.not_in_back):
                         continue
@@ -1589,7 +1468,7 @@ class StructureTagger:
                         line_tag_list[i] = self.elements_mapping[element]
                         i -= 1
                         
-            for element in self.strong_match: # first, expand to lines
+            for element in self.strong_match: # then strong matches, same
                 if self.elements_mapping[element] in self.multi_paragraph:
                     continue
                 for index in feature_dict[element]:
@@ -1612,10 +1491,9 @@ class StructureTagger:
                         line_tag_list[i] = self.elements_mapping[element]
                         weakly_tagged_line.discard(i)
                         i -= 1
-            for element in self.strong_match: # then extend
+            for element in self.strong_match: # then extend across paragraphs for multiparagraph elements
                 if self.elements_mapping[element] in self.multi_paragraph:
                     for index in feature_dict[element]:
-                        #if element == "series":
                         if index < bf_range[0] or index > bf_range[1] or (bf_range[2] and self.elements_mapping[element] in self.not_in_front) or (not bf_range[2] and self.elements_mapping[element] in self.not_in_back):
                             continue
                         if not index in feature_dict["upper_case"] and not ((index -1 in feature_dict["blank_lines"] or index == 0) and (index + 1 in feature_dict["blank_lines"])):
@@ -1645,27 +1523,14 @@ class StructureTagger:
                                 next_para_index += 1
             
  
-
-          
-
-            #print bf_range
-            #print "line_tag_list"
-            #print line_tag_list
                                
             last_line_tag = None
-            blank_count = 0        
+            blank_count = 0
+
+            # for untagged lines, give most recent tag
 
             for i in range(bf_range[0],bf_range[1]):
-                #print last_line_tag
                 if i in line_tag_list:
-                    #print "yes"
-                    #print line_tag_list[i]
-                    #print blank_count <= 1
-                    #print line_tag_list[i] in self.superceded
-                    #try:
-                    #    print last_line_tag in self.superceded[line_tag_list[i]]
-                    #except:
-                    #    print "None"
                     
                     if last_line_tag in self.multi_paragraph and (blank_count <= 1 and (i in weakly_tagged_line or (line_tag_list[i] in self.superceded and last_line_tag in self.superceded[line_tag_list[i]]))):
                         line_tag_list[i] = last_line_tag
@@ -1681,15 +1546,14 @@ class StructureTagger:
                         
             current_tag = None
             current_start = 0
+
+            # create tags
             for i in range(bf_range[0],bf_range[1]):
                 if (i not in line_tag_list and i not in feature_dict["blank_lines"]):
                     continue
                 if (i in line_tag_list and not current_tag) or (current_tag and i in line_tag_list and current_tag[0] != line_tag_list[i]):
                     if ":" in line_tag_list[i]:
                         main_tag,tag_type = line_tag_list[i].split(":")
-                        #if tag_type == "introduction":
-                        #    print "introduction starting at"
-                        #    print i
                         new_tag =  Tag(-1,-1,main_tag,{"type":tag_type})
                     else:
                         new_tag =  Tag(-1,-1,line_tag_list[i],None)
@@ -1711,16 +1575,14 @@ class StructureTagger:
 
     def find_play_elements(self,sections,feature_dict,start_lines,end_lines,plike_start,plike_end,text_lines):
         sorted_features = []
-        #print "play sections"
-        #print sections
+
+        # need to figure out what indicates a line of dialogue
         for feature in ["starts_capitalized","early_period","early_colon","surrounded_by_underscore","start_with_parens","start_with_bracket","text_after_delim","short_line"]:
             if feature in feature_dict:
                 sorted_features.append((len(feature_dict[feature]),feature))
         if not sorted_features:
             return
         sorted_features.sort(reverse=True)
-        #print "play element features"
-        #print sorted_features
         i = 1
         speaker_features = set([sorted_features[0][1]])
         no_line_between_speakers = sorted_features[0][0] > len(feature_dict["blank_lines"])
@@ -1729,22 +1591,6 @@ class StructureTagger:
             no_line_between_speakers = no_line_between_speakers and sorted_features[i][0] > len(feature_dict["blank_lines"])
             i += 1
 
-        #if no_line_between_speakers:
-        #    print "!!!!!!!!!!!!No line between speakers!!!!!!!!!!!!!"
-        #print "speaker features"
-        #print speaker_features
-        #print sorted_features
-        '''
-        while i < len(sorted_features) and sorted_features[i][1] not in set(["start_with_underscore","start_with_parens","start_with_bracket"]):
-            i+= 1    
-        if sorted_features[i][0] > 20:
-            stage_features = set([sorted_features[i][1]])
-            #while i < len(sorted_features) and sorted_features[i][1] not in set(["start_with_underscore","start_with_parens"]):
-            #    stage_features.add(sorted_features[i][1])
-            #    i+= 1
-        else:
-            stage_features = set()
-        '''
         stage_features = set(["start_with_parens","start_with_bracket"])
         
         #print "stage features"
@@ -1765,24 +1611,16 @@ class StructureTagger:
             last_speaker_end = 0
             last_stage_start = 0
             last_stage_end = 0
-            #end_of_header = section[0]
    
             for i in range(section[0],section[1]):
-                if not seen_main:
-                    #if i < section[0] + 3 and i in feature_dict["act"] or i in feature_dict["scene"]:
-                    #    end_of_header = i + 1 
+                if not seen_main: 
                     if i - 1 in feature_dict["blank_lines"] and not i in feature_dict["setting_word"] and ((has_most_features(i,speaker_features,feature_dict) and has_no_features(i,stage_features,feature_dict)) or (has_most_features(i,stage_features,feature_dict) and has_no_features(i,speaker_features,feature_dict))):
-                        #print "left set"
-                        #print i
                         seen_main = True
                         if has_set:
                             new_tag =  Tag(-1,-1,"set",None)
                             set_count += 1
                             start_lines[section[0]].append(new_tag)
                             end_lines[i].append(new_tag)
-                            #print "added set tag"
-                            #print section[0]+1
-                            #print i
                     else:
                         if i not in feature_dict["blank_lines"]:
                             has_set = True
@@ -1790,42 +1628,27 @@ class StructureTagger:
 
                 is_speaker_line = has_most_features(i,speaker_features, feature_dict) 
                 is_stage_line = has_most_features(i,stage_features, feature_dict) or (i in feature_dict["stage_word"] and i in feature_dict["starts_upper"])
-
-                #if is_stage_line:
-                #    print "has stage line"
                 if not is_speaker_line and not is_stage_line:
                     if "starts_capitalized" in speaker_features and i in feature_dict["starts_capitalized"] and i in feature_dict["parens_after_capital"]:
                         is_speaker_line = True
-                #is_speaker_line = has_all_features(i,speaker_features, feature_dict)
-                #is_stage_line = has_most_features(i,stage_features, feature_dict)
-                                    
+                   
                 if is_speaker_line and is_stage_line:
                     is_speaker_line = False
 
                 if is_speaker_line and "text_after_delim" in speaker_features and i not in feature_dict["text_after_delim"]:
                     is_speaker_line = False
-                   
+
+
+               # create actual tags
 
 
 
                 if not i in feature_dict["blank_lines"]:
 
                     if expecting_more:
-                       #if is_stage_line:
-                       #     print "expecting more"
-                       #     print i
-                       #     print last_speaker_start
-                       #     print last_speaker_end
                        expecting_more = False
 
                     else:
-                        #if is_stage_line:
-                        #    print "what about here"
-                        #    print is_speaker_line
-                        #    print i -1 in feature_dict["blank_lines"]
-                        #    print [text_lines[i]]
-                        #    print [text_lines[i-1]]
-                        #    print [text_lines[i-2]]
                         if (i -1 in feature_dict["blank_lines"] or (no_line_between_speakers and ((is_speaker_line and i in feature_dict["text_after_delim"]) or is_stage_line))):
                             if is_speaker_line:
                                 if current_tag:
@@ -1843,7 +1666,6 @@ class StructureTagger:
                                     expecting_more = True
 
                             elif is_stage_line:
-                                #print "made it here"
                                 if current_tag:
                                     plike_end[i] = current_tag
                                     if current_tag.tag == "sp":
@@ -1855,48 +1677,31 @@ class StructureTagger:
                                 current_tag.plike = True
                                 plike_start[i] = current_tag
                                 
-                            else: #assume continuation of last_speaker
+                            else: 
                                 if current_tag and current_tag.tag == "stage" and last_speaker_start:
-                                    #print "yup in here"
-                                    #print i
-                                    #print current_tag.tag
-                                    #print last_stage_start
-                                    #print last_stage_end
-                                    #print last_speaker_start
-                                    #print last_speaker_end
                                     current_tag = plike_start[last_speaker_start]
                                     if last_speaker_end:
-                                        del plike_end[last_speaker_end]
-                                    #print plike_start[last_stage_start].tag
-                                    #print current_tag.tag
-                                    #print plike_start[last_stage_start] == current_tag
-                                    #if plike_start[last_stage_start] != current_tag:
-                                    #    print "fishy fishy fishy"                                        
+                                        del plike_end[last_speaker_end]                                        
                                     if last_stage_start > last_speaker_start and last_stage_end < last_stage_start:
                                         del plike_start[last_stage_start]
                         
             if current_tag:
                 plike_end[section[1]] = current_tag
 
-        #print "HERE!!!!!!!"
+        # select re for distinguishing speaker and speech
         
         if "early_colon" in speaker_features:
-            #print "!!!!!!!!COLON"
             return self.speaker_re_colon
 
         elif speaker_separate_line:
-            #print "!!!!!!!!separate line"
             return self.speaker_re_line
 
         elif "starts_capitalized" in speaker_features:
             if "early period" in speaker_features:
-                #print "!!!!!!!!start cap period"
                 return self.speaker_re_period_cap
             else:
-                #print "!!!!!!!!start cap"
                 return self.speaker_re_cap_only
         else:
-            #print "!!!!!!!!start no cap"
             return self.speaker_re_period_nocap
         
 
@@ -1909,9 +1714,6 @@ class StructureTagger:
         total_length = end_index - start_index
         best_back = end_index
         max_back = end_index - int(total_length*0.3)
-        #print "at find back"
-        #print feature_dict["upper_case"]
-        #print feature_dict["chapter"]
 
         if feature_dict["epilogue"]:
             for index in feature_dict["epilogue"]:
@@ -1953,7 +1755,6 @@ class StructureTagger:
                 if i in feature_dict["upper_case"] and (not global_tags["Genre"] == "play") and not (global_tags["Genre"] == "poetry"):
                     best_back = i
                     break
-            #print best_back
 
                         
         if best_back < end_index:
@@ -2046,23 +1847,14 @@ class StructureTagger:
                             titles.append(content_line[:content_line.rfind("  ")].strip().lower())
                         else:
                             titles.append(content_line.strip().lower())
-                #print "here are the titles"
-                #print titles
                 feature_dict["text"] = {}
                 if titles > 1:
                     for i in range(start_search,len(text_lines)):
                         if i -1 in feature_dict["blank_lines"] and i + 1 in feature_dict["blank_lines"] and text_lines[i].lower() in titles:
-                            print i
-                            print text_lines[i].lower()
                             text_index = titles.index(text_lines[i].lower())
                             feature_dict["text"][i] = text_index
                 if len(feature_dict["text"]) == 1:
                     feature_dict["text"] = {}
-                else:
-                    print "here I am"
-                    print titles
-                    print feature_dict["text"]
-                    sys.stdout.flush()
             
      
     def find_break_cast_index(self,item):
@@ -2136,13 +1928,11 @@ class StructureTagger:
         return line_num in feature_dict["starts_with_roman"] or lines[line_num].strip().startswith("CANTO ")
     
     collection_indicators = re.compile("Plays|Novels|Poems|Works|Stories")
-    #stage_re_parens = re.compile("^([^(]*)(\([^)]+\))(.*)$")
-    #stage_re_brackets = re.compile("^([^\[]*)(\[[^\]]+\])(.*)$")
     stage_re =  re.compile("^([^\[\(]*)[\[\(]([^\]\)]+)[\]\)](.*)$")
     multiple_cast_split = re.compile(",|(\Wand(\W|$))")
 
 
-    poetry_header_token_buffer = 50
+    poetry_header_token_buffer = 50 # allow 50 tokens between poetry header and text
 
     def find_structure_and_tokenize(self,text_lines,global_tags):
 
@@ -2195,8 +1985,6 @@ class StructureTagger:
                     feature_dict["title"].add(index)
             breaks.append(back_index)
             breaks.sort()
-            #print "text breaks"
-            #print breaks
             section_spans = {}
             for i in range(len(breaks) - 1):
                 text_tag = Tag(-1,-1,"text",None)
@@ -2205,9 +1993,6 @@ class StructureTagger:
                 body_tag.depth = 3
                 start = breaks[i]
                 end = breaks[i+1]
-                #print "text span"
-                #print start
-                #print end
                 start_lines[start].append(text_tag)
                 local_front = self.find_front(feature_dict,global_tags,start_index=start,end_index=end)
                 if local_front > start:
@@ -2215,9 +2000,6 @@ class StructureTagger:
                     front_tag.depth = 3
                     start_lines[start].append(front_tag)
                     end_lines[local_front].append(front_tag)
-                    
-                #print "local front"
-                #print local_front
 
                 start_lines[local_front].append(body_tag)
                 local_back =  self.find_back(feature_dict,front_index,global_tags,start_index=start,end_index=end)
@@ -2254,8 +2036,6 @@ class StructureTagger:
 
         if global_tags["Genre"] == "play":
             sections = set()
-            #print "section spans"
-            #print section_spans
             if "scene" in section_spans:
                 sections.update(section_spans["scene"])
             if "act" in section_spans:
@@ -2268,50 +2048,26 @@ class StructureTagger:
                         sections.add(act)
             if "text" in section_spans:
                 sections.update(section_spans["text"])
-            #print "play sections"
-            #print sections
             speaker_re = self.find_play_elements(sections,feature_dict,start_lines,end_lines,plike_start_lines,plike_end_lines,text_lines)
-            #print global_tags
-            #sys.stdout.flush()
-            '''
-            if "start_with_parens" in stage_features:
-                stage_delim = "("
-                stage_re = self.stage_re_parens
-            elif "start_with_bracket" in stage_features:
-                stage_delim = "["
-                stage_re = self.stage_re_brackets
-            else:
-                stage_delim = False
-            '''
-        #for chapter in chapters:
-        #    print text_lines[chapter]
 
+           
         tokens = []
         start_line = 0
         sentence_count = 1
         paragraph_count = 1
         part_count = 0
-        #chapter_count = 1
         new_start = True
         in_plike = False
         depth = 0
         has_contents = False
-        #if 31464 in plike_start_lines:
-        #    print "yes, has 31464"
 
         for i in range(len(text_lines) + 1):
-            #print i
 
             if i == front_index + 1 or i == back_index + 1:
                 sentence_count = 1
                 paragraph_count = 1
                 
             if i in plike_end_lines:
-                #print "insert head"
-                #print start_line
-                #print i
-                #print text_lines[start_line:i]
-                #plike_end_lines[i].start = len(tokens)
                 if plike_end_lines[i].tag == "div" and plike_end_lines[i].attributes["type"] in ["introduction","preface","dustjacket","afterword","appendix"]:
                     plike_end_lines[i].plike = False
                     at_head = True
@@ -2340,10 +2096,6 @@ class StructureTagger:
                                         paragraph_count += 1
                                     tags[-1].depth = depth + 1
                                     tags[-1].plike = True
-                                    #tags[-1].attributes["start"] = last_break
-                                    #tags[-1].attributes["end"] = j
-                                    #tags[-1].attributes["i"] = i
-                                    #tags[-1].attributes["line"] = text_lines[i]
                                     last_break = j
                                     seen_content = False
                             while not text_lines[last_break]:
@@ -2356,15 +2108,16 @@ class StructureTagger:
                     plike_end_lines[i].plike = False
                     item_index = set()
                     if plike_end_lines[i].tag == "contents":
+
+
+                        # first look for likely divisions
                             
                         for div_type in ["chapter","part","book","wordnum_only","roman_only", "digit_only","starts_with_roman"]:
                             if div_type in feature_dict:
                                 temp_index = set()
                                 for index in feature_dict[div_type]:
                                     if start_line < index < i:
-                                        temp_index.add(index)
-                                #print div_type
-                                #print temp_index                            
+                                        temp_index.add(index)                          
                                 if len(temp_index) > 1:
                                     item_index.update(temp_index)
 
@@ -2373,9 +2126,7 @@ class StructureTagger:
                                 temp_index = set()
                                 for index in feature_dict[div_type]:
                                     if start_line <= index < i:
-                                        temp_index.add(index)
-                                #print div_type
-                                #print temp_index                            
+                                        temp_index.add(index)                         
                                 if len(temp_index) > 1:
                                     item_index.update(temp_index)
 
@@ -2383,7 +2134,9 @@ class StructureTagger:
                             for feature in ["introduction","appendix","index","prologue","epilogue","preface","glossary","bibliography"]:
                                 for index in feature_dict[feature]:
                                     if start_line < index < i:
-                                        item_index.add(index)                            
+                                        item_index.add(index)
+
+                    # if not, just add all blank lines
                                 
                     if not item_index or len(item_index) == 1:
                         temp_index = set()
@@ -2446,7 +2199,6 @@ class StructureTagger:
                     plike_end_lines[i].start = len(tokens)
                     plike_end_lines[i].plike = False
                     speaker_span = "\r".join(text_lines[start_line:i])
-                    #print speaker_span
                     inserted_speaker = False
 
                     match = speaker_re.search(speaker_span)
@@ -2508,7 +2260,6 @@ class StructureTagger:
                                         for sent in sents:
                                             tokens.extend(sent)
                                         stage_tag.end = len(tokens)
-                                        #stage_tag.depth = depth + 2
                                         tags.append(stage_tag)
                                         span = span[:span.find("[")].rstrip()
 
@@ -2544,7 +2295,6 @@ class StructureTagger:
                                             for sent in sents:
                                                 tokens.extend(sent)
                                                 tags.append(Tag(sent_start_index,len(tokens),"s",None))
-                                                #tags[-1].depth = depth + 2
                                                 sent_start_index = len(tokens)
                                         stage = stage.strip()
                                         stage_tag = Tag(len(tokens),-1,"stage",None)
@@ -2552,7 +2302,6 @@ class StructureTagger:
                                         for sent in sents:
                                             tokens.extend(sent)
                                         stage_tag.end = len(tokens)
-                                        #stage_tag.depth = depth + 2
                                         tags.append(stage_tag)
                                         match = self.stage_re.match(span)
                                     span = span.strip()
@@ -2562,7 +2311,6 @@ class StructureTagger:
                                         for sent in sents:
                                             tokens.extend(sent)
                                         stage_tag.end = len(tokens)
-                                        #stage_tag.depth = depth + 2
                                         tags.append(stage_tag)
                                         span = span[:span.find("[")].rstrip()
 
@@ -2572,12 +2320,11 @@ class StructureTagger:
                                         for sent in sents:
                                             tokens.extend(sent)
                                             tags.append(Tag(sent_start_index,len(tokens),"s",None))
-                                            #tags[-1].depth = depth + 2
                                             sent_start_index = len(tokens)
                                 p_tag.end = len(tokens)
                                 tags.append(p_tag)
 
-                    if not inserted_speaker: #fall back to stage no speaker or speech
+                    if not inserted_speaker: #fall back to stage if no speaker or speech
                         plike_end_lines[i].tag = "stage"
                         sents =self.tokenizer.tokenize_span(" ".join(text_lines[start_line:i]).strip(" ()_[]"))
                         for sent in sents:
@@ -2605,10 +2352,6 @@ class StructureTagger:
                         if j in feature_dict["blank_lines"] and j -1 not in feature_dict["blank_lines"] and j + 1 not in feature_dict["blank_lines"]:
                             blank_count += 1
 
-                    #print "blank count"
-                    #print blank_count
-                    #print i - (start_line + 2)
-
                     j = start_line + 1
                     while j in feature_dict["blank_lines"]:
                         j += 1
@@ -2633,13 +2376,8 @@ class StructureTagger:
 
 
                     new_castItems = []
-                    for castItem in castItems:
-                         #print "cast item"
-                         #print [castItem]
-                         
-                         if castItem.count("}") > 1 and "\n" in castItem:
-                             #print "multiple cast"
-                             #print castItem    
+                    for castItem in castItems:                    
+                         if castItem.count("}") > 1 and "\n" in castItem: 
                              new_castItems.extend(castItem.split("\n"))
                          elif castItem.strip().startswith("(") and new_castItems:
                              new_castItems[-1] += castItem
@@ -2713,16 +2451,13 @@ class StructureTagger:
                             tags.append(role_desc_tag)
                           
                        item_tag.end = len(tokens)
-                       tags.append(item_tag)
-                        
-                        
+                       tags.append(item_tag)                   
                     
                 else:
                     self.no_sent_tokenize(text_lines,start_line,i,tokens)
                     plike_end_lines[i].plike = True
                 plike_end_lines[i].end = len(tokens)
                 plike_end_lines[i].depth = depth
-                #print tokens[tags[-1].start:tags[-1].end]
                 if i < len(text_lines) and text_lines[i]:
                     start_line = i
                     new_start = False
@@ -2750,8 +2485,6 @@ class StructureTagger:
                             part_tag.depth = depth + 1
                             part_start_stanza = len(stanzas)
                             
-                            
-
                         else:
                             paragraph_count = 0
                             sentence_count = 0
@@ -2852,21 +2585,12 @@ class StructureTagger:
                             self.illustration_tokenize(text_lines,start_line,i,tokens,tags)
                         elif start_line in feature_dict["footnote"]:
                             self.footnote_tokenize(text_lines,start_line,i,tokens,tags)
-                            
-                        #elif global_tags["Genre"] == "play" and front_index < i < back_index: # no ps in plays
-                        #     stage_tag = Tag(len(tokens),-1,"stage",None)
-                        #     sents =self.tokenizer.tokenize_span(" ".join(text_lines[start_line:i]).strip(" ()_[]"))
-                        #     for sent in sents:
-                        #        tokens.extend(sent)
-                        #     stage_tag.end = len(tokens)
-                        #     tags.append(stage_tag)
 
                         else:
                             sentence_count = self.paragraph_tokenize(text_lines,start_line,i,tokens,tags,paragraph_count,sentence_count)
                             paragraph_count += 1
                         tags[-1].depth = depth
                         tags[-1].plike = True
-                    #tags[-1].attributes["regularp"] = "yes"
                 new_start = True
             else:
                 if text_lines[i] and new_start:
@@ -2887,26 +2611,17 @@ class StructureTagger:
                     tag.depth = depth
                     depth += 1
             if i in plike_start_lines:
-                #if i == 71:
-                #    print "here again st 71"
-                #    print plike_start_lines[i].tag
-                #    print plike_start_lines[i].attributes
                 start_line = i
                 plike_start_lines[i].start = len(tokens)
                 plike_start_lines[i].depth = depth
                 in_plike = True
-        #print "list of tags"
-        #for tag in tags:
-            #if tag.start == -1 or tag.end == -1:
-            #    print "bad tag"
-            #    print tag.tag
-            #    print tag.attributes
-            #    print tag.start
-            #    print tag.end
         text = Text(tokens,tags)
         return text
 
 
+
+#general purpose lexical tagger based on regular expressions
+    
 class RegexTagger:
     def __init__(self,regex,tag_name):
         self.regex = regex
@@ -2919,6 +2634,8 @@ class RegexTagger:
                  new_tags.append(Tag(i,i+1,self.name,None))
         return new_tags
 
+
+# a tagger which tags using a lexicon, supports multiwords
 class LexiconTagger:
             
     
@@ -3027,10 +2744,9 @@ class LexiconTagger:
 
         return new_tags
                     
-                
-        
 
                         
+# tags names in the text, based on capitalization and frequency
 
 class NameTagger():
 
@@ -3085,6 +2801,10 @@ class NameTagger():
         for tag in text.tags:
             if tag.tag == "s":
                 text.tags.extend(lex_tagger.tag_span(text.tokens,tag.start,tag.end))
+
+
+# Tagger which tags said elements (speech in fiction and nonfiction. Finds
+# nearest name and assigns it as speaker
 
 class SaidTagger():
 
@@ -3163,11 +2883,9 @@ class SaidTagger():
                         tag.add_attribute("who","_".join(text.tokens[closest_name.start:closest_name.end]))
                     elif next_same_sent and not prev_same_sent or next_distance < prev_distance:
                         tag.add_attribute("who","_".join(text.tokens[text.tags[j].start:text.tags[j].end]))
-                    #elif prev_same_para:
                     elif closest_name:
                         tag.add_attribute("who","_".join(text.tokens[closest_name.start:closest_name.end]))
                 else:
-                    #if prev_same_para:
                     if closest_name:
                         tag.add_attribute("who","_".join(text.tokens[closest_name.start:closest_name.end]))
                 
@@ -3175,16 +2893,12 @@ class SaidTagger():
             else:
                 i += 1
                         
-
-
-
     def add_said_tags(self,text):
         self.add_initial_said_tags(text)
         self.add_speakers(text)
 
 
 class FootnoteTagger:
-
 
     def add_footnote_tags(self,text):
         new_tags = []
@@ -3193,6 +2907,8 @@ class FootnoteTagger:
                 new_tags.append(Tag(i-1, i+2,"anchor",{"xml:id":"footnote" + text.tokens[i]}))
         text.tags.extend(new_tags)
     
+
+# the basic lexicalized NLPUtil POS tagger. Fast and simple
         
 class SimplePOSTagger():
     
@@ -3251,8 +2967,7 @@ class SimplePOSTagger():
                         
             return ret
 
-'''
-
+'''  Left out of this version due to speed
 class NLTKPOSTagger:
 
     def __init__(self):
@@ -3304,6 +3019,8 @@ class LemmatizerSimple:
             lemma_tokens.append(self.lemmatize(token))
         return lemma_tokens
   
+
+# This class deals with all lexical tagging
 
 class LexicalTagger:
 
@@ -3359,15 +3076,11 @@ class LexicalTagger:
                     headings = f.readline().strip().split("\t")
                     index = headings.index(stuff[1])
                     
-                    #print index
                     name = stuff[1]
                     if stuff[0] != "GI":
                         lexicon = {}
                         for line in f:
                             line = line.split("\t")
-                            #print stuff
-                            #print index
-                            #print len(line)
                             try:
                                 line[index] = float(line[index])
                             except:
@@ -3378,7 +3091,6 @@ class LexicalTagger:
                         lexicon = []
                         for line in f:
                             line = line.strip().split("\t")
-                            #print len(line)
                             if line[index]:
                                 lexicon.append(line[0])
                         
@@ -3387,7 +3099,6 @@ class LexicalTagger:
                     case_sense = True
                 else:
                     case_sense = False
-                #print lexicon
                 tagger = LexiconTagger(lexicon,name,attribute,tokenizer,case_sense)
                 if stuff[-1] == "lem":
                     self.selected_lemma_taggers.append(tagger)
@@ -3545,7 +3256,8 @@ def output_header(fout, tag_dict):
     fout.write(TEI_header)
   
 
-
+# this function is needed to create valid XML tags out of GutenTag's representation
+# which allows for overlapping tags
 def split_overlapping_tags(text):
     new_tags = []
     end_indicies = {}
@@ -3554,8 +3266,6 @@ def split_overlapping_tags(text):
     split_count = 0
     text.tags.sort()
     for i in range(len(text.tokens) + 1):
-        #print i
-        #print "here"
         last_split_count = split_count
         if i in end_indicies:
             starts = []
@@ -3563,13 +3273,7 @@ def split_overlapping_tags(text):
             for tag in end_indicies[i]:
                 starts.append(tag.start)
 
-                #try:
                 start_indicies[tag.start].remove(tag)
-                #except:
-                #    print tag.tag
-                #    print tag.start
-                #    print tag.end
-                #    print dksjfd
                 if not start_indicies[tag.start]:
                     del start_indicies[tag.start]
 
@@ -3578,10 +3282,6 @@ def split_overlapping_tags(text):
             first_start = min(starts)
             for j in start_indicies.keys():
                 if j > first_start and j != i:
-                    #print "and here"
-                    #print i
-                    #print j
-                    #print start_indicies[j]
                     for tag in start_indicies[j]:
                         if not (tag.attributes and "id" in tag.attributes):
                             if not tag.attributes:
@@ -3667,10 +3367,7 @@ def remove_from_tag_path(tag_path,options,genre):
     tag_path.pop()
     return check_tag_path(tag_path,options,genre)
 
-
-
-
-                 
+# outputs a string (TEI or tokens) from a internet Text representation              
 def output_text(text,fout,options,tag_dict):
     if "fiction" in tag_dict["Genre"]:
         genre = "prose"
@@ -3689,9 +3386,6 @@ def output_text(text,fout,options,tag_dict):
     tag_loc = 0
 
     text.tags.sort()
-    #print "outputing TEI"
-    #print len(text.tokens)
-    #print len(text.tags)
     last_tagged_token = 0
     split_id = 1
     tag_path = []
@@ -3705,19 +3399,13 @@ def output_text(text,fout,options,tag_dict):
                 outputted_tokens = True
                 fout.write(" ".join(text.tokens[last_tagged_token:i]))
             last_tagged_token = i
-            #print end_indicies[i]
             for tag in end_indicies[i]:
-                #print tag.tag
-                #print tag.attributes
-                #print tag.depth
-                #print "tag"
                 if output_elements and display(tag,options):
                     if not tag.plike and tag.depth != 99:
                         fout.write(" "*(tag.depth + 1))
                     fout.write(tag.get_end_tag())
                     if tag.depth != 99:
                         fout.write("\n")
-                #tag.tag = "doh"
                 output_elements = remove_from_tag_path(tag_path,options,genre)
                 start_indicies[tag.start].remove(tag)
             del end_indicies[i]
@@ -3746,6 +3434,7 @@ def output_text(text,fout,options,tag_dict):
     return outputted_tokens
 
            
+# class for tagging an individual text
 
 class GutenTextTagger:
 
@@ -3780,14 +3469,10 @@ class GutenTextTagger:
             print "fail"
             return None,tag_dict
         f.close()
-        load_time = time.time() - start
-        #print "load time"
-        #print load_time                
+        load_time = time.time() - start               
         start = time.time()
         cleaned_text = self.text_cleaner.clean_text(raw_text)
         clean_time = time.time() - start
-        #print "clean time"
-        #print clean_time
         text_restrictions = self.options["subcorpus" + str(tag_dict["subcorpus"]) + "_restrictions"]
         if "lexical_restrictions" in text_restrictions:
             for phrase in text_restrictions["lexical_restrictions"]:
@@ -3822,10 +3507,6 @@ class GutenTextTagger:
                     
 
         return text,tag_dict
-
-#def fix_TEI_for_html(text):
-#    for i in range(10):
-#        text = text.replace("\n" + " "*i,"<br />"
     
 
 def do_analysis(text,options,tag_dict):
@@ -3868,19 +3549,12 @@ def do_analysis(text,options,tag_dict):
                     
             tag_loc += 1
     tag_dict["token_count"] = token_count
-        #if include_tags:
-        #    if "token" in options["tags_for_analysis"]
-    
-        
-        
         
 
-
+# the function for one of the worker threads which deals with processing of individual texts
 def guten_process(options,sendQ,returnQ,output_lock,fout):
-    #print "started guten process"
     tagger = GutenTextTagger(options)
     while True:
-        print "processing text!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
         tag_dict = sendQ.get()
         text, tag_dict = tagger.process_text(tag_dict)
         options["not_wanted_tags"] = set(options["subcorpus" + str(tag_dict["subcorpus"]) + "_restrictions"]["not_wanted_tags"])
@@ -3912,10 +3586,7 @@ def guten_process(options,sendQ,returnQ,output_lock,fout):
                 if options["output_format"] == "TEI":
                     fout.write("</TEI>")
                 if online:
-                    #pass
                     tag_dict["text"] = fout.getvalue()
-                    #if options["output_format"] = "TEI":
-                    #    tag_dict["text"] = fix_TEI_for_html(tag_dict["text"])
                 elif options["output_mode"] == "single":
                     output_lock.release()
                 else:
@@ -3938,6 +3609,8 @@ def guten_process(options,sendQ,returnQ,output_lock,fout):
             returnQ.put(False)
 
 
+# the main GutenTag class, iterates through the corpus and check if texts
+# satisfy restrictions
 
 class GutenTag:
 
@@ -3957,7 +3630,7 @@ class GutenTag:
             fout = None
         self.metadata_reader = MetadataReader()
         self.worker_threads = []
-        num_threads = cpu_count()/2
+        num_threads = cpu_count()/2 # use half the resources on the system
         self.sendQ = Queue()
         self.returnQ = Queue()
         self.output_lock = Lock()
@@ -4108,7 +3781,7 @@ class GutenTag:
 
       
 
-
+# the main thread
 def main_guten_process(main_Q,result_Q):
     while True:
         options = main_Q.get()
@@ -4127,7 +3800,8 @@ def main_guten_process(main_Q,result_Q):
     
 
 
-
+# this class handles the communication between the internal GutenTag functions
+# and the external web interface
 class GutentagRequestHandler(SocketServer.BaseRequestHandler):
    
     def handle(self):
@@ -4135,17 +3809,8 @@ class GutentagRequestHandler(SocketServer.BaseRequestHandler):
         if self.data.startswith("id:"):
             ID = self.data.split(":")[1]
             while not result_Q.empty():
-                #print "something in Q"
                 result = result_Q.get()
-                #print "token_count"
-                #print result_Q
-                #print result["token_count"]
                 results_dict[result["user_id"]].append(result)
-            #print results_dict
-            print ID
-            print "sending"
-            #print json.dumps(results_dict[ID])
-            print(len(json.dumps(results_dict[ID])))
             self.request.sendall(json.dumps(results_dict[ID]))
             results_dict[ID] = []
                 
@@ -4164,6 +3829,7 @@ class GutentagRequestHandler(SocketServer.BaseRequestHandler):
             main_Q.put(options)
 
 
+# add elements to the webpage which require checking the user's hd
 def insert_dynamic(text):
     try:
         saved_params = os.listdir("saved_parameters")
@@ -4181,17 +3847,13 @@ def insert_dynamic(text):
     except:
         pass
 
-    #try:
+
     if True:
-        print "here"
         user_lists = os.listdir("user_lists")
         if user_lists:
-            print "inserting"
             new_options = "\n".join(["<option>" + filename + "</option>" for filename in user_lists])
             text = text.replace("<!-- user lists -->", new_options)
-            print "done"
-    #except:
-    #    pass
+
     return text
     
 class GutentagWebserver(BaseHTTPRequestHandler):
@@ -4199,8 +3861,7 @@ class GutentagWebserver(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path.strip()== "/":
-            #if lang == "en":
-            if not os.path.exists("corpus_path.txt"):
+            if not os.path.exists("corpus_path.txt"): # set corpus path
                 self.send_response(200)
                 self.send_header('Content-type',	'text/html; charset=utf-8')
                 self.end_headers()
@@ -4209,10 +3870,8 @@ class GutentagWebserver(BaseHTTPRequestHandler):
                 f.close()
                 return
 
-            else:
+            else: # load main front page
                 f = open("gutentag.html")
-                #elif lang == "fr":
-                #    f = codecs.open("wordq/index_fr.html",encoding="latin-1")
                 self.send_response(200)
                 self.send_header('Content-type',	'text/html; charset=utf-8')
                 self.end_headers()
@@ -4228,7 +3887,7 @@ class GutentagWebserver(BaseHTTPRequestHandler):
                 for pair in [item.split("=") for item in self.path.split("?")[-1].split("&")]:
                     cgi_dict[pair[0]] = unquote(pair[1]).decode("utf-8").replace("+"," ")
                 
-                if "results_page.cgi" in self.path:
+                if "results_page.cgi" in self.path: # load results page
                     options = json.loads(cgi_dict["data"])
                     if not online and "save_filename" in options and options["save_filename"]:
                         try:
@@ -4270,7 +3929,7 @@ class GutentagWebserver(BaseHTTPRequestHandler):
                         self.wfile.write(text[1])
 
 
-                elif "get_results.cgi" in self.path:
+                elif "get_results.cgi" in self.path: # update results page
                     ID = cgi_dict["id"]            
                     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     sock.connect(("localhost", port))
@@ -4282,10 +3941,6 @@ class GutentagWebserver(BaseHTTPRequestHandler):
                             total.append(response)
                     sock.close()
                     response = "".join(total)
-                    #response = cgi.escape(response)
-                    #fout = open("the_result.txt","a")
-                    #fout.write(response)
-                    #fout.close()
                     self.wfile.write(response)
 
                 elif "load_parameters.cgi" in self.path:
