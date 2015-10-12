@@ -1807,10 +1807,13 @@ class StructureTagger:
                 i = header_index +1
                 while i in feature_dict["blank_lines"] or i in feature_dict["ends_with_page"]:
                     i += 1
-                while not (i in feature_dict["blank_lines"] and i + 1 in feature_dict["blank_lines"]):
+
+                count = 0
+                while count < 20 and i < len(text_lines) - 1 and not (i in feature_dict["blank_lines"] and i + 1 in feature_dict["blank_lines"]):
                     if i in feature_dict["act"] or i in feature_dict["scene"] or i in feature_dict["chapter"] or i in feature_dict["part"] or i in feature_dict["book"] or i in feature_dict["starts_with_roman"] or i in feature_dict["blank_lines"]:
                         pass
-                    else:       
+                    else:
+                        count += 1
                         content_lines.append(text_lines[i])
                     i+= 1
 
@@ -3533,6 +3536,11 @@ def do_analysis(text,options,tag_dict):
 # the function for one of the worker threads which deals with processing of individual texts
 def guten_process(options,sendQ,returnQ,output_lock,fout):
     tagger = GutenTextTagger(options)
+    if options["mode"] == "export" and options["output_mode"] == "multiple":
+        if options["output_format"] == "TEI":
+            file_suffix = ".xml"
+        else:
+            file_suffix = ".txt" 
     while True:
         tag_dict = sendQ.get()
         text, tag_dict = tagger.process_text(tag_dict)
@@ -3552,7 +3560,7 @@ def guten_process(options,sendQ,returnQ,output_lock,fout):
                         if options["num_subcorpora"] > 1:
                             filename = "sub" + str(tag_dict["subcorpus"]) + "_" + filename
                         filename = filename[:50] +tag_dict["Num"]
-                        fout = codecs.open(options["output_dir"] + "/" + filename + ".xml","w",encoding="utf-8")
+                        fout = codecs.open(options["output_dir"] + "/" + filename + file_suffix,"w",encoding="utf-8")
                     elif options["output_mode"] == "single":
                         output_lock.acquire()
 
@@ -3573,7 +3581,7 @@ def guten_process(options,sendQ,returnQ,output_lock,fout):
                 if not result:
                     tag_dict = False
                     if not online and options["output_mode"] == "multiple":
-                        os.remove(options["output_dir"] + "/" + filename + ".xml")
+                        os.remove(options["output_dir"] + "/" + filename + file_suffix)
                     
             elif options["mode"] == "analyze":
                 do_analysis(text,options,tag_dict)
@@ -3741,7 +3749,7 @@ class GutenTag:
                     tag_dict["notactive"] = True
                     yield tag_dict
 
-            if active == len(self.worker_threads):             
+            if active == len(self.worker_threads) or ("maxnum" in self.options and active == self.options["maxnum"] - count):
                 tag_dict = self.returnQ.get()
                 active -= 1
                 if tag_dict:
@@ -3994,9 +4002,9 @@ class GT_API:
             yield info
     
     def get_text_TEI_string(self,text,text_info):
-        temp = StringIO()
+        temp = StringIO.StringIO()
         output_text(text,temp,self.options,text_info)
-        return temp.get_value()
+        return temp.getvalue()
 
 ###
     
