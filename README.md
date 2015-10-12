@@ -75,7 +75,7 @@ References and links
 2. Julian Brooke, Adam Hammond, and Graeme Hirst. 2015. GutenTag: An NLP-driven tool for digital humanities research in the Project Gutenberg corpus. In
 Proceedings of the 4nd Workshop on Computational Literature for Literature (CLfL ’15).
 3. http://www.gutenberg.org/wiki/Gutenberg:The_CD_and_DVD_Project
-4. http://www.projectgutentag.org/smallgut.zip
+4. http://www.projectgutentag.org/download.html
 5. http://www.python.org
 6. Steven Bird, Ewan Klein, and Edward Loper. 2009. Natural Language Processing with Python. O’Reilly Media Inc.
 7. Philip J. Stone, Dexter C. Dunphy, Marshall S. Smith, and Daniel M. Ogilivie. 1966. The General Inquirer: A Computer Approach to Content Analysis. MIT Press.

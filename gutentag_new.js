@@ -516,7 +516,7 @@ function reveal_sublexicon(main_tag) {
 function start_up() {
 	add_subcorpus();
 	add_lexical_tag('export');
-	add_lexical_tag('analysis');
+	add_lexical_tag('analyze');
 	/*
 	var fileSelector = document.createElement('input');
  	fileSelector.setAttribute('type', 'file');
@@ -1025,6 +1025,7 @@ function load_parameters() {
 
 
 function prepare_data_for_analysis() {
+
  	var data = {};
  	data['mode'] = 'analyze';
  	thisform = document.getElementById('analyze_form');
@@ -1051,13 +1052,15 @@ function prepare_data_for_analysis() {
 	
 	get_subcorpus_info(data);
 
-	data["save_filename"] = getElementById('savefilename2').value;
+	data["save_filename"] = document.getElementById('savefilename2').value;
 	
 	return data;
 	
 	
 
 }
+
+
 
 function prepare_data_for_export(){
  	var data = {}
@@ -1102,21 +1105,48 @@ function prepare_data_for_export(){
 
 }
 
+var bad_char_regex = /[\/\?\*\:\;\{\}\\]/
+
 function do_export() {
+	thisform = document.getElementById('export_form');
+	if (thisform.elements['output_dir'].value == "" || bad_char_regex.test(thisform.elements['output_dir'].value)) {
+		alert("You have entered an invalid export directory")
+		return
+	} 
+	if (bad_char_regex.test(document.getElementById('savefilename1').value)) {
+		alert("You have entered an invalid parameter filename")
+		return
+	}
+	
 	data = prepare_data_for_export();
 	data["id"] = g_id;
 	query_server(data);
+
 } 	
  	
 function do_analysis() {
+	thisform = document.getElementById('analyze_form');
+	if (bad_char_regex.test(thisform.elements['output_file'].value)) {
+		alert("You have entered an invalid analysis filename");
+		return
+	} 
+	if (bad_char_regex.test(document.getElementById('savefilename2').value)) {
+		alert("You have entered an invalid parameter filename");
+		return
+	}	
 	data = prepare_data_for_analysis();
+	if (data["tags_for_analysis"].length == 0 ) {
+		alert("You have no lexical tags for analysis");
+		return;
+	}
 	data["id"] = g_id;
 	//alert(JSON.stringify(data));
 	query_server(data);
+
 } 	                   
 
 function do_save() {
-	if (fork_clicked == 'analysis') {
+	if (fork_clicked == 'analyze') {
 	 	data = prepare_data_for_analysis();
 	}  
 	else {

@@ -175,12 +175,8 @@ class MetadataReader:
             tags["Author"].append(author)
             tags["Author Birth"].append(birth)
             tags["Author Death"].append(death)
-        #if not tags["Author"]:
-        #    print "missing author!!!!!!!"
-        #    print tags
 
     def get_href_and_charset(self,html_text):
-        #print html_text
         index = html_text.find("text/plain")
         if index == -1:
             return None,-1
@@ -195,9 +191,7 @@ class MetadataReader:
             href = None
         else:
             href = html_text[index + 9:html_text.find('"',index + 9)]
-        #print "here"
-        #print charset
-        #print href
+
         return href, charset
 
     def get_PG_metadata(self,filename):
@@ -262,7 +256,6 @@ class TextCleaner:
         while not found:
             looking_for = "\n"*i
             result = text.find(looking_for, best_points[0])
-            #print result
             if result != -1 and ((best_points[1] - result)/best_length > 0.98 or i == 1):
                 found = True
             i -= 1
@@ -320,8 +313,6 @@ class GenreClassifier:
 
     def get_feature_dict(self,text,tags):
         feature_dict = {}
-        #lines = text.split("\n")
-        #print lines[:50]
         lines = text
         total_lines = 0.0
         total_paragraphs = 0.0
@@ -434,8 +425,6 @@ class GenreClassifier:
                     expected_no_capital += 1
                     if words[0].isalpha() and has_capital(words[0]):
                         feature_dict["capital_line_count"] += 1
-                    #print lines[i]
-                #print lines[i-1]
                 if curr_line in self.end_words:
                     feature_dict["end"] = 1
                 if "you" in curr_line:
@@ -445,7 +434,6 @@ class GenreClassifier:
                 if "--" in curr_line:
                     feature_dict["dash_line_count"] += 1
                 if i > 0 and (not lines[i-1] or (indented and not last_indented)):
-                    #print lines[i]
                     total_paragraphs += 1
 
                     if (words[0].lower() == "act" or words[0].lower() == "scene")  and i != len(lines) -1 and not lines[i+1].strip():
@@ -459,7 +447,6 @@ class GenreClassifier:
                         start_word_list.add(words[0].lower())
                     if len(words) > 2 and not words[0].startswith('"') and has_capital(words[0]) and has_capital(words[1]):
                         feature_dict["two_capital_count"] += 1
-                        #print lines[i]
                     if has_capital(words[0]) and alpha_count(words[0]) > 1 and (not self.likely_delimin.isdisjoint(words[0]) or (len(words) > 1 and not self.likely_delimin.isdisjoint(words[1]))):
                         feature_dict["early_delim_count"] += 1
                     if i < len(lines) -1 and not lines[i+1].strip() and len(words) < 5:
@@ -477,7 +464,6 @@ class GenreClassifier:
                         quote_string_count = 0
             else:
                 pass
-                #lines[i] = lines[i].strip()
 
         try:                
             feature_dict["capital_line_count"] /= expected_no_capital
@@ -510,7 +496,6 @@ class GenreClassifier:
         except:
             pass
 
-        #print feature_dict
 
         return feature_dict
 
@@ -518,9 +503,6 @@ class GenreClassifier:
         if len(node) == 1:
             return node[0]
         else:
-            #print node[2]
-            #print node[3]
-            #print feature_dict[node[2]]
             if feature_dict[node[2]] <= node[3]:    
                 return self.get_classification(feature_dict,self.node_dict[node[0]])
             else:
@@ -1477,8 +1459,6 @@ class StructureTagger:
                     if index in line_tag_list:
                         if line_tag_list[index] ==  self.elements_mapping[element]:
                             continue
-                        #else:
-                        #    print "unresolved conflict between strong matches"
                     line_tag_list[index] = self.elements_mapping[element]
                     weakly_tagged_line.discard(index)
                     i = index
@@ -1517,7 +1497,6 @@ class StructureTagger:
 
                         if next_para_index:
                             while next_para_index not in feature_dict["blank_lines"] and next_para_index < bf_range[1]:
-                                #print "added tag to next paragraph"
                                 line_tag_list[next_para_index] = self.elements_mapping[element]
                                 weakly_tagged_line.discard(next_para_index)
                                 next_para_index += 1
@@ -1592,9 +1571,6 @@ class StructureTagger:
             i += 1
 
         stage_features = set(["start_with_parens","start_with_bracket"])
-        
-        #print "stage features"
-        #print stage_features
 
         if "text_after_delim" not in speaker_features and "short_line" in speaker_features:
             speaker_separate_line = True
@@ -2018,8 +1994,6 @@ class StructureTagger:
                     local_back = end
                 end_lines[end].append(text_tag)
                 temp_section_spans = self.find_chapters_and_parts(local_front,local_back,feature_dict,start_lines,end_lines,plike_start_lines,plike_end_lines,global_tags)
-                #print "temp section spans"
-                #print temp_section_spans
                 for div in temp_section_spans:
                     if div not in section_spans:
                         section_spans[div] = set()
@@ -2664,7 +2638,6 @@ class LexiconTagger:
             if len(words) > 1:
                 self.add_to_multiword_trie(words,entry)
 
-        #print self.multiword_trie
                 
 
     def add_to_multiword_trie(self,words,entry):     
@@ -3291,7 +3264,6 @@ def split_overlapping_tags(text):
                         new_attributes = {}
                         for item in tag.attributes:
                             new_attributes[item] =  tag.attributes[item]
-                        #print "there"
 
                         next_id = tag.attributes["id"] 
                         prev_id = split_count
@@ -3307,7 +3279,6 @@ def split_overlapping_tags(text):
                         start_indicies[i].append(tag)
                         new_tags.append(new_tag)
                     del start_indicies[j]
-                    #print "done"
                         
 
         while tag_loc < len(text.tags) and i == text.tags[tag_loc].start:
@@ -3520,6 +3491,11 @@ def do_analysis(text,options,tag_dict):
     tag_loc = 0
     token_count = 0
 
+    if "fiction" in tag_dict["Genre"]:
+        genre = "prose"
+    else:
+        genre = tag_dict["Genre"]
+
     tag_dict["analysis_results"] = {}
     for tag_type in options["tags_for_analysis"]:
         tag_dict["analysis_results"][tag_type] = []
@@ -3531,7 +3507,7 @@ def do_analysis(text,options,tag_dict):
                 token_count += i - span_start
                 span_start = i
             for tag in end_indicies[i]:
-                include_tags = remove_from_tag_path(tag_path,options)
+                include_tags = remove_from_tag_path(tag_path,options,genre)
             del end_indicies[i]
                 
         while tag_loc < len(text.tags) and i == text.tags[tag_loc].start:
@@ -3542,7 +3518,7 @@ def do_analysis(text,options,tag_dict):
             if tag.end not in end_indicies:
                 end_indicies[tag.end] = []
             end_indicies[tag.end].append(tag)
-            include_tags = add_to_tag_path(tag,tag_path,options)
+            include_tags = add_to_tag_path(tag,tag_path,options,genre)
             if include_tags:
                 if tag.get_single_tag() in options["tags_for_analysis"]:
                     if tag.attributes and "value" in tag.attributes:
@@ -3795,8 +3771,6 @@ def main_guten_process(main_Q,result_Q):
         for tags in gr.iterate_over_texts():
             if tags:
                 result_Q.put(tags)
-                
-                print tags
 
         result_Q.put({"user_id":options["id"],"done":True})
 
@@ -3828,7 +3802,7 @@ class GutentagRequestHandler(SocketServer.BaseRequestHandler):
                 else:
                     options["maxnum"] = min(options["maxnum"],10)
             
-            if not online and not os.path.exists(options["output_dir"]):
+            if not online and options["mode"] == "export" and not os.path.exists(options["output_dir"]):
                 os.mkdir(options["output_dir"])
             main_Q.put(options)
 

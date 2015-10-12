@@ -177,14 +177,14 @@
                         </tr>
                                 </table>
 
-          <table class="linebyline" id="analysislexicontable">
+          <table class="linebyline" id="analyzelexicontable">
         </table>
-        <div class="addline" data="0" id="analysislexiconaddbutton" onclick="add_lexical_tag('analysis');">+</div>
+        <div class="addline" data="0" id="analyzelexiconaddbutton" onclick="add_lexical_tag('analyze');">+</div>
         </div>
        
         </div>
         
-        <div class="subdefine" id="analysisoutput">
+        <div class="subdefine" id="analyzeoutput">
 	
         <div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">-</div><p>Output</p></div>
 	<div class="defineframe" id="obd1">
@@ -199,7 +199,7 @@
 		<input type="checkbox" name="randomize_order" value="" checked /> Randomize order of texts selected </td>
         </td>
         </tr>
-        <tr>
+        <tr class="hidden">
  		<td><p>Output file:</p>
         </td>
         <td><input type="text" name="output_file" value=""/>
