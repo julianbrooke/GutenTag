@@ -1,0 +1,4923 @@
+entry	familiarity	concreteness	imagery	meaningfulness	age of acquisition
+a	632	201	217	260	
+abandon	510		395		
+abandonment	359	272	348		544
+abasement	226	275	262	230	
+abatement	294	250	189		644
+abbess	187	401	318	218	
+abdication	284	275	326	277	
+abdomen	426	586	548		556
+abduction	413	337	463	390	
+aberration	208	330	285		
+abhor	360	320	335	327	
+ability	563	273	327		453
+able	575	302	284	355	
+abode	334	498	458	419	553
+abominable	358		387		
+aboriginal	295	335	389	290	
+about	593	227	225	300	
+above	607		346		
+abridgement	303	285	240		644
+abrupt	486	266	362	439	
+abscess	392	538	491		533
+absolute	495		268		
+absolution	372	241	256		608
+abstraction	368				
+abstruse	136		225		
+abundance	448	267	386		519
+abundant	524	351	443	495	
+abuse	450				
+abyss	293	450	453	323	597
+academy	509	499	504	421	
+acceleration	499	358	486		536
+acceptable	521		288		
+accident	564	419	518		329
+accommodation	533	464	466		536
+accomplice	446	395	391	345	
+accord	418	299	248	307	
+accordance	431	270	237		544
+accordion	394	586	576	352	
+account	523	365	361	392	
+accumulation	451	285	354		539
+accurate	566		305		
+accuser	363	424	343		511
+ache	523	443	443	484	
+acidity	399	384	432		622
+acknowledge	503	290	316	426	
+acorn	397				
+acre	427	462	464		411
+acrobat	431	566	583	420	
+act	566	379	433	431	319
+active	552		436		
+actual	589		259		
+actuality	361	247	213		586
+acumen	149	272	229	210	
+adage	160	373	324		
+adam	372		488		
+adder	361	615	583		356
+addition	535	339	347	405	314
+additional	489		303		
+adequate	485		268		
+adherence	375	265	326		603
+adjective	515	316	394	392	
+adjournment	327	311	305		606
+administration	502	331	413		561
+admiral	436	528	543	381	
+admire	531	296	390	457	
+admission	482	305	389		458
+admonish	341	269	302	292	
+adolescence	444	267	467		597
+adorn	441	339	370	355	
+adult	590	492	526	543	
+adultery	456	311	494		583
+advanced	523		320		
+advantage	562	282	292		
+adventurer	402	462	497		406
+adverb	473	352	315	322	
+adversity	360	314	326		
+advice	566	291	352		425
+adze	138	283	256	164	
+aerial	481	517	567		428
+affable	266		315		
+affair	531		361		
+affection	513	280	484		467
+affectionate	507		471		
+affirm	444		281		
+affirmation	332	242	313		583
+affright	219	229	232		656
+afraid	575	336	451	507	
+after	575	242	217	302	
+afternoon	655	406	513		281
+against	600		285		
+age	582	390	468	428	258
+agency	420	426	366		553
+aggress	351	271	270	244	
+aggressive	500		417		
+aggressor	359	439	383		589
+agile	432	356	454	436	
+agility	397	327	464		
+agony	509	348	491	485	461
+agreement	541	327	367		
+ague	196	365	224		661
+ah	519	253	330	322	
+aid	536	372	413	433	
+ail	370	385	391	302	
+aim	549	324	383	383	344
+air	608	518	450	497	
+airship	332	585	545		406
+airy	423	334	368	353	
+aisle	503	509	528	400	
+alacrity	245	269	189		678
+albatross	309	621	583		528
+albumin	217	415	352	205	
+alchemist	262	462	394		664
+alcohol	578	618	598	535	
+ale	454	578	526	410	
+alert	528	400	428	430	
+algae	317	545	424		631
+algebra	483	453	510		
+alias	384	232	294		561
+alien	479	399	470	422	
+alimony	415	454	456		
+alive	593		426		
+alkali	391	437	432		633
+all	582	267	332	513	
+allegation	383	272	291		631
+allege	279		281		
+allegory	314	283	244		650
+alley	526	557	572	418	
+alligator	442	624	627	425	
+allophone	74				
+allotment	420	502	470		486
+allow	504	268	373	368	
+ally	410	485	453		446
+alone	562	390	480	460	
+alphabet	493	449	499		244
+also	552	194	264	333	
+alter	503	430	413	447	
+alternative	518		268		
+although	573	218	208	270	
+altitude	420	373	472		534
+aluminium	453	600	505		514
+aluminum	494	523	501	381	
+always	600	249	280	421	
+am	603	259	247	242	
+amateur	502	388	397		522
+amazement	495	277	456		
+ambassador	477	546	545	392	
+ambition	517	281	346	417	483
+ambitious	540		404		
+ambulance	499	595	627		
+ambush	436				
+amendment	403	326	305		597
+amethyst	285	573	510		567
+amity	200	278	205		656
+ammonia	524	563	536	343	
+amount	583	335	316		392
+amour	362	308	536		
+ampere	272	327	304	231	
+amplifier	474	564	559		
+amplitude	374	315	389		650
+amuse	486	321	455	416	
+an	595	217	195	153	
+analogy	417	247	267		617
+analytic	405		303		
+anchor	458	595	561	390	
+ancient	429		451		
+and	620	220	226	290	
+anecdote	388	398	357		619
+anele	103	302	204	184	
+angel	470	399	554		242
+anger	541	315	488	489	
+angle	518	467	503	390	
+angry	600		492		
+animal	620	587	575		222
+animosity	324	253	388		
+ankle	543	608	613		264
+anneal	176	267	219	193	
+annex	390	464	435		536
+announcement	519	368	381		464
+annual	464		339		
+answer	605	397	368	466	294
+ant	511	604	613	415	
+antagonism	417	288	378		636
+anteroom	241	512	375		629
+anticipation	492	288	435		572
+antique	484	492	549	405	439
+antitoxin	214	531	388		
+anvil	302				
+anxiety	548	241	422		
+anxious	544		376		
+any	542	222	206	272	
+anybody	591	343	329		306
+anyone	605		288		
+apart	555	304	364	398	
+apartment	491	575	556	490	522
+apathy	472	364	376	377	
+ape	547	654	616	538	
+aperture	356	467	424		639
+apex	321	408	375	270	
+apology	510	311	400		406
+apparent	531		266		
+appeal	514	333	402		431
+appear	534	271	341	336	
+appearance	578	358	425		
+appendix	493				
+apple	598	620	637	451	211
+appliance	493	558	554		
+appointment	541	341	386		425
+appraise	459	279	306	382	
+appreciate	552		300		
+approach	508	323	329		444
+approval	526	267	375		469
+apricot	428	638	591		386
+apron	516		565		
+apt	428	183	295	348	
+aptitude	505	241	310		
+arbiter	238	421	257		664
+arbitrary	427		276		
+arbor	289	430	374	260	
+arc	397	471	494	363	
+arch	483	512	557	371	367
+archery	351	470	550		433
+ardent	364		347		
+are	564	195	262	277	
+area	560	384	394	398	392
+argue	564		412		
+arid	418	399	433	385	
+arise	409		354		
+aristocracy	401	371	470		569
+ark	417	561	517	392	
+arm	608	592	593	428	192
+armadillo	181	558	401		
+armor	376	544	503	363	
+armour	406	591	536		400
+army	555	543	578	515	317
+aromatic	307		443		
+arrangement	525	308	316		489
+array	383	371	365		
+arrival	548	328	419		394
+arrogant	407		402		
+arrow	490	595	619		
+art	529	440	493	565	
+article	533	479	421		406
+artifice	252	388	240		637
+artificial	514	350	386	428	
+artist	547	554	600	528	
+artistic	468		441		
+as	586	158	224	238	
+asbestos	427	578	513		578
+ash	494	583	553	350	343
+ashamed	516	325	397	431	
+ashen	274	351	395	283	
+asparagus	534	608	590	442	
+aspect	482	217	233		547
+asphalt	488	583	569	385	
+aspirin	546	574	542	445	
+assault	470	410	481		
+assemblage	286				
+assemble	482	394	413		417
+assent	325	311	345		575
+assist	516	342	368	425	
+assistance	534	288	348		464
+assortment	492	355	367		408
+assumption	521		257		
+aster	205	447	224		631
+astrolabe	126	391	150		697
+astronomy	391	419	483		489
+astute	335	241	261	281	
+asymptote	281				
+at	615	194	225	258	
+ate	562	385	364	403	
+athlete	482	545	591		428
+athletics	548	437	551		
+atmosphere	540	385	444		517
+atom	513	481	499	426	
+atrocity	371	296	404		589
+attack	542	411	501	476	
+attempt	558	313	302		392
+attend	545	324	386	410	
+attendant	494	533	499		
+attentive	479		352		
+attitude	553	265	321		481
+attribute	421	266	295		
+audience	511	515	555		425
+audit	326	371	253		642
+audition	479	370	395	397	
+auditorium	519	552	573	380	
+aunt	554	564	567	498	233
+aural	192	309	253	197	
+aurora	254	346	345		636
+authentic	477	276	428	470	
+author	554	502	460	502	414
+authoritative	443		356		
+automobile	456	607	628		483
+autumn	533	421	622		278
+available	566		285		
+avalanche	399	554	596		
+avenue	529	539	564		372
+average	579		297		
+aviator	272	492	445		575
+avid	354	275	325	303	
+avowal	215	240	208		642
+await	456		293		
+aware	546		298		
+away	573	257	272	384	
+aweigh	167	231	213	162	
+awkward	502	329	419	476	
+awl	257	413	292	200	
+axe	461	623	597		311
+axil	323	467	389	289	
+axiom	318	306	311	255	
+axle	482	555	560	357	
+aye	333	233	255	210	
+babe	370	562	562		303
+baby	597	589	608	573	
+back	587	540	483	418	225
+background	540	383	427		400
+bacteria	460	560	505	437	
+bad	592	308	388	531	
+badge	473	561	519	410	
+bag	634	603	570		217
+bagpipe	397	601	594	380	377
+bail	485	441	480	384	
+bake	549		495		
+balance	545	366	429		367
+bale	386	462	473	278	
+ball	575	615	622	515	150
+balloon	520	623	583	394	
+ballot	453	455	437		539
+banality	175	292	255	213	
+banana	576	633	644	449	
+band	555	590	579	477	236
+bandage	546	639	554	482	
+bandit	388	547	562		
+bang	503	435	470	391	
+bank	573	573	560	465	
+banker	524	547	565	427	392
+banner	381	567	569		
+bar	592	565	596	500	
+barb	302	527	448		528
+bard	224	395	406	249	
+bare	521	399	487	453	
+bargain	552	399	505		394
+bark	518	563	539	433	
+barn	466	614	589		289
+barnacle	277	542	458		
+baron	339	513	498		472
+barrel	487	590	602	385	319
+base	520	441	436	398	369
+basement	522	585	571	452	
+bashful	435		400		
+basic	533		271		
+basilisk	79				
+basin	504	602	542	405	250
+basket	485	606	560	407	
+bass	540	547	544	421	
+bat	514	564	586	412	
+bath	599	600	601	477	172
+baton	424	570	516	338	
+battle	537	564	597	495	
+bawl	429	384	417	370	
+bay	474	580	570		336
+bayonet	293	600	548		500
+be	613	225	274	325	
+beach	553	612	667	518	
+beak	476	552	574	385	
+beam	476	502	539	386	394
+bean	549	604	538	371	
+bear	526	585	572	408	
+beard	538	580	630	434	
+beast	456	564	558		319
+beat	536	361	406	471	
+beau	242	419	394		611
+beautiful	609	393	532	617	
+beauty	561	336	513	598	344
+beaver	470	589	612	412	
+became	531	273	262	334	
+because	604	196	244	310	
+become	603		259		
+bed	636	635	635	545	169
+bedel	118	276	177	144	
+bedroom	646	615	629		206
+bee	554	597	623	441	
+beech	374	446	435	290	
+beef	598	637	625	531	
+beehive	398	611	572		344
+been	567	215	222	270	
+beer	604	587	598	460	
+beet	497	645	555	397	
+beetle	503	619	640	444	
+before	583	261	255	395	
+beg	529	300	431	421	
+began	593		251		
+beggar	435	533	593	472	364
+beginning	593	318	359		311
+behaviour	573	295	351		400
+behind	603		371		
+being	568	276	323	361	383
+belfry	211	526	453		
+belief	554	270	328	418	447
+bell	543	620	610	450	
+belle	341	388	401	362	
+belligerent	320		344		
+belly	486	630	576	440	
+beloved	406	356	456		453
+below	566		317		
+belt	550	602	494	398	
+bench	488	614	555		311
+bend	510		460		
+benefactor	356	449	345		600
+beneficial	496	251	362	423	
+benefit	481	376	445	415	
+benzene	318	535	418		675
+bequest	316	349	294		600
+bereavement	249	298	409		
+beret	419	578	517	392	
+berry	470	573	551	448	289
+berth	379	425	402	287	
+besieger	255	441	335		592
+best	600	282	324	484	
+bet	527	403	453		364
+betel	129	320	238	200	
+betrayal	392	258	358		492
+better	633		274		
+betterment	293	270	310		569
+beverage	566	526	565		
+bewilderment	421	270	407		522
+bhang	116	316	217	185	
+bias	399				
+bib	380	548	488	357	
+bible	496	585	594	489	
+bid	473	364	394		425
+bier	162	411	294	242	
+big	640		463		
+bilious	154		293		
+bill	552	528	535	428	406
+billed	497	377	355	298	
+bin	580	598	562		192
+biology	526	400	441	469	
+birch	518	620	561	448	
+bird	592	602	614	519	206
+birth	527	471	532	505	328
+biscuit	521	574	571	397	
+bishop	467	587	524	437	
+bison	298		541		
+bit	460	392	432	392	
+bite	593	509	553		214
+bitter	526	409	457	432	
+bitterness	430	270	378		497
+bivouac	154	487	370		
+black	603	470	589	493	
+blacksmith	407	589	575	369	
+blade	517	584	568	423	344
+blame	541	293	356		328
+bland	436	338	348	360	
+blanket	563	622	582	449	211
+blasphemy	327	324	355		
+bleach	549	544	510	387	
+bleak	466	307	435	415	
+blessing	483	277	422		392
+blew	533	367	404	415	
+blind	531	443	485	417	
+blink	450		471		
+blister	462	573	616		
+block	544	558	483		244
+blonde	563	502	608	463	
+blood	571	613	620	467	253
+bloom	426	520	524		403
+blossom	507	559	618	493	
+blouse	562	640	595	530	
+blow	528	397	458	402	
+blue	593	459	569	446	
+bluebell	416	621	605		303
+blunder	475	322	432	408	
+blunderbuss	221	423	358	212	
+blunt	434		404		
+blush	535	465	551	482	378
+boar	455	558	524	385	
+board	546	565	592	389	
+boast	491	295	416		378
+boat	584	637	631	542	
+boating	519	494	533	460	
+boatswain	230	543	343		578
+body	610	568	614	543	267
+boil	533	467	533	439	
+boisterous	368		404		
+bole	114	339	213	166	
+boll	210	350	270	187	
+bolt	466	556	551	400	369
+bomb	566	595	606	497	
+bond	454	403	380		491
+bone	541	588	567	418	
+bonus	539		397		
+book	643	609	591	582	214
+boot	566	595	604	440	251
+booth	444	556	486	408	508
+border	489	444	453		417
+bore	543	344	404	430	
+boredom	527	262	406		
+boring	590		390		
+born	566	336	435	484	
+borne	380	324	346	272	
+bosom	425	552	593		489
+boss	574	552	554		
+botany	459	444	410	435	
+both	598	322	298	320	
+bother	583	267	369		322
+bottle	591	591	619		
+bottom	587		436		
+boulder	495	597	614	551	
+boundary	481	411	435		472
+bouquet	473	566	599	423	
+bourbon	531	570	606	465	
+bow	489	572	546	448	271
+bowl	557	575	579	447	256
+box	599	597	591	482	192
+boy	606	609	618	543	
+bra	575	629	624	515	
+bracelet	547	602	606	461	
+brain	580	556	572	494	347
+brake	551	526	511	437	
+bramble	295	378	377	298	
+branch	529	583	548		303
+brandy	542	595	590	519	
+brass	469	577	524	377	414
+brassiere	503	592	635		
+brat	507	501	536	469	
+brave	544	283	427	511	
+bravery	466	261	450		
+brawl	418	456	485	446	494
+bread	611	622	619	484	
+break	529	360	398	390	
+breakfast	657	576	586		233
+breast	555	580	597	498	
+breath	572	479	480	445	331
+bred	423	308	387	387	
+breeze	511	500	560		351
+bribe	531	367	425	436	
+brick	529	610	574	398	261
+bridge	561	623	608		289
+brief	523	361	344	408	
+brigand	270	464	332		589
+bright	589	473	489	432	
+brilliant	493	350	482	490	
+brim	430	509	510		394
+brisket	364	456	370	292	
+bristle	461	558	562		383
+broad	523	399	463	472	
+brocade	298	540	416		592
+broil	502	448	515	407	
+broke	528	394	485	432	
+broken	576	383	469	490	
+bronze	398	568	588		
+brook	384	611	597		375
+broom	547	613	608	444	
+brother	598	585	589	569	219
+brownie	386	535	553		381
+brush	579	589	570	452	214
+brut	343	430	392	356	
+brutal	446	402	427	467	
+brutality	454	344	489		
+brute	430	462	481	422	
+bubal	79	258	233	174	
+bubble	508	563	604	415	272
+bucket	506	594	586	402	
+buckle	474	568	587	366	
+bud	465	549	508	375	331
+budget	517	366	394		497
+buffer	402	509	459		553
+buffoon	262	418	393	275	
+build	554	402	399	434	
+builder	554	532	551		
+building	607	589	578	503	300
+bulky	471		458		
+bulldog	370	626	583		394
+bullet	517	595	611		
+bump	541	525	476	421	
+bunch	503	452	486	448	317
+bungalow	421	564	543	425	
+bunny	471		585		
+buoyant	321		426		
+burden	446	391	499		474
+bureau	395	547	497		461
+burgher	133		317		
+burial	400	477	544		446
+burlap	412	583	488	352	
+burn	548	490	541	400	217
+burner	518	500	488	377	
+burro	475	618	638	432	
+burrow	421	426	444	352	
+bury	479	372	401	380	
+bush	532	585	549	382	256
+business	563	389	441	461	436
+busy	600	329	403	385	
+busybody	393	463	510		
+but	603	227	206	225	
+butcher	473	556	596		
+butler	425		543		
+butter	615	618	603	466	206
+butterfly	481	593	624	424	
+button	573	613	580	387	192
+butyl	147	321	269	193	
+buy	575	370	397	450	
+buyer	487		463		
+by	598	208	229	274	
+byre	151	234	231	172	
+cabbage	504	611	573	397	
+cabin	523	596	582	488	
+cabinet	472	593	524		383
+cable	492	544	469	368	
+cache	259	459	303		614
+cactus	400				
+cafe	531	568	625	479	
+cage	487	593	585	446	300
+cake	594	624	624	473	214
+calculus	364	331	435		689
+calf	511	592	565	415	
+calix	124	320	248	158	
+call	599	389	424	430	225
+calm	547	360	439	469	
+calmness	452	315	437		453
+came	563	265	288	373	
+camel	421	597	561	372	
+camera	550	627	576	472	
+camouflage	341	480	513		
+camp	541	571	588	484	308
+can	620	365	369	327	
+canada	638				
+canal	464	598	588		350
+canary	411	577	533	382	
+cancer	556	615	567	492	
+candid	374		337		
+candidate	488	489	452		578
+candle	544	565	594	393	
+candlelight	439	500	599		419
+candy	559	602	601	503	
+cane	442	590	608		
+cannon	498	604	588	443	
+canoe	441	623	602		394
+canon	424	541	493	410	
+canteen	490	587	540	408	436
+cap	429				
+capable	554		315		
+capacity	512	293	373		
+cape	521	581	566	427	
+capital	538	448	518	436	380
+capitol	529	529	545	487	
+capitulate	311	270	262		647
+capsule	505	540	594	423	
+captain	498	534	497	438	
+captive	415	516	518		
+car	634	622	638	553	197
+carat	383	488	345	313	
+caravan	304	539	562		
+carbohydrate	461	419	461		611
+carbon	470	511	445	352	
+card	543	565	578	447	
+cardinal	451	600	531	400	
+care	563	342	383	455	
+career	589	373	418		514
+carefree	484		446		
+careful	605		346		
+careless	508		361		
+cargo	401		497		
+carnage	298	376	351		628
+carnation	490	625	611	466	
+carol	489	535	499	402	
+carp	439	613	539	372	
+carpet	508	581	538	403	
+carriage	436	576	529		367
+carrot	539	622	577	425	
+carry	554	364	393	436	
+cart	454	576	597		258
+cartilage	396	525	421		592
+case	553	548	517	408	311
+casement	231	545	468		
+cash	592	547	588		
+casket	466	613	588	433	
+casque	265	502	280		611
+cast	495	502	483	385	
+caste	421	368	423	351	
+castle	415				
+castor	365	535	429		453
+casualty	503				
+cat	582	615	617	487	
+catastrophe	428	305	435		525
+caterpillar	457	586	626	387	
+catfish	416	614	544	356	411
+cathedral	440	553	599	448	
+cattle	511	600	619		261
+caucus	320	402	366	311	
+caught	550	340	401	444	
+caul	87	273	188	138	
+cauliflower	462	642	567	390	
+causality	347	381	334		
+cause	557	287	282	367	408
+caustic	307		317		
+cautious	515		363		
+cave	526	592	601	478	
+cavern	400	534	548		433
+cedar	381	608	516		425
+cede	193	239	240	234	
+ceiling	531	606	557	439	
+cell	520	542	590	469	
+cellar	467	572	572	438	361
+cello	295				
+cement	516	646	578	423	
+cent	473	544	518	434	433
+centennial	468	351	421	384	
+center	540	371	459	452	
+century	514	346	395	400	414
+cereal	543	637	576	449	
+cerebrum	381	536	518	353	
+ceremony	501	430	523	505	419
+certificate	488	517	529		439
+chain	513	595	559	461	311
+chair	617	606	610	446	
+chalk	560	634	601	433	
+challenge	515	308	402		456
+chamois	276	488	464	230	
+champion	507	459	508		361
+chance	563	254	354	398	
+channel	482	527	508		411
+chaos	450	299	464		
+chaotic	439	313	434	448	
+chapel	471	587	560	445	361
+character	551	365	372		464
+charity	518	373	445		433
+charlatan	201	407	350	308	
+charm	514	352	455	475	456
+charming	514	386	461	470	
+chart	533	532	531	403	
+charter	402	466	406		
+chasm	270	479	456		
+chassis	327	561	386		589
+chatterbox	439	477	516		314
+cheat	549	329	457	446	
+cheek	533	565	561		267
+cheered	479		424		
+cheerful	537	362	475	500	
+cheery	417		449		
+cheese	588	624	592	502	211
+chemistry	533	374	458	435	
+cherry	514	611	582	497	317
+chest	543	580	556	453	
+chestnut	523	600	602	408	
+chew	570	442	527	474	
+chic	440	454	437	397	
+chicken	544	614	619	462	250
+chief	482	503	545	455	
+child	585	581	619	584	
+childhood	515	335	489		372
+childish	539		417		
+children	608	582	597	608	
+chilly	536	379	460	475	
+chimney	479				
+chin	545	592	608		
+china	507	578	597	474	
+chinchilla	393	558	530	322	
+chink	393	462	429		458
+chipmunk	529	611	609	442	
+chisel	469	597	567	408	
+chloride	391	547	435		
+chlorine	433	591	480		586
+chocolate	560	576	611	477	
+choir	526	567	567	418	
+choose	534	308	299	361	
+chop	487	555	575		317
+choral	411	460	490	337	
+chorus	408		509		
+chow	298	443	326		561
+christmas	611	432	629		
+chrome	385	555	491		528
+chronology	302	266	291		631
+chuckle	505	429	497	528	
+church	560	587	616	520	278
+chute	437	496	467	317	
+cider	507	626	626		431
+cigar	536	580	619	395	
+cigarette	573	607	645	461	
+cinder	382	579	519	379	
+cinnamon	515	599	571	380	
+cinque	161	250	239	205	
+circle	581	515	591	474	214
+circuit	442	493	472		494
+circular	487	404	543	451	
+circumspect	256				
+circumstance	511	250	210		519
+circus	489	535	586	490	
+citation	306	425	386		
+cite	366	337	331	280	
+citizen	535	455	445	473	
+city	616	554	605	560	
+civil	508		317		
+civilization	491	361	437		503
+claim	525	331	321		417
+clam	486	564	541	392	
+clammy	459	393	466	415	
+clamor	357	399	406	392	
+clamour	351	353	362		561
+clang	431	423	445	422	
+clarinet	464	633	593	428	
+clash	488	399	456		422
+clasp	441	498	456		392
+classic	466				
+claw	445	587	600		
+clay	455	606	575		358
+clean	610	392	454	493	
+cleanness	433	373	479		
+clear	576	359	456	455	
+clearance	418	328	319		547
+cleat	333	546	481	303	
+cleaver	357	526	478		561
+clemency	233	264	334		
+clever	515	313	378	402	333
+client	524		443		
+cliff	479	591	599		322
+clinch	474	369	423	381	
+clink	382	456	472		392
+cloak	423	543	518	410	
+clock	608	591	614		
+close	587	391	420		283
+closer	536	323	393	395	
+closet	540	599	525	415	
+cloth	561	580	547	475	
+clothes	652	600	629		194
+clothing	614	570	588		
+cloud	553	554	595	454	
+clove	395	565	446	315	500
+clover	486	554	606	397	
+clown	511	627	589	472	
+club	533	509	522	457	
+clue	533	380	375	444	
+clumsy	512	386	436	430	
+clung	297		354		
+coach	509	561	560	410	314
+coal	513	584	581	377	278
+coarse	506	445	494	463	
+coast	541	562	588	493	
+coat	610	601	572	455	197
+cobweb	379				
+cock	434	611	586		314
+cockpit	481	576	594	346	
+cocktail	511	576	604	488	
+code	464	432	460		
+coffee	625	613	618	440	292
+coffer	279	534	302		603
+coffin	531	595	606	453	
+cognition	432	270	321	379	
+coif	157	421	202		694
+coil	498	490	492	347	
+coin	564	581	603	503	
+coke	585	580	623	447	
+cold	626	457	531	539	183
+collar	509	622	582	400	
+collection	538	403	419		428
+college	620	554	590		
+collegiate	217	379	216		653
+cologne	407	576	586		494
+colonel	482	523	552	367	
+colony	445	511	481	462	
+color	582	467	513	534	
+colouration	310	402	435		561
+column	519	520	491		436
+combination	493	326	326		475
+combine	493	402	359	364	
+combustion	452	462	505		
+come	608	355	322	408	
+comedy	588	365	489		
+comes	636		283		
+comestible	152	321	183		664
+comet	426		521		
+comfort	566	402	421	456	
+comfortable	593		434		
+comforter	392	467	499		
+command	526	377	366	408	
+commander	409	512	478		456
+commence	489				
+commencement	407	293	291		550
+commercial	536	423	460	489	525
+committee	532	498	481		517
+commode	354	482	447	376	
+common	595		276		
+communication	527	399	391		503
+community	499	388	416		522
+compact	518	441	462	452	
+company	573	424	426		436
+comparison	560	311	336		
+compatriot	331	441	405		572
+competence	458	256	339		
+competent	478		295		
+competition	544	342	443		381
+complacent	382	268	365	347	
+complete	605		341		
+complication	480	323	289		528
+compliment	511	302	406	445	506
+composer	448	487	467		461
+composure	458	324	361	382	
+comprehensive	427		278		
+compression	360	356	375		628
+computation	328		329		
+comrade	397	497	515		492
+comradeship	374	315	450		
+concave	370		480		
+conceited	497		410		
+concept	532	264	258		
+concern	519	509	353		444
+concert	520	252	578		386
+conclusion	577	278	345		536
+concrete	528	562	564	427	
+concurrence	314	272	256		644
+condemn	500	314	349	420	
+condescension	331	285	295	300	
+condition	571	303	297		461
+cone	506	573	559		275
+conference	498	417	465	449	539
+confidence	566	270	371		481
+confident	554		390		
+confiscate	456	323	393	407	
+conflict	494	305	432		497
+confusion	554	282	437		472
+congenial	314		352		
+congress	389	384	356		575
+conjugation	340	303	272		633
+conjunction	460	288	361	353	
+connoisseur	354	483	513		
+conquest	441	339	422		
+conscience	536	255	386		503
+conscientious	470		354		
+conscious	571		354		
+consequence	502	260	299		514
+conservation	476	303	391		583
+conservative	545		373		
+consider	562		264		
+considerable	542	302	297	427	
+consideration	500	260	318		494
+consist	556		249		
+consistent	500		298		
+consolation	457	270	335		519
+conspirator	364	464	386		556
+constant	531		290		
+constitution	466	367	395	433	611
+construction	466	464	410		517
+consummation	335	318	324		658
+contact	543	456	449	408	
+contamination	388	341	456		594
+content	553	300	391		389
+contents	566	414	386		
+context	460	314	274		
+continent	459	459	478		453
+continuation	470	288	321		492
+continued	623		281		
+contract	509	467	457	410	
+contraction	454	368	397		592
+contradictory	493		285		
+contribution	505	353	394		
+control	559	311	347		411
+convent	458	537	559	397	
+convention	466	488	502		
+conveyance	384	368	397		622
+convocation	175	258	151		683
+cook	568	502	504	443	
+cookie	585	634	600	502	
+cool	567	364	429	427	
+coolness	451	350	462		428
+cope	516	347	344	423	
+copious	213	273	304	244	
+copper	491	547	548	350	428
+coral	425	572	561	337	434
+cord	477	564	549	381	
+core	459	459	497		344
+cork	544	608	631	429	
+corkscrew	445	614	580		419
+corn	548	576	601	428	
+corner	556	533	556	375	
+cornet	364	527	436	340	
+cornice	252	490	302		653
+corporation	427	361	337		522
+corps	433	438	408	390	
+corpse	406	587	614		
+correspondent	484	441	424		558
+corridor	579	568	553		353
+corse	220	360	183		622
+cost	589	348	401	437	
+costume	456	544	538		392
+cot	391				
+cottage	543	593	607	482	
+cotton	521	608	562	431	306
+couch	521	578	536	473	
+could	622		210		
+coulomb	176	317	257	222	
+council	508	435	405		464
+count	574	351	459	416	
+counterpane	327	505	418		536
+country	592	465	539	595	329
+courage	511	277	440		419
+course	564	389	391	428	
+court	549	509	552	452	
+courteous	515	364	387	467	
+courtship	423	346	520		
+cousin	515	502	478		278
+cover	597	502	443		289
+cow	529	621	632	474	
+cowardice	431	263	344	379	
+cowardly	495	245	378	432	
+cowboy	521				
+cowhide	346	587	528		
+cowl	240	456	337	273	592
+crab	433	626	589		292
+cradle	478	587	592	430	
+craft	487	464	429		422
+crag	245	556	479		
+cranberry	483	596	649	393	
+crane	428	606	562		350
+cranium	313	558	460		
+crank	475	448	524	402	
+craven	288	295	262		608
+crawl	519	408	488	425	
+cream	514	621	557	470	
+creative	513		404		
+creator	431	395	409		
+creature	508	541	492		353
+creeper	390	555	526		431
+crew	442	523	486		366
+crime	537	387	471	482	383
+crisis	521	319	375		
+criterion	349	261	250		
+critical	517		305		
+criticism	518	316	333	432	561
+croak	446	395	445	385	
+crock	356	456	351		517
+crocodile	456	583	601	387	
+crook	467	520	526		374
+crooked	487	387	487	420	
+croquet	418	559	539	348	
+cross	525	514	501	432	
+crow	490	590	578	375	308
+crowd	523	546	548	515	
+crown	531	586	602	463	
+crucifix	416	564	576	431	475
+cruel	521	367	422	487	
+cruiser	490	571	553	468	
+crumb	524	541	497	385	
+crush	480	381	480		339
+crutch	441				
+cry	566	436	478	444	
+crypt	320	573	553		539
+crystal	510	587	579	373	
+cube	502	530	575	417	383
+cucumber	536	653	623	428	
+cue	420	532	448		554
+cuisine	335	497	541		
+cult	437	349	386		586
+culture	523	351	339	437	
+cunning	417	265	380		426
+cup	595	539	558	433	
+curb	526	577	556	403	
+cure	526	352	397	477	350
+curfew	475	426	471	425	
+curiosity	515	303	394		389
+curler	501	600	521	387	
+current	509		497		
+curse	484	363	415	448	450
+curve	521	447	520	367	364
+custard	460	549	515	313	
+custom	538	323	364	438	
+customary	452		290		
+customer	549	505	488		369
+cut	581	430	460	431	
+cuttle	184	417	213		600
+cylix	117	335	204	156	
+cymbal	375	513	494	308	
+cynic	465	379	377		619
+cynical	364		380		
+cyst	335	570	510		628
+dad	646	603	626		125
+daffodil	404	595	611		
+dagger	480	576	581	440	
+dairy	467	565	537		331
+dais	168	333	276	203	
+daisy	519	613	573	431	
+dalliance	115	320	297		
+damage	558	406	443		358
+daman	113	284	190	163	
+dame	472	528	530	498	
+damsel	292	544	551		406
+dance	550	502	510	477	
+dancer	535	558	551	458	
+dancing	579		538		
+dandelion	513	558	579	422	
+dandruff	495	546	554	385	
+danger	557	338	505	498	300
+dare	510	291	373	395	
+dark	598	497	586	548	
+darkness	578	419	622		242
+dart	496	608	597		392
+date	613	514	501	502	314
+dawn	507	501	586	452	350
+day	595	477	526	505	
+daybreak	387	511	608		
+daylight	547	492	575		311
+dead	581	429	520	497	
+deal	522	342	383	432	381
+dear	536	326	374	438	
+death	581	365	498	510	
+debacle	169	370	284	243	
+debate	459	375	397		564
+debonair	315		417		
+debt	494	416	384	437	
+debut	351	303	316		564
+decay	513	370	450	469	
+deceit	440	257	338	327	519
+decision	601	297	340		437
+deck	507	566	539	445	347
+decomposition	417	376	448		589
+decorate	489	423	508	400	
+decorated	491		439		
+decoration	517	507	526		
+decoy	434	486	453	392	
+decree	376	385	341		583
+deduction	492	327	316		
+deed	475	410	390		
+deep	542	400	498	464	
+deer	509	631	624	477	281
+deface	490	397	425	440	
+defeat	519	363	402	473	
+defence	479	346	413		447
+defiance	432	275	383		539
+defiant	419		407		
+deficient	465	329	358	431	
+definition	519	262	224		567
+degraded	496	262	325	424	
+degree	574	406	521		508
+deity	304	305	299		622
+delegation	412	406	356		611
+deliberate	508		341		
+delicate	556		378		
+delight	510	282	459		414
+delirium	317	318	481		
+deliver	529	393	388	395	
+dell	244	513	397		472
+delta	359	494	499		554
+deluge	308	422	464		
+demeanour	302	257	235		617
+democracy	566	298	364	502	
+demolish	501	370	497	462	
+demon	399	302	474		
+demonstration	537	381	486		506
+denial	407	272	364		503
+dense	524	353	461	425	
+dent	480	517	486		361
+dentist	563	607	622	446	
+department	596	447	426		494
+dependable	531		352		
+depict	441	262	316	372	
+deposit	532	417	413		483
+depressed	547		436		
+depression	541	303	453		550
+deputy	462	455	435		433
+deray	181	268	261	223	
+derby	456	495	495	387	
+derelict	245	506	466		
+derivation	434	242	267		611
+describe	610		315		
+description	556	341	326		469
+design	538	444	407		403
+desire	550		368		
+desk	583	583	574	421	
+desolate	459	325	435	437	
+despair	484	279	388	410	458
+desperation	477	257	389		506
+despise	469	314	450	484	
+despot	313	364	297		650
+destroy	551	367	444	516	
+destroyer	448	513	508	388	
+destruction	488	365	505		497
+destructive	543		426		
+detective	509	505	524		377
+determination	527	243	386		
+determine	539		295		
+detestation	240	253	318		628
+detonation	339	408	443	334	
+develop	558		295		
+development	536	316	356		483
+device	500	444	391	419	472
+devil	474	274	546		
+devotion	438	231	411		
+dew	427	578	559		331
+dexterity	332	280	316		614
+diadem	232	439	281		608
+dial	566	537	541	430	
+diamond	512	610	623	470	339
+dice	487				
+dictation	432	356	432		494
+did	542	235	329	294	
+die	569	358	499	574	
+diet	556	449	486		442
+difference	592	270	293	382	378
+different	558		329		
+diffusion	437	327	376		617
+dignified	477		385		
+dignity	454	280	413		522
+diligent	420		402		
+dim	495	402	450	367	
+dime	586	582	590	472	
+dimension	483	274	355		528
+dimple	442	547	518	317	
+diner	442	515	497		444
+dinner	621	542	570	539	
+dip	466	479	456		331
+direction	562	336	399		381
+dirge	282	403	262		606
+dirt	571	564	547	482	
+dirty	589		485		
+disagreement	489	311	362		503
+disappoint	537	331	351	421	
+disappointed	547	290	384	466	
+disaster	548	405	505		
+disavow	344	282	262	292	
+disc	466	553	575		447
+discharge	414	474	426		531
+discipline	507	277	386		
+disclosure	321	299	277		
+discolor	460	398	428	338	
+discolouration	356	358	370		606
+disconnection	419	350	372	405	
+discord	381	298	343	376	611
+discovery	513	332	401		414
+discretion	409	222	285		
+discriminating	509		337		
+discussion	541	341	381		522
+disease	580	504	487		
+disgrace	488	278	386		422
+dishonesty	475	255	362		431
+disinfectant	499	578	529		433
+dislocation	399	396	418		561
+dismal	411		380		
+dismissal	447	300	362		494
+disobedient	501	348	393	400	
+disparagement	242	257	194		680
+disparity	278	270	318		
+display	567	462	453		400
+disposition	458	251	336		
+dispute	520	350	421		522
+disquiet	304	270	305		617
+disruptive	453	318	367	433	
+dissection	431	439	562		606
+distance	594	353	432		344
+distinct	490	247	364	397	
+distinction	492	265	314		511
+distortion	462	365	428	415	
+distraction	509	289	359		
+distress	494	282	443		422
+disturber	431	468	427		
+ditch	511	555	558	416	292
+dive	508	494	586		322
+diver	448				
+diversity	501	268	302	423	
+dividend	387	366	313		580
+diving	506	547	598	433	
+division	518	332	404	403	417
+do	609	276	247	325	
+docile	454	339	384	378	
+dock	483	570	559		367
+doctor	573	575	600	544	
+doe	464	579	532	351	
+does	629		210		
+dog	598	610	636	553	169
+dogma	328	317	327	318	
+dogmatic	320		300		
+doll	503	588	565	449	161
+dollar	611	575	611	492	
+dolt	233	372	259		608
+dome	504	517	557	334	
+domicile	219	456	435		
+domination	417	275	421		558
+done	567	271	346	448	
+donor	479	409	406	393	
+door	630	606	599	487	214
+doorway	532	578	548		353
+dormitory	369	576	575		466
+dot	524	530	556		219
+dotage	180	293	273	190	
+dough	474	627	558	423	369
+doughnut	566	606	599	411	
+dove	415	588	616		
+dowager	268	487	316		631
+down	546	339	459	444	
+downcast	401		376		
+dowry	289	409	422		556
+dozen	568	396	525		319
+drab	443	281	340	397	
+dragon	425				
+drain	510	591	540		303
+drama	534	375	482	492	
+drape	396	532	464		469
+draw	542	442	435	423	
+dread	460	267	378		467
+dream	553	386	485	477	
+dreamer	517	442	507		350
+dreary	506	324	463	452	
+dress	588	595	595	502	222
+dresser	526	560	556	385	
+drill	473	516	571	370	
+drink	628	549	553	488	211
+driver	593	553	567		283
+drizzle	516	558	582	484	
+drop	577	320	417	400	
+dropper	467	492	433	343	
+drove	432	447	353		406
+drug	539	555	564		464
+drum	506	602	599	431	
+drunkard	482		527		
+dry	615		429		
+dryad	180	371	251		681
+dual	463	344	426	385	
+duchess	416	568	525	367	
+duck	529	606	632	473	164
+duct	368				
+duel	439	456	494	356	408
+duke	457	508	480	367	
+dull	570		373		
+dullness	436	308	383		397
+dumb	564	340	397	527	
+dummy	478	551	562		
+dump	504	502	528	433	333
+dungeon	428	562	579	430	
+dunghill	313	576	475		483
+dusk	474	455	575	456	425
+dust	558	550	549	403	
+dusty	537	452	506	444	
+duty	543	322	346	413	
+dweller	432	516	448		
+dwelling	374	523	534		444
+dye	490	542	506	411	392
+dynamic	489		387		
+dynasty	407	406	386	429	
+each	555	268	320	350	
+eager	531	302	401	457	
+eagle	465	616	601	457	
+ear	560	640	597	462	
+earl	358	500	435		464
+early	575		376		
+earn	557	349	437	492	
+earth	580	580	580	515	317
+earthworm	508	606	569	357	
+ease	519	305	327		428
+easel	349	580	532	405	
+east	574	363	497	439	
+easy	607	288	321	445	
+easygoing	525		402		
+eat	529	486	563	500	
+eating	612	485	536	552	
+eaves	367	576	491		506
+eccentric	422		380		
+eccentricity	358	283	401		
+echo	478	415	556		356
+economy	580	284	357		
+edge	569	465	495	402	308
+edict	279	349	297		628
+edifice	330	566	474		
+edition	499	439	373		
+education	585	320	416		408
+educator	380	422	370		542
+eel	433	634	552	350	
+eerie	467	295	423	460	
+effect	602	295	280		414
+efficient	503		334		
+effort	585	296	367		411
+egg	608	613	599	423	186
+ego	497	261	334		
+egotistical	366		380		
+egress	119		251		
+eight	613	368	501	365	211
+elaboration	403	288	325	411	578
+elbow	564	607	602		237
+election	535	343	435		528
+electricity	601	426	486		400
+elegant	484	309	408	442	
+elephant	459	628	616	440	222
+elf	355	437	543		272
+elimination	441	305	375		547
+ellipse	437				
+elm	456	579	550	392	367
+elopement	356	320	453		600
+else	565	222	208	269	
+emanation	261	282	270		661
+emancipation	388	302	364	444	661
+embellishment	317	371	275		633
+embezzlement	360	335	355		
+embrace	433	449	597		492
+embryo	356				
+emerald	457	613	602	428	
+emergence	459	346	387	350	
+emergency	558	334	487		381
+emission	446	397	416	381	
+emotion	549	260	478		492
+emotional	566		453		
+emperor	379	527	502		440
+emphatic	417		307		
+empire	479	429	470	397	
+employment	531	424	435		492
+emporium	179	474	336		
+empty	556	374	479	480	
+emulsion	428	502	451		542
+enamel	476	533	451	323	
+encephalon	87	472	277		
+enchanter	320	394	378		533
+encore	310	372	419		
+encounter	463	316	370		522
+end	592	320	462	498	
+endeavour	399	280	310		531
+endosperm	309	490	324		697
+enemy	523	434	497		367
+energetic	503		422		
+engagement	535	362	474		
+engine	543	586	595	490	
+engineer	514	531	495	430	449
+enigma	290	242	259		649
+enlightenment	395	260	335		592
+enough	545	246	345	359	
+ensemble	366	466	419		578
+entering	540		390		
+enterprise	407	331	319		558
+enterprising	429		307		
+entertain	537	402	435	473	
+enthusiasm	506	266	464		522
+enthusiastic	522		404		
+entire	531		310		
+entrance	555	484	493	467	372
+entree	441	418	413	367	
+entry	492		356		
+enunciation	238	252	216		678
+envelope	542	579	554	348	
+envious	470		361		
+envy	511	265	375		431
+epicure	246	378	280		660
+episode	431	391	370		
+epistle	287	501	437		
+epitaph	348	449	418		614
+equal	591		321		
+equality	528	342	346	443	
+equanimity	214	232	153		678
+equipment	543	532	410		447
+equity	319	303	281		
+errand	441	411	440		
+error	542	373	408		425
+erupt	466		460		
+escape	524	341	459		353
+essay	578	527	564		450
+essence	384	243	289		
+essential	546		268		
+establishment	486	391	389		526
+estate	498	541	474	495	
+estimate	505	293	305		503
+eternal	500	214	403	455	
+eternity	513	302	399	474	
+ether	405	511	436	293	625
+ethical	379		278		
+etiquette	332	252	388		619
+euphemism	195				
+evacuation	378	320	405		550
+evaluate	502	388	340	372	
+evangelist	318	500	456		631
+even	576	283	338	411	
+evening	630	439	559		303
+event	574	379	334		
+ever	557	299	273	317	
+evergreen	399	555	554		422
+every	597	264	267	390	
+evidence	504	340	356		480
+evil	538		434		
+evolution	523	304	402	451	
+ewe	341	538	481	278	378
+exact	606		288		
+exacting	409		295		
+exactitude	253	250	298	265	
+examination	570	464	575		458
+examine	549		341		
+exasperation	419	237	375		578
+excellent	587		366		
+exception	512	260	232		472
+excessive	493		317		
+exchange	504	356	394		443
+excise	356	271	287	307	
+excitable	445		397		
+excitement	535	282	452		400
+exciting	576		407		
+exclusion	354	293	326		
+excuse	552	316	310	357	356
+executioner	418				
+executive	458	477	513		547
+exertion	393	324	445		
+exhaust	510	467	520		429
+exhaustion	520	358	505		
+exhibit	464		376		
+exit	616		512		
+expanse	433	388	497		547
+expansion	515	325	417	444	
+expedition	435	403	472		467
+expensive	633		402		
+experience	604	275	367		464
+explanation	553	308	329		444
+exploration	467	356	451		423
+expose	446		346		
+exposure	538	339	431	405	
+express	530	402	456		467
+expression	527	297	386		
+expulsion	403	359	363	373	
+extensive	468		307		
+extent	510	267	248		489
+exterior	454	474	397		486
+extermination	346	340	422		
+extra	570	262	337		331
+extravagant	484	343	417	456	
+extreme	557	265	332		458
+exuberant	374		402		
+eye	611	634	603	483	167
+eyrie	270	529	408		556
+fable	477	459	477	443	
+fabric	477	565	544		
+face	612	599	581	488	166
+facility	483	279	320		
+fact	593	332	302	463	
+factor	499	328	269		474
+factory	562	586	608		
+fail	568	327	380	440	
+failing	511	297	419	470	
+failure	542	282	437		439
+faint	516	462	466	358	
+fair	573	413	439	474	
+fairy	471	433	536	393	242
+falconer	168	522	422		
+fall	572	409	547	467	
+fallacy	379	258	287		
+falling	527		442		
+false	603		315		
+falsehood	348	260	326		531
+family	607	525	577		280
+famine	444				
+famous	556		376		
+fan	520	557	582	425	
+fancy	537		384		
+fane	225	284	205		639
+fang	450	574	559	405	
+fantasy	499	295	455	521	
+far	587	302	411	463	
+fare	482	413	384	361	
+farewell	436	361	466		406
+farm	564	565	560	532	
+farmyard	443	608	594		261
+farther	539	326	343	368	
+farthing	226	361	381	232	
+fashion	548	356	474	505	467
+fast	600	304	411	523	
+faster	580	344	362	442	
+fat	609	540	574		236
+fate	502	255	343	472	
+father	591	594	646	554	
+fatherland	286	361	378		531
+fatigue	499	416	502		
+fault	541	315	323	372	
+favourite	594	313	378		303
+fawn	433	581	565	377	394
+faze	323	308	295	295	
+fear	569	326	394	538	
+feast	457	542	610		351
+feat	449	345	365	377	
+feather	485				
+fee	515	441	440		444
+feeble	421				
+feel	588	324	363	502	
+feeling	612	262	370		339
+feet	611	642	597	463	
+feint	234	288	313	228	
+feline	277	483	471		
+fell	546	407	431	403	
+fellow	475	502	435		378
+felt	504	437	483	387	
+fence	526	597	611	431	
+fencing	395	525	518		497
+ferry	458	580	592	392	378
+fertile	502	430	446	442	
+fervour	349	308	345		586
+festivity	411	427	520		
+fetish	337	288	342	317	
+fetus	408				
+feudal	373		373		
+feudalism	381	332	409	369	
+fever	454	492	563		358
+few	593	309	333	416	
+fiddle	465	582	555	452	367
+fidgety	449		407		
+fielder	365	509	472		458
+fifteen	539	379	491		289
+fight	561	455	543		261
+figment	408	304	304	365	
+figure	534	472	526	513	
+file	504	480	442	378	
+fill	521	372	415	372	
+filling	562	502	477		347
+film	578	604	562	561	
+filter	489		490		
+filth	492	467	517	477	
+final	574		407		
+finance	515	371	405		522
+find	580	351	370	384	272
+fine	560	328	392	495	
+finish	617	343	437		300
+finished	600		361		
+finite	470	337	365	416	
+fiord	313	574	551		
+fir	407	442	461	348	
+fire	580	595	634	533	
+fireman	504				
+fireplace	529	592	639		
+firewood	444	629	586		331
+firm	567	400	404	465	
+firmament	231	430	443		
+first	590	311	388	429	
+fish	548	597	615	473	
+fisherman	471	567	610		289
+fishing	532	509	599	415	
+fissure	285	477	381		631
+five	553	365	529	392	
+fixed	573		341		
+flag	545	606	607	448	258
+flair	489	335	425	382	
+flame	551	582	598	489	261
+flaming	466		509		
+flannel	499	574	520	402	
+flare	508	467	509	389	
+flash	509	480	528	469	314
+flashlight	499				
+flask	401	595	614		
+flavour	538	449	472		342
+flax	341	495	389	328	
+flea	515	625	606	393	
+flee	486	400	431	376	
+fleece	410	555	547	387	367
+fleet	465	520	510	387	
+flesh	483	597	567		411
+flexibility	455	353	395	425	
+flicker	470	415	506	365	
+flighty	341		347		
+flippant	341		361		
+float	553	451	525	445	
+flock	434	477	516		294
+flood	523	553	598	479	
+floor	551	559	544	402	
+flora	338	557	472		569
+flourish	415	323	391		489
+flow	518	311	417	419	
+flower	566	584	618	529	
+flue	301	500	400		561
+flush	507	447	530	382	
+flute	496	587	581	436	
+flutter	394	386	459		463
+fly	537	525	582	460	
+flyer	433	467	478		406
+foal	338	420	448	353	
+foam	462	577	600		
+foe	344	424	435		453
+fog	546	556	606	485	
+foible	162	336	279		
+foil	516	509	495	398	
+following	551	306	349	408	394
+folly	414	304	326	321	
+fond	556		363		
+font	338	568	497		547
+food	579	597	539	588	
+fool	551	354	436	468	
+foolish	544	244	313	471	
+foot	583	558	597	435	
+football	565	584	597	488	233
+footstep	517	470	526		317
+footwear	464	567	583		
+for	603	245	216	244	
+forbade	349		320		
+forbid	505	348	367	454	
+force	552	331	437		372
+forceps	402	585	553	366	
+fore	414	300	340	308	
+forearm	474	608	529		436
+forecast	524	308	435	444	
+forehead	521	590	596		
+foreign	539		404		
+foreigner	499	492	516		447
+forelock	353	565	421		542
+forest	513	609	633	520	297
+forethought	331	254	308		
+forfeit	380	295	310		533
+forgetful	551		354		
+fork	584	592	598	412	225
+form	553	438	452	389	383
+formaldehyde	363	538	460	308	
+format	493				
+formation	471	381	409		
+former	523		283		
+fort	418	580	559		328
+forth	474	322	336	295	
+fortification	356	459	426		561
+fortune	497	364	459		375
+forward	596		329		
+foul	483	351	467	407	
+foundation	475	462	429		478
+founder	387		339		
+fountain	469	593	602		389
+four	553	365	491	402	
+fourth	549	307	384	374	
+fowl	452	532	528	459	
+fox	501	605	607	430	283
+foxtrot	403	440	478	342	
+frail	459	383	430	411	
+frame	494	562	508		394
+franc	388	479	426	339	
+franchise	313	360	309		650
+frank	500	401	419	356	
+frantic	456		400		
+fraternal	416	349	376	355	
+fraternity	510	429	508	407	
+fraud	447	304	381	410	519
+free	607	328	397	528	
+freedom	568	277	437	515	425
+freely	586		354		
+freeze	563	480	521	393	
+freight	425	511	465	380	542
+frenzy	409	303	450		506
+fresh	576		453		
+friar	343	543	497		483
+friction	499	414	445		
+friend	603	450	587	538	
+friendly	604		439		
+friendship	567	335	535		383
+frieze	296	324	315	195	
+frigid	466	411	463	445	
+frill	379	523	497		383
+frivolous	403		378		
+frock	323	481	403	275	
+frog	507	619	617	466	258
+from	612	197	239	305	
+front	570	424	427	405	
+frontage	329	493	464		
+frost	546	608	595	452	264
+frown	502	454	589	455	
+frugal	314	304	367	333	
+fruit	590	612	587	541	219
+frustrate	529	322	381	423	
+fudge	477	608	567		278
+fuel	534	559	521	459	
+full	594	378	437	448	
+fullness	446	278	364		453
+fun	621	295	515		
+function	518	343	294		511
+functional	508	272	288	394	
+functionary	330	304	263	371	
+funny	617		468		
+fur	530	601	588	454	
+furnace	406	600	586		428
+furniture	580	583	588		
+further	578		300		
+fury	443	305	462		417
+fuse	449	500	479	390	
+fuselage	289	483	402	280	
+fussy	441		400		
+future	612	311	413		414
+fuzzy	482	450	519	438	
+gabardine	277	562	402		528
+gable	355	449	424	305	
+gadfly	158	520	401		
+gadid	87	229	195	150	
+gaiety	464	275	546		
+gain	543	346	307	390	389
+gait	369	381	377	328	
+galaxy	423	465	575		
+gallant	429	240	447	418	
+gallery	479	569	566	420	442
+gallon	519	488	525	394	
+game	574	477	521	503	242
+gang	515	492	535		336
+garbage	554	572	596	525	
+garden	567	602	635	551	186
+gardenia	472	576	564	419	
+garlic	509	636	565	430	
+garment	440	552	507	503	453
+garret	176	538	429		
+gas	558	554	532	438	339
+gasket	428	525	487	305	
+gasp	457	409	491		367
+gate	540	573	545	444	
+gaudy	380		446		
+gauntlet	269	538	450	257	511
+gavel	383	558	539	394	
+gear	437				
+geese	421	597	603		314
+gem	457	573	572	442	
+gender	450	408	376	405	
+general	568	408	491	480	
+generation	520	320	362		489
+generous	538	260	348	467	
+genius	476	342	456		480
+gentle	570	322	422	518	
+gentleman	537	516	559	470	347
+genuine	503	295	378	485	
+geographical	501	355	400	421	
+geography	495	338	470		450
+germ	523	464	442	485	319
+gesture	477	403	432		494
+get	604	290	264	318	
+ghost	505	379	552	436	
+giant	469	515	562		256
+giddy	338		451		
+gift	566	533	553	515	
+gig	425	525	437		564
+gilt	316	413	390	290	
+gin	521	639	555	525	
+ginger	455	522	430	333	
+gingerbread	427	623	572		300
+gingham	203	540	523		
+giraffe	381				
+girdle	488	570	559	400	
+girl	645	607	634	587	183
+gist	322	273	262	253	
+give	595	326	383	465	
+giver	416	432	378		392
+glacier	409	590	580		
+glad	564	318	445	516	
+glare	458	439	536		444
+glass	611	635	585	494	
+gleam	456	391	511		403
+glimpse	469	372	422		450
+glitter	440	420	503	422	
+globe	477	535	583	452	364
+gloom	475	399	429	450	
+gloomy	487		436		
+glory	493	304	389	415	
+glove	575	607	596	490	228
+glum	354		383		
+glut	353	394	334		550
+glutton	430	498	548	479	
+gnat	440	529	550	338	
+gnu	226	474	346	205	
+go	618	337	364	430	
+goal	554	482	556		294
+goat	469	636	585	402	
+goblet	306	592	577		
+god	567	365	461	547	
+goddess	372	334	515		
+godhead	272	358	324		614
+gold	550	576	594	456	
+golden	489		562		
+golf	503	540	616		364
+gondola	291	606	572		508
+gone	546	321	313	319	
+good	621	297	374	555	
+good-natured	517		434		
+goodness	509	275	416		314
+goof	513	348	360	466	
+goral	103	311	206	153	
+gore	322	448	429		547
+gorilla	554	620	634	469	
+gospel	437	403	440		444
+got	565	252	286	352	
+government	594	426	486		453
+gown	515	586	578	487	
+grace	478	314	441	389	
+graceful	513	321	483	462	
+gracious	433		397		
+grade	533	338	397		417
+graduate	520	455	516		592
+graduation	568	416	577		
+graft	423	372	404	368	
+gramercy	159	279	148		683
+grammar	531	402	392	462	
+grandfather	471	565	564		214
+grandmother	522	579	609		208
+granny	471		546		
+granular	423	450	504	313	
+grape	532	611	591	403	297
+graph	524	553	535	385	
+graphic	368		352		
+graphite	335	562	443		586
+grass	587	599	602	512	
+grasshopper	507	660	630	455	
+grate	431	432	424	302	
+gratitude	458	239	396		
+grave	501	535	619	485	339
+gravel	502	587	569	395	
+gravity	493	302	388		
+gravy	522	606	594		269
+gray	531	471	541	437	
+graze	453	409	470	370	
+great	588	311	390	487	
+greatly	570		295		
+greed	494	262	420		294
+greedily	431		373		
+greedy	509	360	427	461	
+green	583	460	609	502	225
+greenness	369	376	540		375
+gregarious	242		334		
+grief	505	303	480	489	450
+grievance	434	295	340		542
+grind	486	441	485	400	
+grip	523	490	540		325
+grisly	395	346	437	369	
+grizzly	471	443	523	389	
+groan	508	432	506	439	342
+grocer	519	576	551	421	
+groin	486	506	516	370	
+ground	574	558	513	442	258
+group	553	451	467	474	
+grove	374	538	470		483
+grow	562	409	371	505	
+grown	552	356	292	388	
+growth	560	381	426		378
+grudge	510	313	373	456	
+guard	504	517	530	485	344
+guess	585	247	330		292
+guest	560	519	497	502	
+guide	524	468	482	454	367
+guilt	559	299	381	421	
+guitar	550				
+gulf	406	449	491		456
+gullet	278	537	409	315	
+gullible	496		359		
+gun	519	612	613	505	228
+gush	383	396	483		453
+gust	415		456		
+gutter	467	498	506	327	
+guy	550	565	551		358
+gybe	136	242	190	167	
+gym	547	597	613	462	
+gymnastics	437	468	562		
+habit	583	358	418		350
+habitation	394	531	466		
+habitual	427		334		
+had	570	253	296	323	
+haddock	475	636	532		389
+hail	440	502	477	361	354
+hailstone	448	576	562	324	
+hair	575	583	580	455	
+hairpin	441	584	569	389	
+hale	370	331	376	267	
+half	610	389	458	408	267
+hall	592	565	559	421	283
+halt	465	345	417	431	
+halter	374	550	453		511
+halve	459	371	425	366	
+ham	536	554	570	430	
+hamlet	396	541	565		
+hammer	515	605	618	435	278
+hamster	467	599	581	418	
+hand	601	604	598	487	
+handful	548		490		
+handkerchief	551	618	583		289
+handmaid	277	505	397		508
+hang	514	397	537	428	
+hank	290	472	313		583
+haphazard	413		344		
+happily	550		410		
+happiness	581	295	519	589	333
+happy	621	355	511	568	
+harbor	448		579		
+harbour	512	603	597		319
+hard	595	425	460	497	
+hardly	500	223	256	300	
+hardship	480	327	427		
+hardware	496	560	576	434	
+hardwood	433	567	557		
+hare	460	615	577	407	281
+harem	377	518	523	413	
+harm	536	244	362		306
+harmony	534	372	423	449	
+harness	421	563	513	308	458
+harp	430	591	621		
+harpoon	423	592	531	356	
+harpsichord	301	623	537		511
+harsh	509	359	379	407	
+harvest	466	535	562		322
+has	585	267	271	283	
+haste	409	303	416		434
+hasty	494	290	380	446	
+hat	580	601	562	478	
+hatchet	467	607	527	397	
+hate	552	335	462	517	278
+hatred	544	239	417		
+haul	454	369	406	423	456
+have	597	251	271	331	
+havoc	462	338	505		469
+hawk	504	623	591	467	
+hay	486	623	597		297
+hazard	506	342	394	513	
+haze	484	509	521	423	
+he	604	399	452	448	
+head	611	603	593	505	181
+headquarters	429	525	499		
+headstrong	427		393		
+heal	536	417	438	465	
+health	577	372	432	503	400
+heap	519	485	494		319
+hear	602	394	425	461	
+hearing	576	369	401		
+heart	578	605	617	538	281
+heartless	529	304	373	474	
+heat	580	472	507	468	278
+heaven	536	305	448		272
+heavy	581	413	495	472	
+hectic	387		390		
+hedge	487	615	583		306
+heel	524	579	597	408	
+height	590	376	472		294
+heir	453	384	394	372	
+hell	564	355	519	487	314
+helmet	528	602	620	436	
+help	594	320	464	503	222
+helpful	542		346		
+hen	461	631	597		219
+henchman	273	503	447	317	578
+her	569	419	464	507	
+herb	514	558	502	445	
+herd	436	565	548		325
+herdsman	356	543	500		458
+here	599	285	278	303	
+heredity	507	330	383		
+heresy	334	270	329		628
+hermit	407	508	537	395	
+hero	510	428	483	477	361
+heroin	514	638	551	523	
+heroism	438	283	432		
+herring	425	617	524	361	397
+hesitant	450		368		
+hesitate	545		354		
+hesitation	484	257	332		523
+hexagon	387	559	527	390	
+hidden	523		354		
+hide	515	451	430	388	256
+hierarchy	409	333	435	438	633
+high	612	371	463	521	
+higher	574	324	464	518	
+highway	488	575	581	489	436
+hill	585	588	607		256
+him	613	368	421	388	
+himself	569	285	317	365	
+hind	416	474	424		469
+hindrance	340	329	347		
+hint	555	312	343		408
+his	614	320	337	423	
+history	564	328	405		369
+hive	386	583	554		319
+hoarse	451	382	403	321	
+hobby	518	449	494		361
+hockey	514	535	593	394	
+hoe	489	537	525	356	
+hog	528	581	527	452	
+hold	596	416	416	472	267
+hole	545	485	527	452	
+holiday	585	439	629		258
+hollow	520		478		
+home	626	539	599	568	233
+homicide	429	385	432		
+honest	607		366		
+honesty	578	278	386	490	
+honey	533	611	608	497	286
+honeycomb	405	562	593		
+honeymoon	541	515	563	537	
+honour	523	258	363		439
+hood	510	547	558	430	
+hoof	401	596	598		306
+hook	497	525	541	345	
+hop	432	494	554		289
+hope	561	261	421	493	
+horizontal	528	404	521	403	
+horn	498	618	566	423	308
+horror	501	341	545		372
+horse	560	613	624	471	
+horsehair	338	581	549		
+horseshoe	419				
+hose	449	596	572		314
+hospital	548	584	602	503	319
+hostage	448	526	536	438	
+hostile	493		460		
+hostility	472	277	437		
+hot	607	507	551	526	
+hotel	565	591	597	454	308
+hound	433	583	596		
+hour	608	375	408	492	
+house	600	608	606	506	
+household	504	462	502		414
+how	593	195	230	321	
+however	552	186	247	287	
+howl	447	434	536		269
+howler	359	366	353		478
+hue	404	388	399	402	544
+human	596	583	543		369
+humane	508	332	383	452	
+humanity	526	381	442	498	
+humankind	351	426	426		514
+humble	519	231	377	452	
+humiliation	501	338	352	420	
+humming	509		453		
+humorous	550		441		
+humour	555	309	462		417
+hump	439	507	515	433	369
+hunger	584	410	526	506	275
+hungry	591	439	503	490	
+hunt	523	416	527	457	
+hunter	428	535	564		342
+hurdle	437	572	600		
+hurled	379		441		
+hurricane	471	576	608	493	
+hurt	579	368	465	530	219
+husband	557	549	537	492	
+hush	415	396	467		246
+hut	486	589	560	415	
+huzza	131	349	156		667
+hybrid	358	344	370	303	
+hygiene	493	349	459		481
+hymn	434	502	431	400	
+hypnotic	467	320	367	345	
+hypothesis	459	261	315		644
+hyssop	81		212		
+i	628	483	465	506	
+ice	564	621	635		261
+iceberg	406				
+icicle	485	569	526	353	
+idea	585	259	319	495	
+ideal	521	253	331	412	461
+idealistic	494		366		
+identification	451	285	345		528
+idiom	420	360	341		
+idle	497	318	444	412	
+idleness	414	242	332		503
+if	607	204	228	278	
+ignition	483	438	466	382	500
+ignorance	558	249	386		
+ignore	514	320	400	400	
+illiteracy	413	252	348		578
+illusion	464	249	396		542
+imagination	570	274	407	480	408
+imaginative	498		383		
+imitate	504	348	436	448	
+imitator	383	419	383		503
+immature	558		439		
+immense	472		436		
+immensity	388	262	402		567
+immortality	424	209	348		592
+immunity	431	293	367		589
+impact	464	379	456		
+impartial	451	309	305	400	
+impatience	530	257	413		425
+impediment	364	358	348		619
+imperfection	414	282	391		531
+impersonation	414	331	375		522
+impetuous	356		329		
+impetus	353	278	272		644
+import	511	320	361	402	
+importance	575	244	347		406
+important	624		341		
+impossibility	547	290	347	428	
+impossible	565	198	302		358
+impotency	397	328	403	420	
+impression	554	288	313		486
+imprint	439	421	332		542
+impropriety	269	259	280	298	
+improve	578		307		
+improvement	564	326	332		442
+impudent	374		334		
+impulse	474	271	396		
+impulsive	489		376		
+impunity	254	242	183		664
+in	616	278	334	413	
+inaccurate	497		290		
+inaction	327	297	270		589
+inadequate	497	274	356	437	
+inanimate	411	338	348	400	
+inanity	137	289	250		
+inauguration	311	305	324		639
+incantation	257	346	318		656
+incapable	485	317	337	424	
+incense	504	499	555	352	
+inch	583	451	497	444	
+incident	497	340	344		458
+incise	345	339	371	280	
+inclemency	172	298	344		
+incline	467	376	429		500
+income	521	429	475		506
+incompetent	503	248	359	416	
+incongruity	306	207	210		672
+incorrect	564		356		
+increase	590	315	356		419
+incredulity	351	237	297		656
+increment	262	322	313		
+incursion	277	275	164		664
+indecisive	438		327		
+independence	543	242	440		522
+independent	523		361		
+indian	546	622	580	524	
+indication	500	282	340		481
+indifferent	502	253	290	387	
+indigenous	330	275	264		658
+indiscretion	384	250	305		631
+individual	586	474	440		454
+indolence	283	211	227		651
+induce	448		300		
+inducement	323	288	336		
+indulgent	413	272	317	367	
+industrious	458		404		
+industry	559	479	499		492
+inebriety	164	353	383		
+inefficiency	465	225	316		560
+inexperience	473	247	305		536
+infallibility	332	225	275		639
+infant	513	579	600		
+infantile	407		422		
+infantry	351	530	483		475
+infection	471	468	487		
+inferior	547	311	379	487	
+inferno	401	487	572		525
+infinite	514	267	401	466	
+infinity	485	204	469		575
+infirmary	437	557	546		
+influence	539	280	270		542
+information	590	388	364		397
+infringement	361	262	278		633
+ingratitude	366	250	336		
+inhabitant	469	508	431		469
+inhale	516	417	461	402	
+inhibition	476	262	383		617
+initiation	389	272	370		597
+initiative	480		298		
+injury	568	497	551		
+ink	542	608	589	415	
+inn	440	592	578		344
+innate	451	308	301	290	
+innocence	522	247	383		478
+inoculation	364	470	513		531
+inquiry	485	358	321		483
+inquisitive	413		354		
+insect	542	593	586	497	283
+insecure	501		373		
+inside	611		371		
+insight	462	270	329		546
+insincere	479		337		
+insistence	411	262	324		556
+insolence	412	248	407		511
+insolent	388	311	357	367	
+inspired	483		348		
+instance	501	284	250		471
+instinct	528	311	358		489
+institute	505	499	485	445	
+institution	492	442	449	520	553
+instruction	552				
+instructor	531	558	551		
+instrument	553	543	521	528	
+insufficiency	385	257	253		589
+insult	552	375	477	490	
+insurance	484	315	365		508
+integer	450				
+integrity	481	247	379	421	
+intellect	507	254	336		
+intelligence	570	275	383		458
+intemperance	236	248	262		651
+intense	490	361	340	432	
+intention	525	285	286		481
+interest	572	305	359	427	411
+interesting	568		359		
+interim	309	310	261		
+interior	456	434	424		481
+intermission	386	333	402		522
+interposition	302	257	202		642
+interruption	546	338	359		442
+interview	520	420	499		494
+intimate	508	281	495	474	
+intimation	371	311	345		608
+into	584	306	259	258	
+intoxication	378	373	570		597
+introduction	566	341	356		481
+introductory	474		281		
+invader	402	485	419		439
+invention	489	388	408		406
+investigation	501	351	397		486
+invitation	557	439	513		361
+invoice	434	538	510		
+involved	586		363		
+iodine	396	576	508		558
+ion	380		348		
+iota	339	275	322	316	
+iris	493	589	606	439	
+iron	555	584	561	388	281
+irony	458	243	293		606
+irregularity	431	270	353		564
+irresistible	554		441		
+irrigation	399	452	456		564
+irritable	501		378		
+irritation	470	305	448		508
+is	627	223	230	318	
+island	507	596	643		289
+islander	429	526	497	413	
+isle	471	530	520	395	
+issue	525	338	315		472
+it	625	271	265	363	
+itch	526	488	486	442	
+item	545	436	369	398	406
+its	547	209	229	279	
+ivory	512	571	529	375	
+ivy	479	567	551	397	
+jack	472	552	460	340	414
+jacket	596	635	611	564	
+jade	359	570	459		572
+jagged	470	444	512	428	
+jail	539	590	608	506	
+jam	529	563	569	448	
+jamb	243	326	276	205	
+jangle	378	373	392	290	
+janitor	463	532	508		381
+jar	564	595	571	426	242
+jargon	413	352	386	384	
+jaw	529	617	573	418	361
+jealous	519		446		
+jealousy	500	250	475		
+jeep	564	622	659	477	
+jeer	378	338	430		486
+jelly	521	560	590	393	
+jeopardy	352	266	344		
+jerid	136	252	228	168	
+jerk	452	441	479	468	400
+jersey	559	621	572		306
+jet	583	580	585	513	
+jewel	519	594	621	502	292
+jib	245				
+jibe	215	337	314	251	
+jingle	409	437	497		386
+jitterbug	440	472	473	341	
+job	578	432	470	503	
+jobber	230	449	226		639
+jockey	443	557	606	384	
+jog	531	464	504	432	
+join	544	292	340	464	
+joint	527				
+joke	580	388	483	484	289
+jolt	424	424	426		431
+journal	486	563	509	423	447
+joviality	250	275	513		
+joy	545	300	533	567	342
+joyful	538		473		
+jubilant	428	345	470	481	
+judge	539	506	558	460	
+judgement	506	260	333		497
+judicious	384		324		
+jug	498				
+juggler	425	547	553	349	
+juice	567	599	593	410	250
+jump	551	449	506	466	222
+junction	489	477	502	419	
+jungle	439		555		
+junior	470	384	391		356
+jupon	111	238	240	141	
+jury	498	540	580		
+just	540	257	221	281	
+justice	522	307	379	460	500
+justification	411	219	326		603
+justify	526	289	336	400	
+kabob	337	536	430	300	
+kale	256	558	391		575
+keel	337	515	451		500
+keen	449	336	335	372	
+keep	584	339	284	327	
+keeper	464	459	421		392
+keg	300	586	606		
+kennel	449	611	580		322
+kept	531	264	300	370	
+kerchief	439	583	515		
+kernel	477	559	542	368	
+kerosene	418	597	548	364	
+kettle	551	602	594	450	274
+kevel	112	297	231	197	
+key	603	612	618	430	
+kick	563	485	551		228
+kid	559	536	525	497	
+kill	549	386	481	537	
+kilt	485	609	622		300
+kind	575	323	383	461	
+kindle	457	386	415	338	
+kindness	560	261	438		328
+kine	82	432	264		
+king	522	559	585	495	
+kingdom	513	392	494	472	
+kink	356	421	480		523
+kinsman	309		436		
+kiss	592	564	633	513	
+kite	481	592	624	408	
+kitten	517	612	639	447	219
+knee	599	593	597		231
+knew	557	291	267	305	
+knife	573	612	633	466	
+knight	505	579	608	438	
+knitting	501	583	578		286
+knob	534	586	554	426	
+knocker	352				
+knoll	374	486	444	323	
+know	605	274	278	439	
+knowledge	575	278	348	508	477
+known	545	226	310	353	
+knuckle	491	586	520	337	356
+ku-klux	360				
+labour	559	406	424		506
+labyrinth	313	515	453	318	
+lace	468	545	506	402	
+lack	532	311	302	360	
+lad	490	548	534	427	306
+ladder	507				
+lady	573	564	571	558	231
+lagan	111	246	190	135	
+laid	507	350	493	427	
+lain	342	331	328	249	
+lair	365	475	454	330	
+lake	583	585	616	497	
+lamb	519	633	614	445	186
+lament	390	320	353	327	
+lamp	578	615	575	442	283
+lancer	357	504	413	284	
+land	574	604	566	508	286
+landscape	503	542	608		
+lane	525	537	543	416	261
+lantern	441	630	575	448	
+lap	505	540	531	392	263
+lapel	362				
+larch	406	623	508		406
+lard	458	517	491	357	
+large	634		449		
+lark	436	578	573	379	
+larkspur	209	482	263		622
+last	587	299	367	470	
+latch	432	578	464		386
+late	584	262	387	423	
+lateral	382				
+latest	578		288		
+lathe	295	481	356	246	
+latter	444	280	256		536
+laud	287	294	288	246	
+laugh	594	433	528	528	
+laughter	570	411	613		322
+launder	348		432		
+laundry	502	576	559		367
+law	562	349	409	455	383
+lawful	500		307		
+lawn	534	588	608	460	
+lawyer	520	569	557	457	481
+lax	396	315	363	341	
+lay	566		426		
+lazy	559	354	464	439	
+lead	526	543	488	400	400
+leader	559	487	502		353
+leaf	556	593	608	437	
+leaflet	433	570	534		
+leak	514	472	545		336
+leal	129	266	280	188	
+lean	549	395	472	477	
+leap	539	389	494	510	
+learn	552	370	361	433	
+learning	565	303	370		322
+lease	504	371	426	377	
+least	529	275	302	313	
+leather	571	575	586	434	
+lecture	624	451	564		536
+lecturer	574	561	551		
+led	526	370	394	356	
+leek	431	621	540		389
+lees	232	306	271	203	
+left	592	341	383	315	
+leg	589	626	601	503	
+legality	458	302	310	421	572
+legendary	466	272	413	402	
+leghorn	223	472	262		625
+legislation	466	397	367		
+legitimate	487	265	321	420	
+legume	258		473		
+lemon	518	608	632	470	280
+lemonade	522	615	606	458	
+lend	566		327		
+length	591	365	395		322
+lenient	473	285	375	407	
+lens	519	573	556	385	475
+leopard	431	595	635		
+less	541	266	286	305	
+lessen	457	287	251	358	
+lesson	559	404	446	489	272
+letter	610	577	595	433	256
+lettuce	565	579	608	423	
+level	504	422	385	403	
+lever	518	572	515	411	
+levity	314	297	321		631
+lewd	290		324		
+liar	534	409	425	428	308
+liberty	467	302	392	457	528
+library	580	564	587	453	
+lice	397	543	532	386	
+lichen	365	547	404	292	
+lie	548	357	385	447	250
+lien	204	332	317	171	
+lieutenant	436	560	512	463	461
+life	598	361	482	533	
+lift	555	461	482	415	311
+light	575	550	542	533	
+lighter	538	400	458	400	
+lighthouse	410				
+lightning	465	525	599		331
+like	610	286	352	516	
+likeable	542		383		
+liken	385	322	322	300	
+lily	437	609	541	417	317
+limb	526	590	580	456	
+lime	447	590	563	400	378
+limelight	384	379	480	370	
+limited	511		281		
+limn	123	275	206	127	
+limousine	505	624	595	505	
+limp	494	481	512	400	
+line	591	477	491	463	275
+linen	515	581	551	415	386
+link	474	488	481		
+links	468	454	454	324	
+lint	479	537	513	310	
+lion	511	627	626	498	244
+lip	568	590	619		
+liquid	578	555	589		343
+liquor	579	630	576	538	
+lire	261	449	326	261	
+lisp	409	429	464		486
+listen	543	408	378	433	
+listless	358		359		
+liter	462	482	412	371	
+literal	468	295	261	306	
+literature	529	462	487	520	494
+little	594	378	502	546	
+littoral	165	273	224	163	
+live	608	436	446	522	
+lively	582		429		
+liver	481	617	571	387	353
+lizard	483	588	632	403	
+load	562	439	461	452	
+loafer	479	417	456	423	
+loan	535	372	430	395	428
+lobby	420	532	462		406
+lobster	472	590	630	407	
+lock	588	565	532		328
+locker	538	586	569	403	
+locomotive	405				
+lode	270	342	363	280	
+lodge	429	538	464		456
+log	466				
+logic	504	250	294		550
+logical	539		295		
+logos	140	299	288	187	
+lone	464	325	457	377	
+lonely	581		443		
+long	579	381	471	492	
+look	607	376	395	432	225
+loon	303	481	348	275	
+loop	494	490	492	397	
+loose	594		397		
+loot	470	542	579	448	
+loquacity	144	326	321	219	
+lord	518	409	482	525	342
+lorry	198	420	383	236	
+lose	534	299	373	390	
+loss	558	313	409	463	331
+lotion	479	534	497	388	
+loud	577	413	448	479	
+love	619	311	569	548	303
+lovely	523	318	491	505	
+loving	573		497		
+low	580	322	378	427	
+lowland	381	497	453		447
+loyalty	491	261	411		497
+lubricant	454	520	515		
+luck	587	275	399		292
+lumber	465	560	530	447	519
+lump	501	542	546		
+lunch	616	552	602	485	275
+lune	160	328	252	202	
+lung	546	569	576	435	
+lunge	394	376	459		508
+lure	451	422	389	358	
+lust	472	324	444	468	
+lute	287	509	429	316	
+luxury	506	346	507		472
+lye	414	515	372	318	
+lymph	330	501	383		675
+lynx	301	568	461	293	511
+lyre	288	538	426	285	
+macaroni	498	631	608	459	381
+machine	549	578	575		
+machinery	528	545	526		409
+mackerel	398	636	540		436
+mad	590	308	479	569	
+madame	414		504		
+made	579	327	351	383	
+madman	407	470	545		417
+madness	473	289	422		
+magazine	585	588	588	493	353
+magic	481	257	458		281
+magician	528	560	569	412	
+magnate	271	413	379	267	
+magnesium	372	547	391		625
+magnet	526	550	543	365	
+magnitude	431	333	303		
+mahogany	451	513	500	333	
+maiden	374	545	554		429
+mail	554	508	548	430	
+main	574	324	309	361	364
+mainly	583		237		
+maize	334	453	420	274	
+majestic	391		446		
+major	558		395		
+majority	546	338	390		531
+make	618	299	322	474	
+maker	487	426	379		358
+malady	287	379	370		
+malaria	356	506	484		
+male	588	564	587	533	383
+malice	354	248	365		
+malicious	406		397		
+mall	330	459	383		589
+mallet	388	623	557	348	
+mammal	458	549	541		
+man	623	618	567	607	
+manage	508		303		
+management	518	381	415		508
+mane	416	554	528	377	
+manganese	332	540	413		661
+manicure	382	449	451		536
+mankind	500	406	452		467
+manner	546	297	342	367	
+manor	424	523	508	361	419
+mansion	489	579	628	490	
+mantle	438	579	596		
+manufacturer	480	467	362		525
+manure	458	644	534	453	
+manus	113	315	238	157	
+many	599	276	393	459	
+map	545	565	587	460	
+maple	518	534	511	413	
+mar	353	302	453	312	
+marble	436	611	605		294
+march	539	440	497	436	269
+mare	460	549	529	426	
+margin	499	472	494		403
+mark	533	464	434	376	
+market	518	551	583		328
+marl	185	394	186		686
+maroon	492	486	503	394	
+marriage	559	398	556		383
+married	615		568		
+marry	557	362	523	461	
+martial	460	338	412	318	
+marvel	465	293	410		489
+mash	481	418	472	382	
+mass	473	397	484	444	458
+mast	427	576	558	303	392
+master	495	498	495		
+mastery	371	279	324		
+mat	490	513	537	363	
+match	558	535	490	461	
+mate	553	507	506	502	
+material	559	539	490		378
+maternity	389	341	502		583
+math	548	386	487	425	
+mathematical	541	328	430	469	
+mathematics	565	413	480	464	
+matter	563	439	298		411
+mattress	524	640	601	450	
+mature	570		363		
+maturity	475	234	429		553
+may	576	332	370	405	
+maybe	598		222		
+mayor	443	507	523	393	436
+maze	434	528	555	408	414
+me	607	511	430	521	
+meadow	478	594	622		272
+meal	603	602	573	548	
+mean	539	313	419	565	
+meant	499	226	282	303	
+measles	487	568	582	398	
+measure	555	366	379		344
+meat	589	587	618	506	
+mechanic	467	580	530		433
+mechanical	533	385	482	470	
+medal	494	571	529	420	
+medallion	338	577	565		
+medicine	547	517	551		311
+mediocre	403		322		
+mediocrity	339	217	258		636
+meek	470	299	392	470	
+meet	575	341	438	462	
+meeting	575	403	451	431	356
+melancholy	431	329	370	421	
+melee	293	414	313		626
+melon	441				
+melt	521	413	461	397	
+member	573	455	399		392
+memory	573	284	391	430	
+men	621	586	587	616	236
+menace	425	377	398		
+menad	96	263	167	167	
+menu	550	555	613		433
+mercenary	315		436		
+merchant	439	517	472		408
+mercury	467	537	521	333	
+mercy	460	239	373		
+merit	475	308	380		444
+mermaid	391	494	578	342	322
+merry	526	370	519	513	
+message	557	459	438	482	
+messenger	491	527	505		383
+metal	559	582	541	466	308
+metaphor	479				
+method	556	303	304	402	481
+methodical	404		337		
+methylene	323	558	405		681
+meticulous	354		337		
+metis	101	248	199	133	
+metronome	225				
+metropolis	398	504	572		
+mica	253	474	397		626
+microbe	339	482	394		622
+microscope	493	591	617	389	
+midnight	569	396	602		328
+midshipman	259	532	369		575
+mien	143	283	253	200	
+might	533	271	346	380	400
+mild	556	330	359	437	
+mile	568	460	511	398	314
+mileage	558	421	460		
+military	458	417	478		428
+milk	588	670	638	515	
+million	519	364	440		419
+millstone	370	578	526		464
+mimic	464	329	390	378	
+minaret	168				
+mince	384	430	419	317	
+mind	591	333	373	437	
+mine	557	452	522	435	
+miner	521	551	569	397	
+mineral	454	527	432		469
+minister	500	563	584	487	342
+mink	524	589	604	452	
+minnow	408	621	554	420	397
+minor	536	353	376	458	
+minstrel	390	530	522	367	
+minute	621	361	473	487	264
+miracle	421	282	367		
+mirage	442	377	489	390	
+mirror	593	605	627	469	258
+mischance	355	270	248		536
+mischief	413	325	422		
+mischievous	475	292	455	434	
+misconception	445	251	292	380	
+misery	494	297	444	497	450
+mismanagement	407	295	286		597
+miss	586	372	447	452	
+missile	504	597	602	482	
+mist	499	497	637		367
+mistake	584		380		
+mistaken	572		290		
+mister	529	349	365	348	
+mistress	472	530	535		517
+misuse	457	318	367	425	
+mite	291	463	387	289	
+mixer	518	574	536	450	
+mixture	588	356	433		350
+moan	510	379	475		328
+moat	443	509	497	312	
+moccasin	475	611	573	436	
+mocker	295	432	372		547
+modern	579		368		
+modernist	278	356	294		614
+modest	546		341		
+mohair	377	583	508		583
+mohur	43	266	158	128	
+moisture	462	545	513		
+molasses	309	578	451		606
+mold	503	486	454	393	
+mole	484	590	567	372	
+molecule	464	453	470	411	
+moment	560	301	334	402	350
+monad	113	247	186	149	
+monarch	428	525	572		456
+monastery	461	564	550	416	
+money	631	574	604	536	247
+monk	401	570	606		
+monkey	531	566	588	448	
+monocle	301	603	529		531
+monsoon	336	508	498	345	508
+month	598	345	448		
+monument	455	558	543		444
+mood	541	234	394		
+moon	585	581	585	442	
+moonlight	467	456	613		378
+moose	518	616	604	420	
+mop	443				
+moral	535	220	341		539
+morass	195	415	256		647
+morbid	465	358	420	430	
+more	612	284	264	351	
+morgue	434	572	589	452	
+morning	605	515	579	510	
+morphine	446	580	550	433	
+mortal	454	406	402		508
+mortar	368	548	449	344	551
+mortgage	506	422	358	413	
+mosque	316	478	461	361	
+mosquito	512	595	612	422	
+moss	436	575	569	373	
+most	560	321	306	340	
+mote	323	397	438	264	
+moth	496	550	577	398	
+mother	632	579	638	584	144
+motion	541	367	416	454	
+motive	540	255	275		511
+motor	545	565	521		344
+mountain	574	616	629	573	283
+mournful	431		475		
+mouse	520	624	615	426	242
+mouser	208	347	329	261	
+mousse	363	492	439	290	
+moustache	481				
+mouth	572	568	613	498	
+mouthpiece	495	608	549	400	
+move	572	390	413	428	
+movie	523	590	571	477	386
+much	584	242	332	380	
+mucin	128	304	217	141	
+mucous	264	539	538		
+mucus	447	565	570	366	
+mud	519	605	582	472	239
+muddy	541		522		
+mug	527	576	574	477	
+mule	455	592	608	408	339
+multiplication	568	387	476		
+multitude	447	361	436		494
+mural	451	515	515	372	
+murder	528	445	549	536	381
+muscle	540	573	553		397
+muscular	527		570		
+music	599	512	549	569	272
+musical	538		451		
+musician	558	564	585		
+mussel	396	618	556		414
+must	589	297	247	300	
+mustard	532	595	599	388	
+mutilation	363	452	502		574
+mutiny	428	367	447	385	
+mutton	337	538	484	334	
+muzzle	369	585	513		461
+my	612	253	298	300	
+mystery	548	256	472		342
+mystic	455	345	495	442	
+myth	514	334	359	420	
+nabob	83	225	213	168	
+nadir	218	279	254	184	
+nag	492	392	508	456	
+naiad	74		198		
+nail	563	598	588	403	272
+naive	460		354		
+name	573	405	475	474	
+namesake	377	356	348		519
+napkin	495	585	582	357	342
+nares	94	320	169	171	
+narrow	546	372	491	451	
+narrowness	401	303	397		417
+nasty	507		387		
+nation	508	415	436	457	425
+national	556		400		
+native	508	471	507	447	425
+natural	594		376		
+nature	535	414	513		342
+naughty	501		407		
+naval	476	519	535	407	
+nave	203	402	282	225	
+navel	485	583	546	437	
+navy	465	472	562		353
+near	582	337	408	465	
+nearly	611		305		
+neat	528	314	495	493	
+necessity	521	273	306		511
+neck	576	587	622	434	
+necklace	536	633	606	457	
+nectar	344	556	523		
+need	589	314	327	473	
+needle	533	608	589	435	264
+neglect	509	282	372		467
+negligent	423		339		
+neighbour	565	515	548		323
+neighbourhood	507	429	456		403
+nephew	452	541	443		
+nerve	554	488	486	439	480
+nervous	572	338	465	490	
+nest	521	557	571	440	
+net	514	577	540	394	269
+neurotic	456		417		
+neuter	368	336	327	334	
+neutral	491		300		
+neutrality	409	267	308		597
+never	572	259	351	397	
+new	614	348	418	525	
+newborn	383	452	532		406
+news	560	437	484	507	
+newspaper	641	576	616		292
+newt	335	606	472		428
+next	548	262	386	349	
+nice	583	279	375	525	
+nicety	302	242	221		569
+nickel	559	597	572	431	
+nidus	85	296	213	133	
+night	636	496	607	533	222
+nightfall	460	511	588		
+nightgown	506	644	564	452	
+nightingale	375	621	551		419
+nine	571	452	494	424	
+nip	477	515	486		303
+nisus	70	337	211	160	
+no	605	318	361	452	
+nob	265	492	372		475
+noble	410		383		
+nod	552	437	508		203
+noel	409	363	463	360	
+noisy	609		215		
+noll	221	401	297	213	
+nomad	342	512	516		511
+nonchalant	360		366		
+none	569	288	425	422	
+nonsense	522	256	349		336
+noodle	499	588	530	385	
+noose	304	542	593		
+nope	481	270	315	328	
+nor	429	190	243	264	
+normal	602	237	294		375
+nose	584	628	605	472	206
+nostalgia	360				
+not	565	273	253	260	
+note	594	525	503	438	292
+notice	634	479	467		369
+noun	518	387	368	436	414
+novel	530	529	547	476	475
+now	605	309	276	339	
+nowhere	521	222	299	385	
+noxious	270		363		
+nozzle	412	555	513		411
+nude	556				
+numb	487	379	477	369	
+number	599	395	489	473	239
+nun	500	583	617	435	
+nurse	537	588	617	452	256
+nursery	461	528	542	422	
+nutmeg	354	586	526		
+nutrient	399	432	378		611
+nymph	332	424	546		
+oak	515	588	590	423	311
+oar	496	572	592	377	
+oasis	341				
+oat	484	553	499	357	
+oath	402	331	443		408
+oatmeal	471	552	558	346	
+obedience	500	238	394		
+obedient	500	317	364	395	
+obelisk	131				
+obese	424	492	563	535	
+obey	538		352		
+object	586	487	408		339
+oblique	407	351	310	280	
+oblivion	379	242	386		639
+oblivious	468	306	347	360	
+obnoxious	454		363		
+oboe	325	586	471	374	
+obscure	434	320	354	362	
+observation	500	326	345		539
+observer	469	505	489		486
+obsession	456	243	409		
+obstinate	390		373		
+obstruction	445	421	413		542
+occasion	566	346	305		
+occasional	503	315	276	350	
+occupation	529	381	375		489
+ocean	526	593	623	522	317
+octagon	366				
+octopus	370				
+ode	360	381	344	338	
+odour	454	472	556		461
+of	598	180	217	217	
+off	608	281	326	403	
+offal	276	583	402		633
+offend	498	321	372	454	
+offensive	521		378		
+office	566	569	518	425	
+officer	549	550	593		
+offshoot	329	365	335	262	586
+oh	563	233	274	257	
+oil	548	581	573	413	303
+okay	555	245	269	414	
+old	616	349	478	568	
+older	548	348	479	458	
+olive	444	618	578	351	458
+omen	394	319	413	402	558
+on	614	262	268	290	
+once	539	315	322	420	
+one	613	379	432	446	
+onion	550	632	617	452	286
+only	600	218	255	330	
+onslaught	338	346	374		600
+opal	418	533	490	305	
+open	581	381	425	402	
+opening	542	455	462		336
+opinion	550	285	359		
+opium	436	552	487	413	
+opponent	495	440	408	432	
+opportunity	567	306	335		475
+opposition	483	316	359		550
+optimism	500	240	418		542
+optimistic	484		378		
+or	589	248	224	222	
+oral	503		378		
+orange	567	601	626	467	203
+orchestra	533	578	619	477	
+orchid	456	599	597	375	
+order	570	344	352	397	344
+orderly	503	388	419	451	
+ordinary	584		271		
+organ	510	596	576	455	356
+origin	537	319	306		492
+original	525		324		
+originality	488	257	335		500
+originate	507	285	311	423	
+originator	409	491	365		
+ornament	460	615	594		303
+ornate	401	339	419	370	
+oscillation	330	333	440		667
+osculation	138	410	318		
+ostentation	294	262	280		653
+ostrich	358				
+other	581	275	265	307	
+otter	391	631	572		383
+ounce	565	502	457	459	
+our	602	245	315	358	
+out	608	249	330	430	
+outbreak	471	358	359		444
+outcome	489	318	295		
+outfit	489	515	487		417
+outgoing	524		352		
+outhouse	378	573	494		461
+outlandish	307		332		
+outpost	368	462	378		481
+output	487		324		
+outset	394	305	270		509
+outside	607		419		
+outsider	468	468	518		
+outspoken	537		354		
+oven	577	593	599	407	236
+over	589	287	327	423	
+overcoat	441	611	552		381
+overlap	472	371	399		444
+overproduction	348	297	316		592
+overshoe	251	553	378		550
+overtone	381	300	268		589
+owl	477	614	595	397	269
+own	598	317	337	485	
+owner	564	468	425	459	
+ownership	464	336	362		
+ox	364	633	548		329
+oxide	397	462	337	364	
+oxygen	529	484	430	388	
+oxymoron	164				
+oyster	453	573	521	366	
+pacifism	375	279	383	411	
+package	497	580	529		364
+pact	361	372	364		531
+padlock	387		523		
+paean	133	281	261	178	
+page	603	571	555	380	267
+paid	577	386	429	487	
+pail	453	538	508	354	
+pain	569	426	502	557	
+paint	551	577	567	402	
+painter	575	568	565		
+painting	527	615	602		258
+pair	544	377	480	510	
+palace	462	579	612	484	294
+pale	499	385	532	423	
+palette	301	565	437		542
+pall	274	362	271	231	
+palm	515	596	555	421	333
+pampas	252	570	410		597
+pan	566	586	532	451	
+pancreas	396	573	453		656
+pane	395	506	410	346	
+panic	546	324	501	494	
+panoply	194	411	213		672
+panorama	381	397	464	400	
+panties	498	597	574	471	
+pants	575	619	630	510	
+paper	635	599	590	460	229
+parade	526	523	578	463	
+paradise	414	326	516		456
+paradox	394	257	334	315	
+paragraph	559	493	482	419	
+parallelism	275	260	324		647
+parallelogram	387				
+parcel	503	525	509	418	
+pardon	532	307	355	413	342
+pare	335	361	392	260	
+parish	434	434	483	411	
+park	571	579	573	508	219
+parliament	511	456	475		508
+parry	209	311	328	213	
+part	579	339	340	337	314
+participant	430	439	370		575
+particular	514		274		
+partner	555	500	513		344
+party	619	496	596		
+pass	535	385	479	440	
+passage	525	558	525		356
+passenger	543	562	529		378
+passing	566		368		
+passion	502	300	467	487	
+passionate	507		495		
+passive	505		307		
+passport	429		546		
+past	545	293	446	437	
+paste	504	559	529	427	317
+pastor	461	567	488	367	
+pasture	414	562	562		386
+pat	492	400	386	395	
+patch	528	558	529	423	
+patent	426	400	375		
+path	531	504	537	447	
+pathetic	460	256	397	422	
+patience	533	266	363	429	403
+patient	538	487	526		366
+patron	425		376		
+pattern	555	472	453		319
+paul	486	524	440	357	
+pause	517	306	347	410	414
+pavis	104	283	194	139	
+pawn	477	480	479	376	
+pax	264	274	277	282	
+payment	527	432	472		439
+pea	524	614	568	385	
+peace	571	309	446	503	
+peaceful	560	360	426	527	
+peacemaker	456	432	416	474	
+peach	536	617	613	459	292
+peal	451	402	433	381	
+pear	567	634	590	494	
+pearl	508	597	590	392	
+peasant	422	550	540		419
+pebble	477		546		
+peck	471	432	494		300
+pedal	512	602	556	411	306
+peddle	501	482	508	377	
+peek	469	411	446	362	
+peel	507	432	436	387	
+peep	418	388	437		289
+peer	460	406	376	358	
+peg	462	537	538	338	
+pelt	371	526	517	346	439
+pen	554	571	576	425	
+pencil	598	617	607	449	225
+pendulum	407	583	605		422
+penguin	360				
+penicillin	494	590	501	455	
+penitent	264		334		
+penny	613	606	609	470	186
+peon	365	440	455	390	
+people	628	540	548	612	281
+pep	445	314	466		
+pepper	554	591	587	378	269
+perception	558	287	355		
+perch	396	576	462		414
+perdition	222	272	180		675
+perfect	613		404		
+performance	530	409	453		457
+performer	479	529	530		
+perhaps	590		220		
+period	573	358	429		458
+periodical	477	538	492		
+perish	483	329	404	434	
+perjury	405	323	353	367	
+permanent	526	336	390	447	
+permission	533	425	331		
+permit	516	399	388	435	458
+perpetrator	307	409	272		653
+perry	326	350	356	248	
+perse	187	313	271	210	
+persecution	423	300	416		575
+persistent	524		344		
+person	620	562	562		
+personal	559	311	408	453	
+personality	575	311	405		508
+personnel	482	429	375		575
+persuasive	475		366		
+perturbation	255	222	232		658
+peso	318	520	463	342	
+pessimistic	517		400		
+pest	482	479	445		306
+pestle	209	465	341	241	
+pet	541	557	589	582	219
+petal	466	586	508	397	
+pew	394	554	531	359	431
+pewit	96	294	229	134	
+phaeton	132	383	221		689
+phantom	387	364	499	423	
+phase	516	360	319	373	
+phial	273	545	394		653
+philology	183	272	162		692
+philosophy	491	257	348	438	622
+phone	550	624	587	460	
+photograph	551	590	618	520	317
+phrase	521	321	342	377	
+physician	472	573	572		561
+physics	483	406	425	380	
+pianist	473	565	608		
+piano	545	615	630	487	253
+pick	524	502	513	430	
+pickle	562	606	641	416	
+picture	597	579	581		219
+picul	64	308	174	161	
+pidgin	274	372	390	234	
+pie	576	613	604	482	
+piece	511	384	395	387	
+pier	436	588	545	380	
+pierced	469		475		
+pig	509	614	635		233
+pigeon	499	609	610	411	325
+pile	521	504	513	421	
+pill	556	610	580	497	
+pillow	602	613	624	471	217
+pimple	557	579	617	439	
+pin	524	600	576	425	261
+pine	557	592	617	487	
+pineapple	489	653	569	435	
+pint	536	483	487	418	
+pioneer	346	467	416		497
+pious	411	288	378	403	
+pipe	535	602	598	465	
+piping	451	538	491		436
+pique	200	329	293	198	
+piston	409	586	526		
+pit	493	593	589		314
+pity	516	303	391	420	353
+placard	300	448	382	265	
+place	612	427	377	456	269
+plaice	149	314	226	165	
+plain	551	426	463	477	361
+plait	216	353	319	223	
+plan	571	357	379	431	
+plane	558	535	556	472	
+planet	457	523	578		414
+plank	483	592	598		
+plant	592	594	605	521	
+plate	556	595	527	460	
+platform	498	547	529		386
+platter	478	593	576	390	
+plausible	435		278		
+play	586	468	498	497	192
+playful	572		463		
+playing	582	379	464	526	
+plaza	228	479	351		642
+plea	478	308	347	416	
+plead	438		393		
+pleasant	547		390		
+pleasing	551		368		
+pleasure	583	302	511		394
+pledge	442	360	408	375	
+plenipotentiary	128	351	129		697
+plentiful	518	317	408	457	
+pliable	411	377	364	335	
+pliers	499	645	588	408	
+plot	515	379	420	412	422
+plug	575	558	583		242
+plum	547	632	611	470	
+plumb	461	459	501	351	
+plunge	441	396	548		406
+pocket	590	578	558	413	228
+podium	455	546	508	367	
+poet	544	552	518		
+poetry	512	425	486		386
+point	538	464	481	376	
+poison	504	527	513		364
+pole	510	577	579	420	
+policeman	570	574	629		
+polio	463	555	561	397	
+polish	485	535	494		336
+polite	539	342	393	438	
+politician	556	494	507		511
+polka	281	477	475		571
+poll	453	429	488	387	
+pollen	488	584	526	421	
+pollution	555	463	509	508	
+polo	446	495	524	305	
+polyp	185	435	235		678
+pommel	228	323	280	208	
+pompous	313		380		
+pond	506	623	599		239
+pony	524	611	642	439	
+pool	541	573	577		239
+poor	548	311	447	531	
+pope	489	593	576	436	
+popular	626		422		
+population	543	406	391		469
+porch	455	596	586		319
+pore	437	492	447	339	
+pork	538	585	522	435	
+port	481	531	546	405	372
+portal	252	545	505		
+porter	487		536		
+portion	507	384	399		411
+portrait	427	570	565		
+portray	486	337	377	349	
+position	559	351	346		375
+possession	512	379	410		469
+possessive	478		383		
+possible	595		249		
+post	586	533	518	398	306
+poster	545	592	600		
+pot	577	584	598	538	217
+potato	612	629	617	484	233
+pouch	373	568	513		367
+pound	618	515	553	475	308
+pour	545	356	495	393	
+poverty	529	343	502		
+powder	521	513	524	377	
+power	556	325	450	505	
+practical	585	331	358		489
+prairie	416	575	569		433
+praise	502	354	467	468	
+pray	528	372	444	403	
+prayer	507	381	492	441	269
+preaching	454		441		
+precaution	477	300	367		525
+preception	558				
+precious	513		424		
+precipitate	429	350	426		633
+precise	507		324		
+precursor	270	371	205		671
+predicament	433	277	365		
+predict	515	288	372	400	
+preference	519	219	281		536
+prefix	407	370	353	337	
+prejudice	508	340	419	462	
+preliminary	409		254		
+prelude	383	364	340		572
+preparation	532	338	313		494
+preposition	419	353	317	357	
+presence	514	326	339	402	456
+present	569	389	481		
+presentable	456		341		
+president	538	526	572	516	458
+pressure	544	379	446		444
+prestige	441	248	394		
+pretence	453	227	307		500
+pretty	584	341	520	548	
+prevalent	418	255	274	361	
+previous	545		276		
+prey	443	464	500	436	439
+pride	564	270	424	469	
+priest	484	561	568	485	411
+prim	366		361		
+primary	497	326	367		297
+prime	492	360	386	475	
+prince	506	542	606	497	
+princess	502	568	547	428	
+principal	491	381	402		525
+principle	496	245	305		533
+prior	444		274		
+prison	462	570	593		
+prisoner	485	548	565		361
+private	570	350	432	448	
+prize	508	474	517	441	
+problem	596	360	411	482	367
+procession	462	500	534		414
+produce	534	432	396	418	431
+product	562	516	435		
+production	545	318	347		486
+productive	523	309	350	418	
+profession	543	374	406		
+professional	520	379	383		494
+professor	583	549	587	523	519
+proficient	384		346		
+profile	445	510	572		
+profit	552	364	497	468	
+profiteer	333	417	297		636
+programme	580	411	458		332
+prohibit	516	301	373	472	
+projectile	347	532	486		597
+projector	477	548	584	318	
+promenade	382	538	526		467
+promise	598		320		
+promised	566		298		
+promising	489		300		
+promotion	532	368	367		
+prong	409	530	499		439
+pronoun	480	346	402	349	
+proof	546	328	339	413	456
+prop	444	474	450	293	
+propeller	491	593	599	395	
+proper	546		295		
+property	531	460	466	461	447
+prophet	503	450	467	390	
+proportion	529	305	329		511
+proprietor	423	518	475		561
+prosaic	198		283		
+prosecutor	454	520	497		
+prosper	503	356	392	419	
+prosperity	477	301	436		567
+prosperous	520		436		
+protection	519	308	410		461
+protest	530	339	472		475
+protocol	306	264	258	229	
+proud	570	327	434	446	
+provender	148	326	162		683
+provided	576		264		
+provincial	421	339	322	312	
+provision	453	432	343		508
+prow	252	485	307		583
+proxy	350	365	334	327	
+prune	444	611	578		347
+psalm	418	409	427	348	
+psychologist	556	505	470		606
+psychology	549	350	353	475	
+public	602	356	448		400
+puck	281	472	370		572
+pudding	510	593	588	469	
+puddle	521	604	562	430	
+pugilist	189	419	264		656
+pull	565	360	446	410	
+pulpit	415	562	551	370	
+pummel	287	387	308	290	
+pump	497	556	556	389	344
+punch	483	548	527	485	306
+punctual	440		368		
+puncture	431		465		
+punish	536	344	474	519	
+punishable	429		303		
+punishment	515	358	418		342
+puny	426	327	395	427	
+pup	531	544	624	484	
+pupil	547	570	572	502	
+puppet	382				
+puppy	522	623	635		203
+pure	590		366		
+purl	166	313	310	195	
+purpose	572	280	280		428
+purse	533	572	567	433	
+purser	296	479	362		592
+push	564		395		
+put	539	287	263	297	
+puzzle	486	449	510		320
+pyramid	386	615	613		397
+python	308	580	559	364	
+quack	467	459	446	423	
+quaich	85	251	201	150	
+quail	376	600	505	405	536
+quake	474	440	463	397	
+quality	560	274	349		
+quantity	557	340	349		419
+quarrel	463	379	479	515	
+quart	568	504	545	431	
+quarter	569	509	531	450	334
+quean	126	377	263	195	
+queen	527	537	612	456	247
+querulous	148		293		
+quest	413	316	460		
+question	588	387	398	423	314
+questionable	485		329		
+quibble	336		393		
+quick	570	343	363	453	
+quicken	469	380	335	375	
+quickly	581	292	376	473	
+quickness	478	288	372		392
+quiet	577	389	426	451	
+quietude	220	267	286		642
+quill	409	595	530	359	
+quilt	490	613	554	444	
+quire	179	233	240	197	
+quiver	368	485	505		460
+quotient	405		341		
+rabbi	515	572	557	430	
+rabbit	523	635	611	433	206
+race	543	463	457	441	
+rack	486	535	439	337	
+racket	486	562	530		386
+racketeer	329	533	502		
+racquet	480	513	522	397	
+radical	500		346		
+radio	644	615	613		317
+radish	456				
+raft	483				
+raid	487	407	476	420	391
+rail	505	540	556	385	
+railroad	493	579	596		
+raiment	222		373		
+rain	604	600	618	475	211
+rainbow	431		604		
+raise	534	340	418	431	
+raised	545		376		
+rake	476	597	550	380	336
+ram	468	541	546	384	
+ramp	504	538	527	344	
+rampant	247		337		
+ramrod	253	509	418	287	
+ranch	379	561	519		403
+rancid	309	342	364	398	
+range	515	417	413		436
+rap	501	404	388	386	
+rape	555	472	565	468	
+rapid	524	415	387	473	
+rare	559	327	439	482	
+rarity	373	265	270		550
+rash	485	523	520	403	
+raspberry	513	594	636	400	
+rat	548	624	588	468	
+ratal	119	279	193	178	
+rate	527	308	311	416	456
+rating	478	309	310		
+ration	473	390	392	377	
+rational	458		298		
+rattle	448	549	554		261
+rattlesnake	493	586	611	377	
+raw	509	399	470	413	
+ray	480	470	556		322
+raze	281	336	271	277	
+razor	511				
+reach	577	368	391	395	
+reaction	533	312	395		506
+read	568	420	499	467	
+reading	581	377	436	461	
+real	596	285	313	464	
+reality	551	296	315	435	469
+really	562		246		
+realm	376	303	324		561
+reap	441	373	408	389	
+reaper	401	455	462	338	
+rear	547	402	455	500	
+reason	601	332	285	393	383
+reasonable	585		305		
+rebec	92	229	224	151	
+rebel	448	439	497		461
+rebellious	490		463		
+rebus	131	299	201	174	
+recall	526	319	424	425	
+receipt	498	474	432		517
+receiver	541	420	504	468	
+recent	513		298		
+receptacle	383	545	426		561
+receptive	487	323	302	405	
+recess	456		415		
+reciprocal	399	308	278		656
+recital	468	476	495		
+reckless	517		395		
+reckoning	428	237	283		525
+recognition	507	266	388		
+recollection	425	295	308		533
+recommend	529	278	313	377	
+record	609	558	591		322
+recreant	179	333	167		656
+recruit	471	393	412	390	
+rectangle	498	554	590	440	
+rector	448	517	494		561
+red	607	501	585	445	
+redeemer	370	366	353		531
+reduction	509	313	332		508
+reed	430	564	520	344	369
+reel	456	502	487	369	
+referee	534	554	564	465	
+refined	488	302	353	371	
+refinement	436	272	375		550
+reflection	505	339	567		
+reflex	515	402	476		
+reformation	349	248	280		603
+refrain	523	325	370	418	
+refresh	502	362	374	385	
+refrigerator	545	574	612	395	
+refuse	518	426	419	437	394
+regency	373	358	316		586
+region	511	441	459	469	
+register	471	500	483		408
+regret	529	260	359		428
+regular	580		320		
+regulation	504	363	345	457	
+reign	433	305	382	389	450
+rein	440	537	478		356
+rejoice	529	329	432	468	
+relation	585	383	451		375
+relativity	372				
+relax	571		387		
+relaxation	501	285	494		483
+reliable	505		363		
+relic	413	528	481	403	
+relief	551	303	432		443
+religion	565	375	434	534	
+relinquish	419	289	337	380	
+reluctant	481	263	373	415	
+remark	558	368	321		419
+remedy	480	368	370		492
+remex	89	246	222	188	
+reminder	543	363	328		
+remittance	388	338	337		594
+removal	498	346	391		406
+rendezvous	390	388	477		581
+renounce	429	297	362	361	
+renown	383		334		
+rent	547	437	469	462	425
+repair	543	394	440		375
+repeat	602	331	351		367
+replacement	520	368	333	416	
+replete	266	304	285	265	
+reply	550		341		
+report	590	417	411		386
+representative	511	434	380		531
+repress	419	345	365	368	
+reprisal	395	282	294		639
+reprove	364	290	301	303	
+reptile	490	578	579	487	
+republic	458	376	356		556
+repulsive	474	336	426	462	
+reputation	492	232	343		558
+requirement	508	300	339	393	
+rescue	532	373	456		367
+research	546	366	445	489	
+resentful	497		404		
+resentment	440	252	352		539
+residue	401	510	487		
+resistance	540	358	416		503
+resolution	433	265	316		550
+resolved	387		278		
+resort	523	499	523	469	
+respect	571	280	343		433
+respectable	556		385		
+response	544		348		
+responsibility	532	222	294		514
+responsible	588		348		
+responsive	515	306	347	407	
+rest	590	351	396	408	222
+restaurant	593	583	611		
+restless	552		404		
+restore	490	275	324	374	
+result	623	318	324		406
+resumption	372	262	264		603
+retailer	429	521	445		
+retain	507	308	352	410	
+retard	505	345	481	433	
+retention	399	280	316		592
+retreat	479	367	408	390	431
+retrospect	314				
+return	582		293		
+revealed	517		346		
+revenge	489	305	429		467
+revenue	401	373	330		569
+review	496	388	345		547
+revolt	497	400	502		
+revolution	477	378	513		517
+revolver	486	592	629		
+reward	525	396	453		372
+rhapsody	321	414	409	329	639
+rheumatism	371	489	458		
+rhinoceros	400				
+rhombus	339	419	441	297	
+rhumb	126	285	199	150	
+rhyme	480	434	475		253
+rib	536	599	586	434	
+ribbon	480	600	563		286
+rice	548	608	506	458	
+rich	575	377	467	503	
+rick	223	474	275		569
+rickety	279		426		
+riddle	489	404	455	405	
+ride	576	424	483	457	
+ridge	430	547	543		433
+ridicule	510	310	390	488	
+rifle	477	606	581	453	322
+right	599	361	372	413	
+righteous	433		329		
+rigid	503	411	488	425	
+rigidity	394	335	432		575
+rim	501	511	509	394	
+ring	589	593	601	516	208
+rinse	480		465		
+riot	490	414	548		456
+ripe	534	360	490	392	
+rise	546	368	451	473	
+risk	517	290	405		397
+rite	400	381	353	302	
+ritual	403	377	474		
+river	565	585	633	521	
+road	604	583	609	481	206
+roar	471	437	526		278
+roast	536				
+rob	508		465		
+robber	493	545	549		
+robbery	532	440	484	480	
+robin	487	637	615	431	233
+rock	583	600	612	482	
+rocker	474	583	520	388	
+rocket	525	645	612	478	
+rod	504	591	549	416	278
+rode	496	353	451	379	
+roe	233	397	349	265	
+rogue	378	424	478		444
+role	524	335	385	438	
+roll	547	457	496	421	
+rolling	514		434		
+romance	517	313	551		466
+roof	552	586	604	433	
+room	627	566	545	495	244
+rooster	385				
+root	554	558	565	443	
+rope	539	608	596	441	281
+rosary	410	535	464	352	
+rose	556	608	623	475	
+rosebud	369	593	586		369
+rosin	199	521	435		
+rotation	470	366	448		494
+rote	249	295	264	235	
+rough	557	452	491	489	
+round	563	438	559	489	
+route	515	440	447	482	447
+routine	523		341		
+rover	309		473		
+rubber	547	596	599		289
+rubble	407	493	482	363	
+ruby	445	594	562	405	397
+rudder	390	572	520	357	
+rude	550		390		
+ruff	329	358	327	292	
+rug	557	611	591	423	233
+rugged	492	384	488	471	
+rule	534	286	415	442	
+ruler	571	555	543		311
+rum	552	600	560	532	
+rumble	476	407	494	415	
+rumour	503	311	353		461
+rung	423	532	480		414
+runner	531		546		
+running	571	444	490	473	
+rural	493	358	437	370	
+rush	546	350	404	457	
+rust	484	553	547		380
+rusty	503	506	553	423	
+rye	388	600	459		500
+sable	351	513	419	325	
+sack	539	582	548	447	
+sad	589	360	419	500	
+saddle	436	603	578		344
+safe	531	376	474	474	
+safety	556	323	397	405	339
+saga	388	366	345		506
+sagacity	172	211	232	226	
+sage	424	462	434	337	
+said	600	306	313	397	
+sail	504	567	597	428	
+saint	463	458	394	378	
+salad	554	595	623		342
+salary	527	456	452		558
+sale	555	364	422	434	
+salep	89	287	211	174	
+salol	86	269	206	154	
+saloon	381	575	608		
+salt	612	594	570	397	233
+saltpetre	210	525	283		656
+salty	509	490	512	415	
+salutation	331	454	456		
+salute	479	471	538	389	
+salvation	396	269	408		558
+salve	329	434	391	284	
+same	569	248	326	437	
+sampler	397	426	378		539
+sanctity	338	293	330	277	
+sanctuary	449	486	481	413	
+sand	519	616	603	463	217
+sandal	494	609	613	487	
+sandy	528	499	554	390	
+sane	508	290	364	428	
+sanitarium	298	565	510		606
+sanitation	354	391	447		586
+sap	377	540	451		464
+sapphire	380	572	560	377	
+sarcastic	516		419		
+sardine	446	606	592	403	353
+sash	385	540	488	334	
+satchel	364	593	580		297
+satin	470	594	561	438	
+satire	477	287	370		
+satisfaction	544	305	478		466
+sauce	522	576	569		258
+saucer	533	606	544	425	
+sauerkraut	426	604	585	339	
+savage	448	427	528	458	392
+savant	157	293	271	143	
+save	559	314	365	438	
+savory	406	373	446	383	
+saw	552	532	531	390	269
+saxophone	453	624	602	424	519
+scab	524	559	573	424	
+scale	523	475	463	405	397
+scar	529	552	565	416	
+scarce	508	297	380	466	
+scare	523	380	471	503	297
+scarecrow	389				
+scarlet	428	519	587	453	
+scavenger	474	486	501	423	
+scene	526	408	432	516	425
+scent	501	462	421	430	
+scheme	492	328	319	363	475
+schism	231		361		
+scholar	489	450	451	445	
+school	582	573	599	517	228
+schoolhouse	388	586	544		369
+science	577	366	423	512	458
+scissors	559	596	609	405	
+scooter	468	565	569	374	
+scorn	417	290	364		471
+scornful	458		407		
+scorpion	342	590	596		
+scotch	518	583	590	459	
+scout	452	562	578		372
+scowl	464	386	456	405	
+scratch	553	523	543		269
+scream	522	479	589		275
+screaming	519		519		
+screwdriver	544	574	617	441	
+scroll	350	593	572		458
+scull	344	508	474	348	533
+sea	537	596	606	529	
+seal	482	587	563	398	328
+seam	547	538	555	398	
+seaman	449	563	481	380	
+sear	316	292	299	259	
+search	537	371	402		344
+seasick	393				
+season	565	445	495		328
+seat	597	568	574	469	
+seaweed	478	593	590	384	
+second	598	344	371	397	289
+secretary	528	576	563	411	456
+secure	507		373		
+security	513	290	391		508
+sedative	423	459	459		561
+seduction	423	353	521		628
+see	625	352	379	525	
+seed	514	611	542	467	
+seedling	323		451		
+seedy	354		432		
+seek	506	375	335	412	
+seel	301	417	341	300	
+seem	549	226	249	325	
+seen	576	336	351	360	
+seer	253	370	309	290	611
+segment	451	485	480		428
+seine	246	351	367	280	
+seldom	478		259		
+select	543		310		
+selection	523	328	311		439
+self	604	459	466		328
+selfish	483		359		
+sell	585	342	397	495	
+seller	459	444	427	369	381
+selling	514	370	376	390	
+semen	429	550	494	413	
+semester	504	389	383		
+semicircle	427	444	526		453
+send	529	324	423	384	
+sender	464	482	370		406
+sensation	503	265	394		
+sense	583	316	368	484	336
+sensible	507		334		
+sensitive	550		434		
+sent	523	292	386	362	
+sentiment	471	258	365		514
+separation	504	303	435		458
+sequel	338	353	323	293	556
+serf	364	507	500	361	
+sergeant	480	511	549	365	
+serial	440	365	340	310	
+series	525	373	398		461
+serious	593		376		
+servant	437	515	508		406
+service	560	364	408		397
+session	505	372	394		
+settled	499		307		
+settlement	482	437	457		478
+settler	384	533	528		
+sever	429	404	439	398	
+severance	354	311	316		603
+severe	526	286	352	484	
+sew	517		478		
+sewer	489	564	538	374	
+sex	617	512	584	613	450
+sexual	576		504		
+shadow	536	457	565		311
+shadowy	462		443		
+shady	533	408	487	460	
+shaker	370	472	408		433
+shale	359	458	401	295	
+shall	558		237		
+shallow	540	330	451	415	
+shame	534	287	419	457	367
+shape	575	452	471	489	303
+shark	516	611	602	423	
+sharp	572		495		
+shawl	455	606	576	432	331
+she	599	406	474	487	
+shear	428	456	484	367	
+shed	524	611	602		231
+sheep	507	622	596	444	
+sheepskin	428	600	566	382	
+sheer	468	397	440	410	
+sheet	616	608	594		251
+shell	524	597	581	415	
+shelter	509		488		
+shepherd	435	598	600		275
+shield	464	576	556		350
+shilling	337	522	476	320	
+shining	558		480		
+shiny	541	411	537	418	
+ship	553	615	612	492	249
+shirt	612	616	612	547	269
+shiver	517	455	578		308
+shock	560	395	471		
+shoe	569	600	601	485	
+shone	482	363	384	340	
+shoot	536	445	494	457	
+shop	615	549	561	518	236
+shopper	528	497	519	423	
+shore	531	574	624		
+short	586	351	431	484	
+shortage	554	353	405		414
+shot	531	467	535	433	
+should	565	249	295	374	
+shoulder	553	589	577	408	264
+shout	557	471	484	525	
+shovel	528	581	538	418	
+show	559	402	424	458	
+shower	593	588	615	454	342
+shown	519	315	273	288	
+shriek	458	481	515	453	406
+shrimp	546	629	618	474	
+shrub	446	588	556		383
+shrug	481	421	497		408
+shutter	398	562	533		389
+sick	571	404	456	500	
+sickness	524	444	489	473	356
+side	566	394	386	380	
+siege	345	417	445		503
+sigh	518	380	440		380
+sight	559	393	406	490	
+sigil	93	287	231	158	
+sign	543	520	534	433	
+signal	507	464	513		367
+significant	525		261		
+signify	473		298		
+silence	570	352	470		333
+silk	482	538	510	368	
+silver	528	564	582	431	317
+similar	554		324		
+simile	439	395	334		
+simper	275	335	329		556
+simple	604	306	344	460	
+sin	501	273	441	415	400
+since	541	247	264	283	
+sincere	529		407		
+sine	353	319	377	215	
+sinful	452		371		
+sing	576	421	527	472	
+singer	548	553	575		314
+singing	507		471		
+single	556		415		
+sink	586	590	599	418	219
+siren	431	538	578		347
+sister	588	575	613	547	
+sit	581	437	487	441	
+site	507	408	406	415	
+situation	573	311	319		457
+sixpence	396	583	602		249
+size	566	354	415	466	
+skate	534	562	563	413	
+sketch	452	535	510		411
+ski	551	590	615	500	
+skill	549	346	366		414
+skillet	432	579	586	450	
+skin	591	614	638	482	
+skirt	551	614	573	445	258
+skull	503	570	609	400	
+skunk	519	648	652	446	
+sky	607	542	618	482	
+skylark	350	614	548		394
+skyscraper	489	618	577	490	
+slag	310	426	373	251	
+slang	512	373	411	436	464
+slap	521	511	542	475	
+slave	418	539	564		386
+slavery	512	393	517	475	
+slay	481	411	454	466	
+sleave	308	421	381	222	
+sled	477				
+sleep	610	484	530	475	
+sleet	479	538	547	407	
+sleeve	560	587	550	421	272
+sleigh	531	613	608	455	
+slept	562	383	393	377	
+slice	540	443	507	438	292
+slide	529	504	490	354	
+slight	512		317		
+slime	426	545	558	384	408
+slip	537	448	497	407	
+slipper	494	585	595	418	
+slit	487	520	508		364
+sloe	185	300	276	202	
+slope	563	513	578	475	
+sloppy	542		434		
+slough	272	399	245		603
+slovenly	297	311	404	338	
+slow	602	293	377	425	
+sluggish	481	343	382	385	
+slumber	367	386	500		419
+slush	489	570	567	415	
+smack	511	451	601	481	
+small	616	402	447	563	
+smart	602	304	396	515	
+smash	536	402	518		278
+smear	480	355	415	362	
+smell	582	450	477	498	
+smelt	444	475	473	336	
+smile	594	514	615	502	208
+smoke	596	541	615	534	228
+smooth	570	406	472	478	
+smother	477	377	413	367	
+smug	375		352		
+smut	330	449	426		556
+snail	489	579	577	346	
+snake	501	621	627	458	289
+snap	526	420	410	373	
+sneer	398	371	494		467
+sneeze	544	563	562	382	
+snort	401	424	472		433
+snow	615	618	597	503	
+snub	386	280	348		522
+so	597	195	227	273	
+soap	594	598	600	471	222
+soar	496	366	436	470	
+sob	516	425	483	490	
+sobriety	293	325	380		
+soccer	521	524	570	484	
+social	497	242	386	437	
+socialist	480	443	352		
+society	601	335	440		497
+sock	578	581	553	378	172
+sod	433	569	467	382	
+soda	536	600	544	470	
+sodium	403	511	423	331	
+sofa	564	629	597	495	
+soft	590	414	476	476	
+softly	524	363	456	477	
+soil	516	581	566	448	347
+sold	544	310	408	423	308
+soldier	517	578	578	497	275
+sole	473	484	462	393	
+solemn	453	322	392	446	
+solemnity	361	289	314	314	597
+solidify	474	363	445	407	
+solution	548	388	391		506
+some	578	286	302	303	
+somersault	402	482	562		369
+sometimes	593		259		
+son	607		560		
+sonata	313	491	441	349	
+song	603	514	578	539	242
+soon	547	261	278	307	
+soot	390	563	531	385	
+sop	259	373	294		536
+sophisticated	446		415		
+soprano	373	497	535		519
+sore	544	502	486	431	
+sorrow	486	282	429		394
+soul	544	289	366	428	
+sound	597	502	497	438	300
+soup	576	615	604	435	
+sour	533	458	495	433	
+south	540	347	476	434	
+southland	230	373	224		558
+sow	428	504	479	367	
+space	576	381	538	536	319
+spade	513	565	578	436	
+span	449	352	381	340	456
+spangle	344	371	356	262	
+spank	536	479	522	450	
+spare	552	313	316		364
+spark	505	526	539	449	
+sparrow	523	629	583	470	
+spasm	422	439	486		558
+spatula	407	586	517	333	
+speak	600	419	488	508	
+speaker	554	537	549		
+spear	513	584	545	403	
+special	607		305		
+specialist	495	487	448		517
+specimen	512	481	417	405	
+speck	477	484	503	381	353
+speech	549	453	447		369
+spell	525	376	429		292
+sperm	395	578	548		597
+sphere	457	489	562	426	
+spice	518	590	592	452	
+spicy	509	478	494	450	
+spider	526	607	597	392	
+spike	471	572	573	405	353
+spinach	452	589	606	384	
+spire	309	576	541		
+spirit	518	296	450		389
+spirited	425		426		
+spite	459	262	405		442
+spiteful	419		334		
+splendid	510		383		
+split	514	417	445		381
+spoke	532	526	466	413	328
+sponge	538	597	577	387	
+spook	475	417	449	432	
+spool	499	565	552	347	
+spoon	612	614	584	425	186
+spot	560	512	507	442	261
+spout	433	468	466	295	
+spray	521	514	559	415	
+spree	410	333	425		531
+spring	588	524	585	545	
+sprint	461	411	526		428
+spruce	499	568	532	448	
+spurt	417	417	491		406
+square	576	516	610	519	250
+squeak	506	461	492	438	
+squib	283	402	390	234	
+squint	528	456	515	413	
+squire	323	502	459		525
+squirrel	511	612	642	397	
+squirt	492	453	496	392	
+stable	519	562	537	490	292
+stadium	526	569	586	413	
+staff	577	515	478		403
+stain	534	535	533		311
+stair	560	558	551	428	
+stake	460	540	506	372	
+stale	509	393	412	344	
+stalk	413	474	440	388	422
+stand	564	450	471	417	
+standard	556	324	319		472
+stanza	385	456	437		617
+star	574	574	623	490	
+starch	459	555	497	385	489
+stare	508	365	420	405	
+startle	450		410		
+state	560	440	511	466	
+statement	505	379	386		481
+station	548	572	554	485	300
+statue	444	600	562		406
+stay	573	329	321	369	
+steadfast	368				
+steady	606		378		
+steak	558	646	647	533	329
+steal	562	363	448	489	
+steam	545	552	591	433	308
+steamer	458	591	616		
+steel	553	586	534	434	
+steeple	405	561	559	370	361
+steerage	193	416	341		
+stem	513	556	533	445	
+step	578	508	483	413	267
+steppe	324	479	427	252	
+stern	481	349	424	435	
+stethoscope	333				
+stew	522	603	587	465	283
+stick	528	604	517	503	
+stifle	453	292	381	371	
+stile	318	466	413	236	444
+still	557	354	345	397	
+sting	480	509	553		261
+stingy	452	299	395	430	
+stipend	246	396	213		650
+stoat	352	621	483		417
+stocking	516	551	555	390	
+stoic	302	305	340		639
+stole	549	342	441	459	
+stomach	547	617	551	457	
+stone	564	614	585	502	
+stool	531	592	584	374	203
+stop	563	308	452	485	
+stopped	607		397		
+store	562	548	506	473	
+stork	393	614	570		356
+storm	555	527	587	524	
+story	578	427	491	518	
+stout	511	413	521	492	
+stove	525	591	592	487	297
+straight	582	404	453	415	
+strain	533	338	402		422
+strand	500	442	431	419	
+strange	606		378		
+stranger	522	441	454		322
+straw	508	603	568	436	289
+strawberry	539	610	631	465	
+streamer	475	518	504	315	
+street	602	579	577	500	
+strength	573	339	470		325
+strengthen	537		341		
+strict	551		383		
+stride	438	409	462		439
+string	566	570	556	443	
+stripe	457	550	562		308
+stroke	511	463	481	441	
+strong	603		463		
+strop	236	364	208		647
+strut	368	429	437		511
+stub	387	542	495		
+stubborn	543		400		
+student	632	549	603	549	481
+studious	478		426		
+stumble	536	433	485	498	
+stump	447	540	490	411	372
+stunt	490	393	429	378	
+stupid	550	351	381	487	
+style	555	344	416	510	419
+stylish	486		407		
+subaltern	224	417	267		675
+subject	590	406	418		417
+submarine	450	583	588	403	381
+subsection	330	368	283		631
+substance	506	479	348		483
+substitute	505	400	360		464
+substratum	233	363	244		661
+subtle	487		294		
+subtraction	515	336	413	400	
+succeed	591	304	416	495	
+success	568	295	443		411
+succour	282	308	297		614
+such	521	248	219	210	
+sucker	492	404	419	437	
+sudden	575		361		
+suds	436	554	565		369
+sue	528	432	449	395	
+suede	531	578	550	393	
+sufferance	369	260	326		597
+suffix	444	318	254	258	
+suffocate	474	391	486	387	
+suffrage	371	283	317	371	
+sugar	608	620	595	510	
+suggestion	567	333	345		461
+suit	543	545	536	452	
+suite	453	534	487	362	458
+sullen	374		361		
+sulphur	445	591	561	370	
+sultan	256	563	541		
+sum	537	379	465	429	278
+summer	612	439	618		253
+summit	400		546		
+sun	635	617	639	520	181
+sunburn	501	563	629		
+sunlight	523	515	643		289
+sunset	539	525	633	447	
+sunshine	627	527	655		206
+superfluity	249	237	232		647
+superior	534		378		
+supper	593	563	590	530	250
+supplication	236	324	326		
+supply	534	368	340		417
+support	556		359		
+supposition	396	280	270		619
+suppression	445	289	328		
+sural	144	282	231	152	
+sure	552	281	285	378	
+surf	526	527	601	435	
+surface	573	447	453		378
+surplus	450		346		
+surprise	583	326	451		322
+surrender	488	356	432		386
+surtax	304	393	290	225	
+suspect	488	379	377		472
+suspicion	470	265	386		478
+suspicious	523		371		
+swage	149	292	234	203	
+swallow	531	547	554	439	308
+swamp	438	570	600		
+sward	155	364	207		650
+swarm	463	406	488	425	
+swayed	493	328	404	389	
+sweat	545	569	560	457	
+sweep	495	476	513	415	281
+sweet	570	463	493	495	
+swell	443	411	410		428
+swift	507	338	460	493	
+swim	550	482	572	435	256
+swimming	560	548	635	502	
+sword	444	577	597	387	342
+swore	477		404		
+sycamore	369	606	562		381
+syllable	473	361	375		497
+symbol	536	402	447	490	
+symbolism	529	273	438	436	
+symmetrical	440		456		
+sympathetic	508	320	390	460	
+sympathy	501	278	402		464
+synagogue	431	545	498	430	
+synod	215	399	229		683
+system	588	356	340		461
+table	599	604	582	423	
+tablespoon	567	587	600		258
+tacet	151	314	234	181	
+tack	463	565	546	358	363
+tail	533	613	551	473	
+tailor	417	535	499		378
+take	555	332	337	360	
+tale	499	352	363	402	
+talent	523	290	399		419
+talented	533		387		
+tales	529	445	466	503	
+talk	613	422	453	566	
+talkative	507		400		
+tall	585	439	514	525	
+tally	374	331	308		536
+taluk	85	257	230	178	
+tame	501	335	447	402	
+tang	436	478	518	356	
+tangerine	495	645	625	445	
+tank	511	581	563	402	
+tap	567	538	541	410	222
+tape	567	564	573	426	406
+taper	384	362	372	292	
+tapis	118	312	193	141	
+tar	491	597	550	346	
+tariff	395		373		
+tarn	251	399	299		606
+tarnish	455	443	456	383	
+task	514	409	410		392
+taste	580	464	425	431	
+tax	523	445	446	398	469
+tea	572	609	599	449	
+teach	552	353	429	455	
+teacher	599	569	575	545	247
+team	538	492	565	503	
+tear	555	504	550	498	264
+technicality	390	308	262		608
+teem	323	340	346	245	
+teeth	593	618	611	500	
+telegraph	460	547	518		436
+telephone	605	619	655	467	
+telescope	461	592	596	410	
+tell	596	306	350	465	
+temerity	185	285	267	230	
+temper	575	353	489		333
+temperamental	414		393		
+temperature	547	472	460	415	
+tempest	375	460	514	390	
+temple	450	565	547	427	
+tempt	495	283	437	443	
+temptation	494	265	391		454
+tendency	507	243	261		525
+tender	510		429		
+tennis	528	574	634	492	
+tense	531	365	422	430	
+tent	521	608	593	452	283
+tentative	442		266		
+tenure	304	345	286	289	
+term	575	374	387	450	394
+terrible	605		422		
+territory	465	459	445		486
+terror	495	326	483		381
+test	566	520	528	487	
+testimony	508	381	377	390	
+text	511	498	437		486
+than	545	188	213	269	
+thane	231	381	251		642
+that	611	232	225	287	
+thaw	492	368	466	416	381
+the	625	237	209	212	
+theft	499	361	436	484	386
+their	607	257	255	310	
+them	542	344	368	389	
+theme	524	336	395	434	
+then	610	190	204	272	
+theologian	357	475	416		669
+theoretical	487	264	334	357	
+theory	534	287	317	408	557
+there	603	216	283	277	
+therefore	556	199	243	300	
+thermometer	481	612	581	443	389
+these	547	260	267	308	
+they	607	316	312	336	
+thick	573	386	468	428	
+thicket	361	571	511		469
+thief	529	519	529	480	322
+thimble	397	529	570	360	
+thin	570	392	502	474	
+thing	587	350	358	479	
+think	612	346	384	500	
+thinker	474	403	405		408
+thirsty	602	451	482	443	
+this	601	240	279	303	
+thistle	463	611	624		333
+thong	335	543	448		553
+thorn	454	586	600		
+those	570	254	247	298	
+thought	603	274	348	495	347
+thoughtful	553	313	390	474	
+thread	522	607	568	443	267
+threat	524	335	408	380	394
+three	581	439	495	398	
+threw	557	333	421	403	
+thrifty	461	297	381	402	
+thrill	504	320	483		403
+throat	548	578	561	388	
+throe	205	240	299	198	
+throng	377	400	452	360	
+through	587	274	320	390	
+throw	548	400	477	418	264
+thud	456	423	453	352	
+thumb	601	638	599		183
+thunder	547	547	554	467	
+thus	507	197	267	275	
+thwart	361	340	324	332	
+thyme	336	587	470	346	578
+ticker	329		385		
+ticket	586	590	574	443	294
+tickle	524	473	492	371	
+tidbit	388	489	448		
+tide	504	516	530	408	331
+tidy	490	311	478	472	
+tie	559	568	551	432	
+tiger	513	611	606	433	
+tight	555	425	495	457	
+till	442	365	364	353	
+timber	440	578	553		403
+time	604	343	413	453	
+timepiece	421	577	568	487	
+timid	473		404		
+tin	575	593	532		286
+ting	190	350	316		492
+tip	493	459	483	374	328
+tire	546	563	511	400	
+tired	630		419		
+tiresome	464		361		
+title	523	384	413		375
+to	613	199	220	245	
+toad	516	568	591	415	
+toast	571	582	594	402	
+toaster	520	579	580	365	
+tobacco	558	609	601	444	366
+toe	578	607	620	469	194
+toga	291		519		
+together	603		426		
+toil	468	386	393	405	
+toilet	567	586	603	430	
+token	473	467	416		450
+told	531	318	286	329	
+tolerant	498	265	335	402	
+toll	485	424	419	371	
+tomahawk	366	586	619		
+tomato	574	662	610	489	
+tomb	450	573	596	442	411
+ton	501	473	475	477	386
+tongue	531	634	621	438	
+too	595	208	261	297	
+tool	532	570	538	510	300
+tooth	578	619	624	436	
+top	571	435	486	477	
+topic	539	366	364		483
+topped	473		348		
+torment	398	288	386		472
+tornado	484	644	591	492	
+tortoise	415	602	539	403	
+torture	471	437	533		408
+touch	590	417	456		269
+tough	534	404	486	456	
+tourist	536	533	577	498	
+tow	468	409	406	340	
+towel	570		570		
+tower	463	585	596		353
+town	589	556	553	565	
+toy	550	567	569	505	164
+trace	531	371	384	371	
+track	514	547	499		383
+traction	423	406	479		
+tractor	518	590	585	418	
+trade	537		390		
+tradition	526	291	354	445	486
+tragedy	521	331	478	477	
+trail	508	511	525	466	386
+trailer	528	597	587	363	
+train	548	592	593	468	
+trainer	458		482		
+traitor	467	467	447	402	
+trance	436	368	463	359	481
+tranquil	479	334	508	462	
+transfer	502	331	313		489
+transform	495		305		
+transformer	397	517	399		592
+translation	495	366	340		556
+transportation	487	403	430	570	528
+trapeze	394	609	552	405	
+trapezoid	411	494	518	359	
+trash	541	588	599	498	
+travel	550	402	506	520	
+traveller	494	492	491		364
+trawl	321	445	352	275	
+tray	558	590	550	450	
+treason	396		363		
+treasurer	511	557	493	417	
+treat	534	399	360	442	
+treatment	529	343	408		433
+treaty	372	361	321		536
+tree	613	604	622	489	
+trellis	208	574	544		
+tremor	401	487	491		511
+tremulous	256		324		
+trend	503	328	373	368	
+trey	256	389	287	164	
+trial	509	446	516	433	433
+triangle	512	523	597	425	
+tribe	503	504	515	412	
+tribute	420	339	386		
+trick	531	391	459		308
+tricycle	436				
+tried	597		303		
+trim	456	388	378		367
+trip	559	448	520	550	314
+tripod	363	577	574	338	
+triumph	490	332	470	492	458
+triumphant	473		426		
+trolley	449	579	585	368	
+trombone	481	606	579	417	
+troop	470	509	498	456	406
+trouble	590	310	395	475	322
+troupe	363	479	404	338	
+trout	479	617	617	430	394
+truce	386	335	481		
+truck	620	595	621		
+true	605	269	365	475	
+truism	398	276	292	310	
+trumpet	490	608	628	468	
+trunk	485	596	529		328
+trust	548	300	356	460	400
+trustworthy	460		337		
+truth	581	261	374	452	
+try	636	260	318		229
+tube	539	581	564	416	
+tuberculosis	461	519	426	392	
+tuck	452	437	416		342
+tuff	341	352	366	315	
+tulip	546	619	641	470	
+tumble	490	433	461	459	350
+tun	141	211	235	183	
+tune	545	464	463	487	
+tunic	373	563	508	355	406
+tunnel	541	555	578	393	
+turmoil	431		429		
+turn	583	359	384	347	233
+turner	368	462	345		517
+turpentine	483	604	587	368	
+turtle	509	644	564	431	
+tush	157	287	143		656
+tusk	433	580	538	338	
+twang	371	371	387	288	
+tweed	429	570	540		419
+tweezer	496	540	587	356	
+tweezers	415	590	619		
+twig	493	559	555	420	
+twilight	423	467	588		411
+twist	510	423	529	427	
+two	596	383	445	389	
+type	567	376	395	438	383
+typewriter	524	611	615	415	389
+typhoon	331	542	536		
+typical	557	268	299	403	
+tyranny	419	302	386	398	
+tyrant	387	467	494		492
+ugly	562	377	491	490	
+ulcer	423	558	516		517
+umbrella	511	606	592	400	306
+umpire	542	581	572	482	
+unanimity	269	250	216		661
+unbelief	366	260	332		489
+unbeliever	373	379	328		486
+uncertainty	451	237	283		522
+uncle	557	580	574	455	192
+unclean	403		424		
+unconcern	380	252	322		503
+unction	239	308	213		669
+under	544	319	426	405	
+underbrush	251	470	307		575
+undergraduate	530	500	518		639
+understanding	559	269	377		442
+undertaking	430	300	278		519
+underworld	399	425	448		
+undoing	396	257	283		439
+undulation	309	368	369		614
+uneasiness	451	229	411		475
+unfair	588		264		
+unhappiness	494	234	461		353
+unification	353	266	323		647
+uniform	484	550	591		331
+union	595	449	526		503
+unique	534	300	379	473	
+unit	513	389	334		411
+unite	494	309	474	443	
+universal	560	339	356	487	
+university	622	533	615	531	497
+unjust	504	244	366	434	
+unkempt	305		393		
+unlearn	548	222	297		406
+unknown	548	222	297		406
+unlimited	532	263	390	490	
+unnatural	462		305		
+unpleasant	528		356		
+unpleasantness	441	265	425		439
+unpopular	500		307		
+unreality	421	203	295	403	525
+unrest	444	324	379	392	481
+unstable	493		356		
+unsuccessful	507	339	293	412	
+untidy	515		458		
+up	608	400	391	359	
+upheaval	390	320	424		494
+upholstery	380	570	478		508
+upkeep	395	299	347		
+upon	575	311	334	368	
+upright	480	348	453	411	436
+upset	536	282	416		329
+upwards	507		366		
+urban	518	420	476	500	
+urchin	332	568	529		469
+urn	369	551	510	350	442
+us	618	397	428	410	
+used	567	315	344	363	
+useful	599		334		
+usual	604	235	235		353
+usurp	214	260	262	226	
+usury	176	300	189		678
+utensil	494	567	534		
+utter	480	365	370	421	
+utterance	357	358	313		539
+vacant	534	318	475	495	
+vacate	408	351	369	397	
+vacation	495	414	559		458
+vaccination	442	509	572		
+vacuum	487	389	479		
+vague	522	272	321	400	
+vain	486	315	351	383	
+vale	334	467	421	302	481
+valley	515	575	600	458	339
+valor	432	312	371	387	
+valuable	558		422		
+value	552	260	289		433
+van	542	606	572		267
+vane	411	400	377	310	
+vanity	433	250	406		
+vapour	455	499	493		533
+variety	533	297	372		464
+vary	485	258	272	347	
+vase	452	595	563	388	297
+vault	445	550	550	395	
+veal	465	528	519	385	
+vegetable	591	602	598	530	269
+vehicle	534	558	593		
+veil	421	560	516	379	414
+vein	496	553	546	451	
+velocity	436	352	417		
+velvet	515	580	569	380	
+velveteen	238	550	470		636
+venom	375	476	456		531
+venture	461	295	399		492
+verb	534	337	357	431	436
+verdict	98		337		
+verdant	98		337		
+verity	295	270	240		611
+versatile	425		327		
+verse	483	500	489		351
+vertical	524	400	478	314	
+very	606	223	243	307	
+vessel	461	571	525		400
+vest	472	575	581	378	
+vestal	177		283		
+vestibule	315	577	530		
+vestment	318	404	365	318	
+vet	456	485	494	382	
+veteran	443		439		
+veto	361	326	336		636
+vial	371	485	424	330	
+vice	457	399	413	422	517
+vicious	440		441		
+victim	511	467	521		423
+victory	498	376	461	476	411
+view	523	379	430	417	
+vigil	370	353	426		550
+vigilance	308	305	383		
+vigour	426				
+vile	404	379	444	393	
+village	524	576	578	528	317
+vine	411	601	564		425
+vinegar	468	645	562	361	
+violation	487	326	386		
+violet	461	541	560	403	344
+violin	468	626	606	479	
+virtue	469	243	351		511
+vise	368	402	432	295	
+vision	529	395	440	440	411
+visitor	560	482	499		311
+vista	280		322		
+vitriol	235	472	294		656
+vivacious	344		407		
+vivid	500		390		
+vocation	458	349	404		
+vodka	573	576	613	485	
+voice	596	485	489		275
+volcano	461	591	627	431	
+volt	435	489	415	362	
+volume	526	418	464		461
+voluntary	558	309	327	427	
+vote	567	389	477	443	486
+voter	519	548	486	450	
+vow	463	329	389	455	458
+vulgar	507	359	420	505	
+wad	354	479	370		525
+wafer	430	536	484	370	
+wage	539	451	466	479	428
+wagon	443				
+wail	426	439	452	426	
+waist	540	563	530	402	325
+wait	577	317	357	380	
+waiting	564		383		
+waive	460	337	350	331	
+walk	625	452	505	470	206
+walking	559	497	574	492	
+wall	596	589	576	439	
+wallet	558	584	617	421	
+walnut	538	642	590	468	
+walrus	506	629	590	420	
+waltz	442	476	524	433	442
+wampum	262	440	415	312	
+wamus	89	276	213	154	
+wand	381	570	513		272
+wander	539	320	406	434	
+want	606	302	361	472	
+war	582	477	551	566	314
+warbler	273	570	541		
+ware	394	368	399	347	
+warehouse	449	578	502		492
+warm	613		441		
+warmth	560	397	551		
+warn	491	315	359	377	
+warrior	368	525	553		374
+wary	436	313	315	373	
+was	604	194	264	272	
+wash	632	447	522	511	186
+waste	577	430	448	489	354
+wasteful	476		373		
+watch	576	487	525	445	
+water	641	616	632	548	153
+watt	436	350	370		578
+wave	518	492	542	402	
+wax	494	569	547	392	331
+way	567	265	315	340	
+we	614	270	389	427	
+weak	562	351	414	466	
+weakness	525	257	386		389
+wealth	557	370	500	528	
+weapon	517	560	546		375
+wear	536	360	328	402	
+weather	623	439	537		292
+web	457	561	602	374	
+wedding	507	509	594		314
+weed	542	600	596	485	
+week	577	383	481	446	
+weep	455	439	523	476	356
+weeping	483		499		
+weigh	536	363	411	400	
+weight	578	462	521	457	
+weird	539	253	466	477	
+welcome	529	350	470		342
+welfare	509	309	362	457	
+well	550	467	522	418	
+welt	266	458	297		578
+wench	321	542	520		
+wept	594	240	308	369	
+went	594	240	308	369	
+were	593	200	243	274	
+west	563	355	426	417	342
+wet	585	478	509	458	
+whack	350	409	486		311
+whale	500	610	623	474	
+whalebone	293	567	470	274	
+wharf	330	573	463		542
+what	608	293	249	389	
+wheat	510	594	577	447	386
+wheel	566	573	576	483	
+when	609	219	231	305	
+where	608	256	255	360	
+wherry	135	378	156		683
+whether	528		207		
+which	555	215	257	290	
+whiff	426	413	461	382	
+while	543	204	302	320	
+whimper	416		441		
+whip	476	570	579	454	397
+whirl	423	402	499		364
+whisker	489	560	542	379	
+whiskey	574	604	592	475	
+whisper	550	490	567		256
+whistle	505	579	574	420	
+whistling	462		497		
+white	590	472	566	464	
+whiteness	412	384	575		353
+who	599	234	261	310	
+whole	592	324	377	462	289
+wholesaler	403	539	409		
+whom	501	243	301	382	
+whoop	320	383	426		414
+why	589	267	251	282	
+wick	438	599	535		353
+wicker	233		390		
+wicket	350	516	473	298	
+wide	569	348	455	520	
+widow	485	547	505		426
+wife	585	562	575	527	
+wig	518	618	587	423	
+wiggle	388	409	491		350
+wigwam	303	583	593		
+wild	572	381	500	537	
+wilderness	405	512	564		422
+will	584	275	322	318	
+willing	537		348		
+willow	425	589	565	395	386
+win	582	364	454		269
+wind	592	552	535	513	
+windmill	368				
+window	621	609	602	507	231
+wine	570	621	624	489	403
+wing	510	595	584	416	
+wink	521	515	501	362	
+winter	615	499	621		236
+wire	556	585	564	378	
+wisdom	510	275	381	518	475
+wise	533	268	412	515	
+wish	556	270	399	423	
+witan	110	267	176	154	
+witch	474	522	589	465	258
+with	608	268	287	305	
+withdrawn	487		324		
+wither	445	384	438	382	
+without	577	267	302	330	
+witness	321		334		
+witless	321		334		
+witty	470		380		
+wizard	473	473	551	410	
+woe	359	252	348		461
+wolf	537	595	610	455	
+woman	623	580	626	583	258
+womb	508	538	529	464	
+won	575	324	418	441	
+wonder	530	305	402		339
+wonderful	548		404		
+wood	574	606	577	505	269
+woodland	423	585	608		381
+wool	540	608	586		247
+work	603	402	458	558	
+worker	587	532	486		308
+workhouse	295	549	419		
+working	609	383	458	534	
+world	607	532	560	561	
+worm	498	611	578		253
+worn	537	357	457	421	
+worse	529	279	339	390	
+worth	542	257	275	332	369
+would	588	202	211	245	
+wound	474	561	570		372
+wrack	309	354	424	303	
+wrap	549	457	482	420	
+wrath	466	304	377	456	
+wreck	516	505	595	488	369
+wren	396	629	551		375
+wrest	319	337	313	207	
+write	560	446	548	492	
+writing	630	467	540		256
+wrong	600	303	344		244
+wrote	574	385	469	438	
+wrung	383	361	352	315	
+xylophone	250				
+yacht	464	606	624	464	363
+yard	522	553	568	482	308
+yawn	567	502	545	400	
+year	601	364	428	437	269
+yell	509	439	501	452	
+yellow	555	537	598	433	
+yelp	333	402	499		378
+yeoman	237		371		
+yet	523	249	237	222	
+yew	321	598	467		483
+yoke	441	542	514	352	
+yolk	471	593	530	373	
+yonder	387	329	360	297	
+yore	214	267	218		617
+you	632	370	400	432	
+young	609		521		
+younger	575	322	391	461	
+your	581	256	289	380	
+yourself	618		426		
+youth	551	439	507	561	431
+yucca	136	316	167		694
+zeal	388	304	347	363	
+zealous	317		337		
+zebra	333				
+zenith	416	430	449	317	
+zero	569	341	483	411	
+zipper	556	599	632	402	
+zodiac	409		415		
+zone	456	392	432	389	478
+zoo	565	583	613	515	
+zoologist	472	525	470		583
+zoology	448	356	364	416	
