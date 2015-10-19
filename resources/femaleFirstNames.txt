@@ -63,8 +63,6 @@ heather
 teresa
 doris
 gloria
-evelyn
-jean
 cheryl
 mildred
 katherine
@@ -345,7 +343,6 @@ janie
 maggie
 kayla
 sonya
-jan
 kristine
 candace
 fannie
@@ -870,7 +867,6 @@ deidre
 chasity
 sheree
 carly
-james
 elvia
 alyce
 deirdre
@@ -1446,7 +1442,6 @@ dawna
 cathie
 billy
 astrid
-sidney
 laureen
 janeen
 holli
@@ -1529,7 +1524,6 @@ anabel
 alesia
 thuy
 tawanda
-richard
 joanie
 tiffanie
 lashanda
@@ -1741,7 +1735,6 @@ zena
 velia
 tanika
 charissa
-thomas
 talia
 margarete
 lavonda
@@ -1909,7 +1902,6 @@ jettie
 jenniffer
 hui
 corrina
-christopher
 carolann
 alena
 tess
@@ -1969,7 +1961,6 @@ rufina
 oliva
 mozell
 marylyn
-madison
 kristian
 kathyrn
 kasandra
@@ -1986,7 +1977,6 @@ aja
 zenobia
 sharen
 sharee
-patrick
 page
 lavinia
 kum
@@ -2305,7 +2295,6 @@ vanesa
 shelba
 shawnda
 sam
-norman
 nikia
 naoma
 marna
@@ -2619,7 +2608,6 @@ monserrate
 minh
 melynda
 melany
-matthew
 lovella
 laure
 kirby
@@ -2874,7 +2862,6 @@ janay
 jacquiline
 hilde
 fae
-eugene
 elois
 echo
 devorah
@@ -3359,7 +3346,6 @@ izetta
 hiedi
 heike
 hassie
-harold
 giuseppina
 georgann
 fidela
@@ -3472,7 +3458,6 @@ lisandra
 leo
 lekisha
 lean
-laurence
 lakendra
 krystin
 kortney
@@ -3667,7 +3652,6 @@ anjelica
 anja
 alfredia
 aleisha
-adam
 zada
 yuonne
 willodean

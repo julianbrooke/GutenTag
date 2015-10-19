@@ -1,7 +1,7 @@
 @charset "UTF-8";
 /* CSS Document */
-a:link {color:#376091;text-decoration:none;}      /* unvisited link */
-a:hover {color:#376091;border-bottom:2px solid #339900;}  /* mouse over link */
+a:link {color:#376091;text-decoration:none;font-weight:bold;}      /* unvisited link */
+a:hover {color:#376091;border-bottom:2px solid #376091;}  /* mouse over link */
 a:active {color:#376091;}  /* selected link */
 a:visited {color:#376091;}
 p {margin:0;}
@@ -736,6 +736,7 @@ div#genre div.defineframe div table tr td{
 	font-weight:900;
 	padding:15px 5px 5px 5px;
 }
+
 #downloadbutton:hover {
     cursor:pointer;
 }
