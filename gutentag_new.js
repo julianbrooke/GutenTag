@@ -201,7 +201,9 @@ function activate_subcorpus_function(element) {
 	element.className='activesubcorpus';  
 	element.children[0].className = 'corpusheader';
 	element.children[0].children[0].innerHTML = 'Define ' + element.children[0].children[0].innerHTML;
-	active_subcorpus = parseInt(element.id.substr(element.id.length - 1));		
+	active_subcorpus = parseInt(element.id.substr(element.id.length - 1));	
+	PANEL_NORMAL_CLASS    = "";
+   PANEL_COLLAPSED_CLASS = "hidden";	
 	animateTogglePanel(element.children[1]);
 
 }
@@ -1044,6 +1046,7 @@ function prepare_data_for_analysis() {
  	}
  		else {
  		data["tags_for_analysis"].push('persName');
+ 		data['not_display_tags'] = [];
  		}
  		
  	data['output_file'] =thisform.elements['output_file'].value;
@@ -1089,6 +1092,9 @@ function prepare_data_for_export(){
  	
  	if (thisform.elements['persName'].value=="false") {
  		data['not_display_tags'] = ['persName']
+ 	}
+ 	else {
+ 		data['not_display_tags'] = []
  	}
  	
 	
