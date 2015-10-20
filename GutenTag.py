@@ -2775,9 +2775,21 @@ class NameTagger():
                 final_set[name] = self.gender_classifier.classify(name.split(" ")[0].lower())
 
         lex_tagger = LexiconTagger(final_set,"persName","gender",self.tokenizer,case_sensitive=True)
+        pre_tag_count = len(text.tags)
         for tag in text.tags:
             if tag.tag == "s":
                 text.tags.extend(lex_tagger.tag_span(text.tokens,tag.start,tag.end))
+
+        #add xml-id to first instance of tag
+        i = pre_tag_count + 1
+        done = set()
+        while i < len(text.tags):
+            name = "_".join(text.tokens[text.tags[i].start:text.tags[i].end])
+            if name not in done:
+                text.tags[i].attributes["xml:id"] = name
+                done.add(name)
+            i+= 1
+    
 
 
 # Tagger which tags said elements (speech in fiction and nonfiction. Finds
@@ -2857,14 +2869,14 @@ class SaidTagger():
                         next_same_sent = False
                     next_distance = text.tags[j].start - tag.end
                     if prev_same_sent and not next_same_sent:
-                        tag.add_attribute("who","_".join(text.tokens[closest_name.start:closest_name.end]))
+                        tag.add_attribute("who","#" + "_".join(text.tokens[closest_name.start:closest_name.end]))
                     elif next_same_sent and not prev_same_sent or next_distance < prev_distance:
-                        tag.add_attribute("who","_".join(text.tokens[text.tags[j].start:text.tags[j].end]))
+                        tag.add_attribute("who","#" + "_".join(text.tokens[text.tags[j].start:text.tags[j].end]))
                     elif closest_name:
-                        tag.add_attribute("who","_".join(text.tokens[closest_name.start:closest_name.end]))
+                        tag.add_attribute("who", "#" + "_".join(text.tokens[closest_name.start:closest_name.end]))
                 else:
                     if closest_name:
-                        tag.add_attribute("who","_".join(text.tokens[closest_name.start:closest_name.end]))
+                        tag.add_attribute("who","#" + "_".join(text.tokens[closest_name.start:closest_name.end]))
                 
                 i = j
             else:
