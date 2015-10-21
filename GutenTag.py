@@ -566,12 +566,19 @@ class Tokenizer:
     def fix_brackets(self,raw_text):
         return self.left_bracket.sub(u'\\1 [',self.right_bracket.sub(u'] \\1',raw_text))
 
+    def fix_sentence_quotes(self,sentences):
+        for i in range(1, len(sentences)):
+            if sentences[i].startswith(u'”') or sentences[i].startswith(u'’'):
+                sentences[i-1] += sentences[i][:1]
+                sentences[i] = sentences[i][1:] 
+
     def tokenize_span(self,raw_text):
         new_text = self.fix_quotes(raw_text)
         new_text = self.fix_brackets(new_text)
         new_text = new_text.replace("_","")
         all_sentences = []
         sentences = self.sentence_tokenizer.tokenize(new_text)
+        self.fix_sentence_quotes(sentences)
         new_sentences = []
         i = 0
         for sentence in sentences:
@@ -654,6 +661,10 @@ class Tag:
         if self.attributes == None:
             self.attributes = {}
         self.attributes[key] = value
+
+    def del_attribute(self,key):
+        if not self.attributes == None and key in self.attributes:
+            del self.attributes[key]
 
     def get_single_tag(self):
         if self.tag == "div" and self.attributes and "type" in self.attributes:
@@ -2877,7 +2888,6 @@ class SaidTagger():
                 else:
                     if closest_name:
                         tag.add_attribute("who","#" + "_".join(text.tokens[closest_name.start:closest_name.end]))
-                
                 i = j
             else:
                 i += 1
@@ -3308,12 +3318,14 @@ def split_overlapping_tags(text):
     text.tags.extend(new_tags)
 
 
-def remove_useless_tags(tags,options):  #this prevents display bug
+def remove_useless_tags(tags,options):  #this prevents display and said bug
     not_wanted = []
     for i in range(len(tags)):
         tag = tags[i]
         if tag.get_single_tag() in options["not_display_tags"] and not tag.get_single_tag() in options["not_wanted_tags"]:
             not_wanted.append(i)
+        if tag.tag == "said" and "persName" in options["not_display_tags"]:
+            tag.del_attribute("who")
     not_wanted.sort(reverse=True)
     for index in not_wanted:
         del tags[index]
