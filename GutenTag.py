@@ -569,7 +569,7 @@ class Tokenizer:
     def fix_sentence_quotes(self,sentences):
         for i in range(1, len(sentences)):
             if sentences[i].startswith(u'”') or sentences[i].startswith(u'’'):
-                sentences[i-1] += sentences[i][:1]
+                sentences[i-1] += " " + sentences[i][:1]
                 sentences[i] = sentences[i][1:] 
 
     def tokenize_span(self,raw_text):
@@ -2815,6 +2815,7 @@ class SaidTagger():
         for tag in text.tags:
             if tag.tag == "p":
                  last_opening = None
+                 seen_punct = False
                  for i in range(tag.start,tag.end):
                     if text.tokens[i] == u'“':
                         last_opening = i
@@ -2825,7 +2826,7 @@ class SaidTagger():
                             new_tags.append(Tag(last_opening,i + 1,"said",{}))
                             last_opening = None
                             
-                    elif last_opening and text.tokens[i] in self.punct:
+                    elif text.tokens[i] in self.punct:
                         seen_punct = True
         text.tags.extend(new_tags)
                             
