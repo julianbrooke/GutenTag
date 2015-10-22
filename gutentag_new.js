@@ -201,7 +201,9 @@ function activate_subcorpus_function(element) {
 	element.className='activesubcorpus';  
 	element.children[0].className = 'corpusheader';
 	element.children[0].children[0].innerHTML = 'Define ' + element.children[0].children[0].innerHTML;
-	active_subcorpus = parseInt(element.id.substr(element.id.length - 1));		
+	active_subcorpus = parseInt(element.id.substr(element.id.length - 1));	
+	PANEL_NORMAL_CLASS    = "";
+   PANEL_COLLAPSED_CLASS = "hidden";	
 	animateTogglePanel(element.children[1]);
 
 }
@@ -327,7 +329,7 @@ function update_check_boxes(form_element){
 			theform.elements['head'].checked = true;
 			theform.elements['back'].checked = true;
 			theform.elements['afterword'].checked = true;
-			theform.elements['endnotes'].checked = true;
+			theform.elements['note'].checked = true;
 			break;
 		case "2":
 			theform.elements['front'].parentNode.parentNode.parentNode.parentNode.parentNode.className = "withintextoptions";
@@ -340,7 +342,7 @@ function update_check_boxes(form_element){
 			theform.elements['head'].checked = false;
 			theform.elements['back'].checked = false;
 			theform.elements['afterword'].checked = true;
-			theform.elements['endnotes'].checked = false;
+			theform.elements['note'].checked = false;
 			break;
 			
 		case "3":
@@ -354,7 +356,7 @@ function update_check_boxes(form_element){
 			theform.elements['head'].checked = false;
 			theform.elements['back'].checked = false;
 			theform.elements['afterword'].checked = false;
-			theform.elements['endnotes'].checked = false;
+			theform.elements['note'].checked = false;
 			break;
 			
 		case "4": 
@@ -384,25 +386,26 @@ function update_check_boxes(form_element){
 			break;
 			
 		case "7":
-			theform.elements['lg'].parentNode.parentNode.parentNode.parentNode.parentNode.className = "withintextoptions";
-			theform.elements['lg'].checked = true;
+			theform.elements['lg|poetry'].parentNode.parentNode.parentNode.parentNode.parentNode.className = "withintextoptions";
+			theform.elements['lg|poetry'].checked = true;
 			theform.elements['p|poetry'].checked = true;
 			break;
 			
 		
 		case "8":	
-			theform.elements['lg'].parentNode.parentNode.parentNode.parentNode.parentNode.className = "withintextoptions";		
-			theform.elements['lg'].checked = true;
+			theform.elements['lg|poetry'].parentNode.parentNode.parentNode.parentNode.parentNode.className = "withintextoptions";		
+			theform.elements['lg|poetry'].checked = true;
 			theform.elements['p|poetry'].checked = false;
 			break;                             
 			
 	   case "9":
-	   	theform.elements['lg'].parentNode.parentNode.parentNode.parentNode.parentNode.className = "withintextoptions";
+	   	theform.elements['castList'].parentNode.parentNode.parentNode.parentNode.parentNode.className = "withintextoptions";
 	   	theform.elements['castList'].checked = true;
 	   	theform.elements['speaker'].checked = true;
 	   	theform.elements['set'].checked = true;
 	   	theform.elements['stage'].checked = true;
-	   	theform.elements['s'].checked = true;
+	   	theform.elements['p|play'].checked = true;
+	   	theform.elements['lg|play'].checked = true;
 	   	theform.elements['div:epilogue|play'].checked = true;
 	   	break;
 	   	
@@ -412,7 +415,8 @@ function update_check_boxes(form_element){
 	   	theform.elements['speaker'].checked = false;
 	   	theform.elements['set'].checked = false;
 	   	theform.elements['stage'].checked = false;
-	   	theform.elements['s'].checked = true;
+	   	theform.elements['p|play'].checked = true;
+	   	theform.elements['lg|play'].checked = true;
 	   	theform.elements['div:epilogue|play'].checked = false;
 	   	break;	   	
 
@@ -423,7 +427,8 @@ function update_check_boxes(form_element){
 	   	theform.elements['speaker'].checked = false;
 	   	theform.elements['set'].checked = true;
 	   	theform.elements['stage'].checked = true;
-	   	theform.elements['s'].checked = false;
+	   	theform.elements['p|play'].checked = false;
+	   	theform.elements['lg|play'].checked = false;
 	   	theform.elements['div:epilogue|play'].checked = false;
 	   	break;	
 
@@ -608,7 +613,7 @@ function get_subcorpus_info(data) {
 		
 		
 		if (thisform.elements['publication_country'].options[thisform.elements['publication_country'].selectedIndex].value != "Any") {
-			text_restriction["publication_country"] = thisform.elements['publication_country'].options[thisform.elements['publication_country'].selectedIndex].value
+			text_restriction["Publication Country"] = thisform.elements['publication_country'].options[thisform.elements['publication_country'].selectedIndex].value
 		}	
 		
 
@@ -625,7 +630,7 @@ function get_subcorpus_info(data) {
 		text_restriction["wanted_tags"] = [];
 		text_restriction["not_wanted_tags"] = [];
 		
-		var struct_tags = ["front","docTitle","div:preface","contents","div:introduction","body","head","back","afterword","endnotes","said","div:prologue","div:epilogue|play","div:epilogue|prose" ,"lg","castList","speaker","set","stage","s","p|poetry","p|prose"];
+		var struct_tags = ["front","docTitle","div:preface","contents","div:introduction","body","head","back","afterword","note","said","div:prologue","div:epilogue|play","div:epilogue|prose" ,"lg|poetry", "lg|play","castList","speaker","set","stage","p|play","p|poetry","p|prose"];
 		
 		for (var i = 0; i < struct_tags.length; i++) {
 	   	if (thisform.elements[struct_tags[i]].checked) {
@@ -879,8 +884,8 @@ function load_parameters() {
 			}
 			
 			
-			if ('publication_country' in restrictions) {
-			 	selectElement(thisform.elements['publication_country'],restrictions['publication_country']);
+			if ('Publication Country' in restrictions) {
+			 	selectElement(thisform.elements['publication_country'],restrictions['Publication Country']);
 			}
 			else {
 			 	selectElement(thisform.elements['publication_country'],"Any");
@@ -1041,6 +1046,7 @@ function prepare_data_for_analysis() {
  	}
  		else {
  		data["tags_for_analysis"].push('persName');
+ 		data['not_display_tags'] = [];
  		}
  		
  	data['output_file'] =thisform.elements['output_file'].value;
@@ -1086,6 +1092,9 @@ function prepare_data_for_export(){
  	
  	if (thisform.elements['persName'].value=="false") {
  		data['not_display_tags'] = ['persName']
+ 	}
+ 	else {
+ 		data['not_display_tags'] = []
  	}
  	
 	
