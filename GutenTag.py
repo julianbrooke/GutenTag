@@ -2,7 +2,7 @@
 
 version = "0.1.3"
 
-standalone = True
+standalone = False
 online = False
 
 online_max_texts = 500
