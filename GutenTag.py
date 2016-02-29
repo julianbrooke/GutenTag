@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
-version = "0.1.2"
+version = "0.1.3"
 
-standalone = False
+standalone = True
 online = False
+
+online_max_texts = 500
+http_port = 8000
 
 import sys
 
@@ -33,9 +36,9 @@ import codecs
 import re
 import copy
 import encodings
+import io
 
 import StringIO
-import time
 import random
 import webbrowser
 from collections import defaultdict
@@ -47,6 +50,8 @@ from multiprocessing import cpu_count,Queue,Process,Lock,freeze_support
 from nltk.tokenize import regexp
 if not standalone:
     import nltk.data
+if online:
+    import urllib2
 from threading import Thread
 import json
 
@@ -291,7 +296,7 @@ class GenderClassifier:
 
 class GenreClassifier:
 
-    common_words = set(["how","you","the","a","it","he","she","i","they","we","at","and","but","when","there","as","if","after","before","this","that","all","what","to","from","such","here","with","for","some","where","now","dear","yours","your","january","febuary","march","april","may","june","july","august","september","october","november","december","monday","tuesday","wednesday","thursday","friday","saturday","sunday"])
+    common_words = set(["do","god","three","thou","thus","nor","says","say","said","any","all","have","had","can","one","is","are","am","be","was","were","which","on","my","how","you","the","a","it","he","she","his","her","i","they","we","at","and","but","when","there","as","who","if","under","over","after","before","this","that","all","what","to","by","in","from","such","here","with","for","of","yes","ah","oh","so","our","no", "not","some","where","now","come","go","dear","then","than","these","those","up","down","out","yours","let","your","there","january","febuary","march","april","may","june","july","august","september","october","november","december","monday","tuesday","wednesday","thursday","friday","saturday","sunday"])
     likely_delimin = set([".","-",":","<","(","_","["])
     narrative_words = set(["said","asked","replied","answered","cried","answered","responded","added","ejaculated","rejoined","inquired"])
     fiction_title = set(["novel","stories","story","adventures","tale","tales","mystery"])
@@ -546,11 +551,11 @@ class Tokenizer:
 
         
 
-        self.left_single_quote = re.compile("(\s|^)'([^ ])")
-        self.right_single_quote = re.compile("([^ ])'($|[\s])")
+        self.left_single_quote = re.compile("([[\s(-]|^)'([^ ])")
+        self.right_single_quote = re.compile("([^ ])'($|[])\s);,.?!-])")
 
-        self.left_double_quote = re.compile('(\s|^)"([^ ])')
-        self.right_double_quote = re.compile('([^ ])"($|[\s])')
+        self.left_double_quote = re.compile('([[\s(-]|^)"([^ ])')
+        self.right_double_quote = re.compile('([^ ])"($|[])\s;,.?!-])')
         self.left_bracket = re.compile('([,-])\[')
         self.right_bracket = re.compile('\]([,-])')      
         f = open('resources/english.pickle')
@@ -560,7 +565,7 @@ class Tokenizer:
 
 
     def fix_quotes(self,raw_text):
-        return self.left_double_quote.sub(u'\\1 “ \\2',self.right_double_quote.sub(u'\\1 ” \\2',self.left_single_quote.sub(u'\\1 ‘ \\2',self.right_single_quote.sub(u'\\1 ’ \\2',raw_text))))
+        return self.left_single_quote.sub(u'\\1 ‘ \\2',self.right_single_quote.sub(u'\\1 ’ \\2',self.left_double_quote.sub(u'\\1 “ \\2',self.right_double_quote.sub(u'\\1 ” \\2',raw_text))))
 
 
     def fix_brackets(self,raw_text):
@@ -572,10 +577,11 @@ class Tokenizer:
                 sentences[i-1] += " " + sentences[i][:1]
                 sentences[i] = sentences[i][1:] 
 
+
     def tokenize_span(self,raw_text):
-        new_text = self.fix_quotes(raw_text)
+        new_text = raw_text.replace("_","")
+        new_text = self.fix_quotes(new_text)
         new_text = self.fix_brackets(new_text)
-        new_text = new_text.replace("_","")
         all_sentences = []
         sentences = self.sentence_tokenizer.tokenize(new_text)
         self.fix_sentence_quotes(sentences)
@@ -589,17 +595,46 @@ class Tokenizer:
             if "hYpppHeN" in sentence[0]:
                 sentence[0] = sentence[0].replace("hYpppHeN", "-")
             while i < len(sentence) -2:
-                if sentence[i+1] == "'" and sentence[i+2] in self.contractions:
-                    sentence[i + 1] += sentence[i+2]
-                    del sentence[i+2]                      
-                elif sentence[i+1] == "'" and sentence[i+2] == 't' and sentence[i].endswith('n'):
-                    if not sentence[i] == "can":
-                        sentence[i] = sentence[i][:-1]
-                    sentence[i+1] = "n't"
-                    del sentence[i+2]
-                elif sentence[i+1] == ".":
+                if sentence[i+1] == "'":
+                    if sentence[i+2] in self.contractions:
+                        sentence[i + 1] += sentence[i+2]
+                        del sentence[i+2]                      
+                    elif sentence[i+2] == 't' and sentence[i].endswith('n'):
+                        if not sentence[i] == "can":
+                            sentence[i] = sentence[i][:-1]
+                        sentence[i+1] = "n't"
+                        del sentence[i+2]
+                    else:
+                        sentence[i] += sentence[i+1] + sentence[i+2]
+                        del sentence[i+2] 
+                        del sentence[i+1]
+                        i+= 1
+                        continue
+                elif sentence[i+1] == "." and not (sentence[i+2] == u"”" or sentence[i+2] == u'’'):
                     sentence[i] += "."
-                    del sentence[i+1]  
+                    del sentence[i+1]
+                '''
+                elif sentence[i+1] ==  u'‘':
+                    found = False
+                    for j in range(i+3,len(sentence)):
+                        if sentence[j] == u'’':
+                            found = True
+                    if not found:
+                        print sentence
+                        print [raw_text]
+                        sentence[i+1] += sentence[i+2]
+                        del sentence[i+2]
+                elif sentence[i+1] ==  u'’':
+                    found = False
+                    for j in range(i,-1,-1):
+                        if sentence[j] == u'‘':
+                            found = True
+                    if not found:
+                        print sentence
+                        print [raw_text]
+                        sentence[i] += sentence[i+1]
+                        del sentence[i+1]
+                '''
                 if sentence[i+1].startswith("hYpppHeN"):
                     sentence= sentence[:i+1] + ["-"] + [sentence[i+1][8:]] + sentence[i+2:]
                 if sentence[i+1].endswith("hYpppHeN"):
@@ -1010,11 +1045,12 @@ class StructureTagger:
                         except:
                             pass
 
-            if line.isdigit() and int(line) < 100:
-                if "digit_only" not in feature_dict:
-                    feature_dict["digit_only"] = {}
+            if line.isdigit():
                 try:
-                    feature_dict["digit_only"][i] = int(line)
+                    if int(line) < 100:
+                        if "digit_only" not in feature_dict:
+                            feature_dict["digit_only"] = {}
+                        feature_dict["digit_only"][i] = int(line)
                 except:
                     pass
 
@@ -2628,7 +2664,7 @@ class RegexTagger:
 class LexiconTagger:
             
     
-    def __init__(self, lexicon, tag_name, attribute_name,tokenizer,case_sensitive=False):
+    def __init__(self, lexicon, tag_name, attribute_name,tokenizer,case_sensitive=False,already_tokenized=False):
         self.name = tag_name
         self.attribute = attribute_name
         self.lexicon = lexicon
@@ -2645,15 +2681,17 @@ class LexiconTagger:
                 except:
                     self.lexicon.append(word.lower())
                     self.lexicon.remove(word)
-                
+
             
         self.multiword_trie = {}
         for entry in lexicon:
-            words = tokenizer.tokenize_span(entry)[0]
+            if already_tokenized:
+                words = entry.split(" ")
+            else:
+                words = tokenizer.tokenize_span(entry)[0]
             if len(words) > 1:
-                self.add_to_multiword_trie(words,entry)
+                self.add_to_multiword_trie(words,entry) 
 
-                
 
     def add_to_multiword_trie(self,words,entry):     
         curr_trie = self.multiword_trie
@@ -2663,13 +2701,14 @@ class LexiconTagger:
             else:
                 try:
                     curr_trie[words[i]].startswith("")
-                    curr_trie[-1] = curr_trie[words[i]]
-                    curr_trie[words[i]] = {}
+                    temp = {} 
+                    temp[-1] = curr_trie[words[i]]
+                    curr_trie[words[i]] = temp
                 except:
                     pass
             curr_trie = curr_trie[words[i]]
         if words[-1] in curr_trie:
-            curr_trie[-1] = entry
+            curr_trie[words[-1]][-1] = entry
         else:
             curr_trie[words[-1]] = entry
 
@@ -2706,15 +2745,15 @@ class LexiconTagger:
         new_tags = []
         while i < end:
             if self.multiword_trie:
-                match_len, lex_entry = self.match(tokens,i,end)
+                match_end, lex_entry = self.match(tokens,i,end)
             else:
                 lex_entry = None
             if lex_entry:
                 if self.attribute:
-                    new_tags.append(Tag(i,match_len,self.name,{self.attribute:self.lexicon[lex_entry]}))
+                    new_tags.append(Tag(i,match_end,self.name,{self.attribute:self.lexicon[lex_entry]}))
                 else:
-                    new_tags.append(Tag(i,match_len,self.name,None))
-                i += match_len
+                    new_tags.append(Tag(i,match_end,self.name,None))
+                i = match_end
             else:
                 if not self.case_sensitive and not tokens[i].islower():
                     word = tokens[i].lower()
@@ -2736,10 +2775,19 @@ class LexiconTagger:
                         
 # tags names in the text, based on capitalization and frequency
 
+
+
+
 class NameTagger():
+    midname_function_words = set(["of","van","de","the","'s","del","delgi","la","von","du"])
+    internal_sentence = set([u'“',u'‘',":"])
+    not_wanted_capitalized = set(["I","Monday","Tuesday", "Wednesday","Thursday","Friday","Saturday","Sunday","January","February","March","April","May","June","July","August","September","October","November","December"])
 
     count_filter = 10
     max_name_length = 3
+    #count_filter = 0
+    #max_name_length = 8
+    add_thes = True
 
     def __init__(self,tokenizer):
         self.bad_names = set()
@@ -2753,6 +2801,8 @@ class NameTagger():
         self.tokenizer = tokenizer
 
 
+    def good_name(self,word):
+        return word.istitle() and word not in self.not_wanted_capitalized
 
     def add_name_tags(self,text):
         names_count_dict = {}
@@ -2761,11 +2811,14 @@ class NameTagger():
                 in_name = False
                 start_index = -1
                 start = tag.start + 1
-                if text.tokens[tag.start] == u'“' or text.tokens[tag.start] == u'‘':
-                    start += 1
                 for i in range(start, tag.end):
+                    if i > 0 and text.tokens[i-1] in self.internal_sentence:
+                        continue
+
+
                     add_name = False
-                    if text.tokens[i] and text.tokens[i].istitle():
+                    if text.tokens[i] and (self.good_name(text.tokens[i]) or (self.add_thes and text.tokens[i] =="the" and i < tag.end -1 and text.tokens[i+1] and self.good_name(text.tokens[i+1])) or (in_name and text.tokens[i] in self.midname_function_words and i < tag.end -1 and text.tokens[i+1] and (self.good_name(text.tokens[i+1]) or (text.tokens[i+1] in self.midname_function_words and i < tag.end -2 and text.tokens[i+2] and self.good_name(text.tokens[i+2]))))):
+
                         if not in_name:
                             in_name = True
                             start_index = i
@@ -2777,15 +2830,23 @@ class NameTagger():
                             add_name = True
                     if add_name:
                         name = " ".join(text.tokens[start_index:i])
-                        names_count_dict[name] = names_count_dict.get(name,0) + 1
+                        if len(name) != 1:
+                            names_count_dict[name] = names_count_dict.get(name,0) + 1
                         in_name = False
+                if in_name:
+                    name = " ".join(text.tokens[start_index:i + 1])
+                    if len(name) != 1:
+                        names_count_dict[name] = names_count_dict.get(name,0) + 1
+
         final_set = {}
         
         for name in names_count_dict:
-            if names_count_dict[name] > self.count_filter and name not in self.bad_names:
+            if names_count_dict[name] > self.count_filter and name not in self.bad_names and not (self.add_thes and name.startswith("the ") and names_count_dict.get(name[4:],0) >= names_count_dict[name]):
                 final_set[name] = self.gender_classifier.classify(name.split(" ")[0].lower())
+                if self.add_thes and name.startswith("the "):
+                    final_set["T" + name[1:]] = final_set[name]
 
-        lex_tagger = LexiconTagger(final_set,"persName","gender",self.tokenizer,case_sensitive=True)
+        lex_tagger = LexiconTagger(final_set,"persName","gender",self.tokenizer,case_sensitive=True,already_tokenized=True)
         pre_tag_count = len(text.tags)
         for tag in text.tags:
             if tag.tag == "s":
@@ -3090,8 +3151,8 @@ class LexicalTagger:
                     else:
                         lexicon = []
                         for line in f:
-                            line = line.strip().split("\t")
-                            if line[index]:
+                            line = line.split("\t")
+                            if line[index].strip():
                                 lexicon.append(line[0])
                         
                     
@@ -3472,8 +3533,6 @@ class GutenTextTagger:
             print "fail"
             return None,tag_dict
         f.close()
-        load_time = time.time() - start               
-        start = time.time()
         cleaned_text = self.text_cleaner.clean_text(raw_text)
         clean_time = time.time() - start
         text_restrictions = self.options["subcorpus" + str(tag_dict["subcorpus"]) + "_restrictions"]
@@ -3486,10 +3545,14 @@ class GutenTextTagger:
             tag_dict["genre_features"] = self.genre_classifier.get_feature_dict(cleaned_text,tag_dict)
         elif self.options["mode"] == "tag_genres_and_get_pub_info":
             tag_dict["Genre"] =  self.genre_classifier.classify_genre(cleaned_text,tag_dict)
+      
             
         text = self.structure_tagger.find_structure_and_tokenize(cleaned_text,tag_dict)
+
+
             
-        text = self.lexical_tagger.do_lexical_tagging(text,tag_dict)           
+        text = self.lexical_tagger.do_lexical_tagging(text,tag_dict)
+
 
         if self.options["mode"] == "tag_genres_and_get_pub_info":
             dates = set()
@@ -3506,8 +3569,7 @@ class GutenTextTagger:
             if dates:
                 tag_dict["Publication Date"] = min(dates)
             if countries:
-                tag_dict["Publication Country"] = list(countries)
-                    
+                tag_dict["Publication Country"] = list(countries)        
 
         return text,tag_dict
     
@@ -3557,7 +3619,16 @@ def do_analysis(text,options,tag_dict):
                     
             tag_loc += 1
     tag_dict["token_count"] = token_count
-        
+
+
+def get_filename(tag_dict,options):
+    try:
+        filename = re.sub("[^\w]","",tag_dict["Title"][0] + "by" + tag_dict["Author"][0])
+    except:
+        filename = re.sub("[^\w]","",tag_dict["Title"][0])
+    if options["num_subcorpora"] > 1:
+        filename = "sub" + str(tag_dict["subcorpus"]) + "_" + filename
+    return filename[:50] +tag_dict["Num"]
 
 # the function for one of the worker threads which deals with processing of individual texts
 def guten_process(options,sendQ,returnQ,output_lock,fout):
@@ -3570,6 +3641,7 @@ def guten_process(options,sendQ,returnQ,output_lock,fout):
     while True:
         tag_dict = sendQ.get()
         text, tag_dict = tagger.process_text(tag_dict)
+        
         options["not_wanted_tags"] = set(options["subcorpus" + str(tag_dict["subcorpus"]) + "_restrictions"]["not_wanted_tags"])
         options["wanted_tags"] = set(options["subcorpus" + str(tag_dict["subcorpus"]) + "_restrictions"]["wanted_tags"])
         if text:
@@ -3579,13 +3651,7 @@ def guten_process(options,sendQ,returnQ,output_lock,fout):
                     fout = StringIO.StringIO()
                 else:
                     if options["output_mode"] == "multiple":
-                        try:
-                            filename = re.sub("[^\w]","",tag_dict["Title"][0] + "by" + tag_dict["Author"][0])
-                        except:
-                            filename = re.sub("[^\w]","",tag_dict["Title"][0])
-                        if options["num_subcorpora"] > 1:
-                            filename = "sub" + str(tag_dict["subcorpus"]) + "_" + filename
-                        filename = filename[:50] +tag_dict["Num"]
+                        filename = get_filename(tag_dict,options)
                         fout = codecs.open(options["output_dir"] + "/" + filename + file_suffix,"w",encoding="utf-8")
                     elif options["output_mode"] == "single":
                         output_lock.acquire()
@@ -3600,6 +3666,7 @@ def guten_process(options,sendQ,returnQ,output_lock,fout):
                     fout.write("</TEI>")
                 if online:
                     tag_dict["text"] = fout.getvalue()
+                    tag_dict["filename"] = get_filename(tag_dict,options) + file_suffix
                 elif options["output_mode"] == "single":
                     output_lock.release()
                 else:
@@ -3620,6 +3687,7 @@ def guten_process(options,sendQ,returnQ,output_lock,fout):
             returnQ.put(tag_dict)
         else:
             returnQ.put(False)
+
 
 
 # the main GutenTag class, iterates through the corpus and check if texts
@@ -3643,7 +3711,10 @@ class GutenTag:
             fout = None
         self.metadata_reader = MetadataReader()
         self.worker_threads = []
-        num_threads = cpu_count()/2 # use half the resources on the system
+        if online:
+            num_threads = cpu_count() # use the whole server
+        else:
+            num_threads = cpu_count()/2 # use half the resources on the system
         self.sendQ = Queue()
         self.returnQ = Queue()
         self.output_lock = Lock()
@@ -3661,6 +3732,7 @@ class GutenTag:
             self.genre_lookup = {}
             self.publication_date_lookup = {}
             self.publication_country_lookup = {}
+
 
         self.gender_classifier = GenderClassifier()
 
@@ -3776,7 +3848,11 @@ class GutenTag:
                     yield tag_dict
 
             if active == len(self.worker_threads) or ("maxnum" in self.options and active == self.options["maxnum"] - count):
-                tag_dict = self.returnQ.get()
+                try:
+                    tag_dict = self.returnQ.get(timeout=100)
+                    print "timed out, exiting!"
+                except:
+                    return
                 active -= 1
                 if tag_dict:
                     count += 1
@@ -3784,7 +3860,11 @@ class GutenTag:
 
         if i == len(filenames):
             while active > 0 and ("maxnum" not in self.options or count < self.options["maxnum"]):
-                tag_dict = self.returnQ.get()
+                try:
+                    tag_dict = self.returnQ.get(timeout=100)
+                except:
+                    print "timed out, exiting!"
+                    return
                 active -= 1
                 if tag_dict:
                     count += 1
@@ -3792,24 +3872,41 @@ class GutenTag:
                     
         print "SUCCESSFUL COUNT"
         print count 
-
       
 
 # the main thread
+def sub_guten_process(options,result_Q):
+    if online and options["mode"] == "export":
+        output_file = io.BytesIO()
+        local_zipfile = zipfile.ZipFile(output_file,"w",zipfile.ZIP_DEFLATED)
+    gr = GutenTag(options)
+    for tags in gr.iterate_over_texts():
+        if tags:
+            if online and options["mode"] == "export" and "filename" in tags:
+                local_zipfile.writestr(tags["filename"].encode("utf-8"),tags["text"].encode("utf-8"))
+                del tags["filename"]
+                del tags["text"]
+            result_Q.put(tags)
+    output_dict = {"user_id":options["id"],"done":True}
+    if online and options["mode"] == "export":
+        local_zipfile.close()
+        output_dict["zipfile"] = output_file.getvalue()
+        if "output_dir" in options:
+            output_dict["filename"] = options["output_dir"] + ".zip"
+        else:
+            output_dict["filename"] = "gutentag_result.zip"
+    result_Q.put(output_dict)
+
+
 def main_guten_process(main_Q,result_Q):
     while True:
         options = main_Q.get()
         if options == -1:
             break
-        gr = GutenTag(options)
-        for tags in gr.iterate_over_texts():
-            if tags:
-                result_Q.put(tags)
 
-        result_Q.put({"user_id":options["id"],"done":True})
+        mainprocess = Process(target=sub_guten_process,args=(options,result_Q))
+        mainprocess.start()
 
-
-    
 
 
 # this class handles the communication between the internal GutenTag functions
@@ -3820,11 +3917,18 @@ class GutentagRequestHandler(SocketServer.BaseRequestHandler):
         self.data = self.request.recv(4096).strip()
         if self.data.startswith("id:"):
             ID = self.data.split(":")[1]
-            while not result_Q.empty():
-                result = result_Q.get()
-                results_dict[result["user_id"]].append(result)
-            self.request.sendall(json.dumps(results_dict[ID]))
-            results_dict[ID] = []
+            if ID in download_dict:
+                self.request.sendall(download_dict[ID])
+                del download_dict[ID]
+            else:
+                while not result_Q.empty():
+                    result = result_Q.get()
+                    if "zipfile" in result:
+                        download_dict[ID] = result['zipfile']
+                        del result['zipfile']
+                    results_dict[result["user_id"]].append(result)
+                self.request.sendall(json.dumps(results_dict[ID]))
+                results_dict[ID] = []
                 
         else:
             options = json.loads(self.data)
@@ -3832,9 +3936,9 @@ class GutentagRequestHandler(SocketServer.BaseRequestHandler):
             options["tagger"] = "simple"
             if online:
                 if not "maxnum" in options:
-                    options["maxnum"] = 10
+                    options["maxnum"] = online_max_texts
                 else:
-                    options["maxnum"] = min(options["maxnum"],10)
+                    options["maxnum"] = min(options["maxnum"],online_max_texts)
             
             if not online and options["mode"] == "export" and not os.path.exists(options["output_dir"]):
                 os.mkdir(options["output_dir"])
@@ -3867,6 +3971,12 @@ def insert_dynamic(text):
             text = text.replace("<!-- user lists -->", new_options)
 
     return text
+
+def process_main_page(text):
+    if online:
+        return text.replace("Output directory (will be created)","Output filename (.zip extension will be added)").replace('class="saveparams"','class="hidden"').replace('class="loadsaved"','class="hidden"') 
+    else:
+        return insert_dynamic(text)
     
 class GutentagWebserver(BaseHTTPRequestHandler):
 
@@ -3887,19 +3997,19 @@ class GutentagWebserver(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-type',	'text/html; charset=utf-8')
                 self.end_headers()
-                self.wfile.write(insert_dynamic(f.read()).encode("utf-8"))
+                self.wfile.write(process_main_page(f.read()).encode("utf-8"))
                 f.close()
                 return
         else:
             self.send_response(200)
             if ".cgi" in self.path:
-                self.send_header('Content-type',	'text/html; charset=utf-8')
-                self.end_headers()
                 cgi_dict = {}
                 for pair in [item.split("=") for item in self.path.split("?")[-1].split("&")]:
                     cgi_dict[pair[0]] = unquote(pair[1]).decode("utf-8").replace("+"," ")
                 
                 if "results_page.cgi" in self.path: # load results page
+                    self.send_header('Content-type',	'text/html; charset=utf-8')
+                    self.end_headers()
                     options = json.loads(cgi_dict["data"])
                     if not online and "save_filename" in options and options["save_filename"]:
                         try:
@@ -3937,21 +4047,32 @@ class GutentagWebserver(BaseHTTPRequestHandler):
                         self.wfile.write(text[1])
 
 
-                elif "get_results.cgi" in self.path: # update results page
+                elif "get_" in self.path: # update results page
+                    #print "updating_results"
+                    if "get_zip" in self.path:
+                        self.send_header('Content-type',	'application/octet-stream')
+                        self.end_headers()
+                        output_string = io.BytesIO()
+                    else:
+                        self.send_header('Content-type',	'text/html; charset=utf-8')
+                        self.end_headers()
+                        output_string = StringIO.StringIO()
+                        
                     ID = cgi_dict["id"]            
                     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     sock.connect(("localhost", port))
                     sock.send("id:" + ID)
                     response = sock.recv(4096)
-                    total = [response]
+                    output_string.write(response)
                     while response:
                             response = sock.recv(4096)
-                            total.append(response)
+                            output_string.write(response)
                     sock.close()
-                    response = "".join(total)
-                    self.wfile.write(response)
+                    self.wfile.write(output_string.getvalue())
 
                 elif "load_parameters.cgi" in self.path:
+                    self.send_header('Content-type',	'text/html; charset=utf-8')
+                    self.end_headers()
                     filename = cgi_dict["filename"]
                     f = open("saved_parameters/" + filename)
                     data = f.read()
@@ -3959,6 +4080,8 @@ class GutentagWebserver(BaseHTTPRequestHandler):
                     self.wfile.write(data)
 
                 elif "check_corpus_path.cgi" in self.path:
+                    self.send_header('Content-type',	'text/html; charset=utf-8')
+                    self.end_headers()
                     path = cgi_dict["path"]
                     if os.path.exists(path + "/ETEXT"):
                         self.wfile.write("Ok, click reload on your browser")
@@ -3990,7 +4113,7 @@ class GutentagWebserver(BaseHTTPRequestHandler):
                 f.close()
 
 def start_webserver():
-    server = HTTPServer(('localhost', 8000),  GutentagWebserver)
+    server = HTTPServer(('localhost', http_port),  GutentagWebserver)
     server.serve_forever()
 
 
@@ -4004,6 +4127,12 @@ def start_socketserver():
         fout.write(str(port))
         fout.close()
     server.serve_forever()
+
+def keep_server_active():
+    while True:
+        time.sleep(600)
+        f = urllib2.urlopen("http://localhost:" + str(http_port))
+        f.read()
 
 ### this API is for people who want to access Gutentag directly in python
 
@@ -4041,21 +4170,26 @@ if __name__ == "__main__":
     main_Q = Queue()
     result_Q = Queue()
     results_dict = defaultdict(list)
+    download_dict = {}
     socketthread = Thread(target=start_socketserver)
     socketthread.daemon = True
     socketthread.start()
-    if not online:
-        webthread = Thread(target=start_webserver)
-        webthread.daemon = True
-        webthread.start()
+    #if not online:
+    webthread = Thread(target=start_webserver)
+    webthread.daemon = True
+    webthread.start()
     mainprocess = Process(target=main_guten_process,args=(main_Q,result_Q))
     mainprocess.start()
     time.sleep(1)
-    webbrowser.open("http://localhost:8000/",new=1)
-    print "GutenTag is running"
-    print "If a new browser window did not open, open a browser and go to the URL localhost:8000"
-    print "Press Enter key to quit (browser window will not close, but it will no longer accept requests"
-    raw_input()
-    main_Q.put(-1)
+    if not online:
+        webbrowser.open("http://localhost:8000/",new=1)
+        print "GutenTag is running"
+        print "If a new browser window did not open, open a browser and go to the URL localhost:8000"
+        print "Press Enter key to quit (browser window will not close, but it will no longer accept requests"
+        raw_input()
+        main_Q.put(-1)
+    else:
+        wake_process = Process(target=keep_server_active,args=())
+        wake_process.start()        
     mainprocess.join()
     print "Exited"

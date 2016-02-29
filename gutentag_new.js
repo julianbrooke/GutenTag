@@ -4,6 +4,11 @@ var fork_clicked ='none'
 var g_id = Math.random().toString().substring(2,8);
 
 
+is_safari = /Version\/[\d\.]+.*Safari/.test(navigator.userAgent)
+if (is_safari) {
+	alert("We have detected you are using Safari, which is not officially supported. GutenTag may work, but if you are exporting large corpora it may take longer than normal (your browser may freeze for upwards of ten minutes at the end of the process) and you will have to rename the downloaded file (Untitled) manually (your filename must have the .zip file extension to be opened). We recommend you use Chrome or Firefox.");
+}
+
 function CreateXmlHttpObject( )
 {
 	var xmlHttpRqst = undefined;
@@ -719,10 +724,15 @@ function query_server(data) {
 	f.setAttribute('method',"get");
 	//f.setAttribute('action',"results_page.py");
 	f.setAttribute('action',"results_page.cgi");
+	f.setAttribute('display','none');
 	var i = document.createElement("input");
 	i.setAttribute('value', JSON.stringify(data));
 	i.setAttribute('name', "data");
 	f.appendChild(i);
+	var i = document.createElement("button");  // for firefox compatibility
+	i.setAttribute('type',"submit");
+	f.appendChild(i);
+	document.body.appendChild(f)
 	f.submit();
 }
 
@@ -959,7 +969,7 @@ function load_parameters() {
 		 		thisform.elements['lemmatized'][1].checked = true;
 		 	}
 		 	
-		 	if ('not_display_tags' in data) {
+		 	if ('not_display_tags' in data && 'persName' in data['not_display_tags']) {
 		 		thisform.elements['persName'][1].checked = true;
 		   }
 		 	else {
@@ -1119,7 +1129,7 @@ var bad_char_regex = /[\/\?\*\:\;\{\}\\]/
 function do_export() {
 	thisform = document.getElementById('export_form');
 	if (thisform.elements['output_dir'].value == "" || bad_char_regex.test(thisform.elements['output_dir'].value)) {
-		alert("You have entered an invalid export directory")
+		alert("You have entered an invalid export filename/directory")
 		return
 	} 
 	if (bad_char_regex.test(document.getElementById('savefilename1').value)) {
