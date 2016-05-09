@@ -2909,6 +2909,7 @@ class NameTagger():
         for word in Tokenizer.base_abbreviations:
             if word.istitle():
                 self.bad_names.add(word)
+                self.bad_names.add(word.strip("."))
 
         #self.gender_classifier = GenderClassifier()
         self.tokenizer = tokenizer
@@ -3000,6 +3001,8 @@ def lr_normalize(output):
     
 
 class NamedEntityTagger():
+
+    remove_plural_people = True
 
     def __init__(self):
         f = open("resources/NER_LR_model.data","rb")
@@ -3107,6 +3110,8 @@ class NamedEntityTagger():
                 remove.add(name)
             elif best_class == 2:
                 change_to_location.add(name)
+            elif best_class == 1 and self.remove_plural_people and name.endswith("s") and not name.endswith("ss"):
+                remove.add(name)
         print "locations"
         print change_to_location
         print "others"
@@ -3126,6 +3131,12 @@ class NamedEntityTagger():
 
 # Tagger which tags said elements (speech in fiction and nonfiction. Finds
 # nearest name and assigns it as speaker
+
+def fix_if_capital_the(name):
+    if name.startswith("The_"):
+        return "t" + name[1:]
+    return name
+
 
 class SaidTagger():
 
@@ -3156,7 +3167,8 @@ class SaidTagger():
                     elif text.tokens[i] in self.punct:
                         seen_punct = True
         text.tags.extend(new_tags)
-                            
+
+
 
     def add_speakers(self,text):
         text.tags.sort()
@@ -3201,21 +3213,21 @@ class SaidTagger():
                         j += 1
                 if next_name:
                     if not closest_name:
-                        tag.add_attribute("who","_".join(text.tokens[text.tags[j].start:text.tags[j].end]))
+                        tag.add_attribute("who","#" + fix_if_capital_the("_".join(text.tokens[text.tags[j].start:text.tags[j].end])))
                     if current_s.start < tag.end and current_s.end > next_name.start:
                         next_same_sent = True
                     else:
                         next_same_sent = False
                     next_distance = text.tags[j].start - tag.end
                     if prev_same_sent and not next_same_sent:
-                        tag.add_attribute("who","#" + "_".join(text.tokens[closest_name.start:closest_name.end]))
+                        tag.add_attribute("who","#" + fix_if_capital_the("_".join(text.tokens[closest_name.start:closest_name.end])))
                     elif next_same_sent and not prev_same_sent or next_distance < prev_distance:
-                        tag.add_attribute("who","#" + "_".join(text.tokens[text.tags[j].start:text.tags[j].end]))
+                        tag.add_attribute("who","#" + fix_if_capital_the("_".join(text.tokens[text.tags[j].start:text.tags[j].end])))
                     elif closest_name:
-                        tag.add_attribute("who", "#" + "_".join(text.tokens[closest_name.start:closest_name.end]))
+                        tag.add_attribute("who", "#" + fix_if_capital_the("_".join(text.tokens[closest_name.start:closest_name.end])))
                 else:
                     if closest_name:
-                        tag.add_attribute("who","#" + "_".join(text.tokens[closest_name.start:closest_name.end]))
+                        tag.add_attribute("who","#" + fix_if_capital_the("_".join(text.tokens[closest_name.start:closest_name.end])))
                 i = j
             else:
                 i += 1
@@ -3253,7 +3265,7 @@ class CharacterListBuilder:
         while i < len(text.tags) and text.tags[i].start < text_tag.end:
             tag = text.tags[i]
             if tag.tag == "persName":
-                rep =  "_".join(text.tokens[tag.start:tag.end]) 
+                rep =  fix_if_capital_the("_".join(text.tokens[tag.start:tag.end]))
                 if rep in characters:
                     tag.attributes = {"corresp":"#" + rep}
             i+= 1      
@@ -4270,7 +4282,7 @@ class GutenTag:
         #self.options["subcorpus1_restrictions"]["Num"] = set([13075,16064,13855])
         #self.options["subcorpus1_restrictions"]["Num"] = set([5055])
         #self.options["subcorpus1_restrictions"]["Num"] = set([1008,10031])
-        #self.options["subcorpus1_restrictions"]["Num"] = set([9584])
+        #self.options["subcorpus1_restrictions"]["Num"] = set([2946,158])
         ####
 
         if "Num" in self.options["subcorpus1_restrictions"] and int(num) not in self.options["subcorpus1_restrictions"]["Num"]:
