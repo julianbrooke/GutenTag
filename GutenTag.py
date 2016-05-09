@@ -37,6 +37,7 @@ import re
 import copy
 import encodings
 import io
+import math
 
 import StringIO
 import random
@@ -2893,12 +2894,12 @@ class LexiconTagger:
 class NameTagger():
     midname_function_words = set(["of","van","de","the","'s","del","delgi","la","von","du"])
     internal_sentence = set([u'“',u'‘',":"])
-    not_wanted_capitalized = set(["I","Monday","Tuesday", "Wednesday","Thursday","Friday","Saturday","Sunday","January","February","March","April","May","June","July","August","September","October","November","December"])
+    not_wanted_capitalized = set(["I","Monday","Tuesday", "Wednesday","Thursday","Friday","Saturday","Sunday","January","February","March","April","May","June","July","August","September","October","November","December","And", "So"])
 
     count_filter = 10
-    max_name_length = 3
+    #max_name_length = 3
     #count_filter = 0
-    #max_name_length = 8
+    max_name_length = 8
     add_thes = True
 
     def __init__(self,tokenizer):
@@ -2978,6 +2979,150 @@ class NameTagger():
         #    i+= 1
     
 
+size_of_int = 17
+
+def feature_id_add(feature_id, new_word,new_pos):
+    feature_id =feature_id << size_of_int | new_word
+    feature_id =feature_id << 2 | new_pos
+    return feature_id
+
+
+def logistic(x):
+    return 1.0/(1+math.exp(-x))
+
+def lr_normalize(output):
+    for i in range(len(output)):
+        output[i] = logistic(output[i])
+    total = sum(output)
+    for i in range(len(output)):
+        output[i] /= total
+    return output
+    
+
+class NamedEntityTagger():
+
+    def __init__(self):
+        f = open("resources/NER_LR_model.data","rb")
+        self.word_ids = cPickle.load(f)
+        self.feature_weights = cPickle.load(f)
+        for feature in self.feature_weights:
+            for i in range(3):
+                self.feature_weights[feature][i] /= 1000000
+        self.ratio_dicts = cPickle.load(f)
+        f.close()
+
+    def extract_features(self,tokens, target_start_index, target_end_index, sent_start,sent_end):
+        context = []
+        for i in [-2,-1]:
+            if target_start_index + i < sent_start:
+                context.append(self.word_ids["$None$"])
+            else:
+                word = tokens[target_start_index + i].lower()
+                if word in self.word_ids:
+                    context.append(self.word_ids[word])
+                else:
+                    context.append(-1)
+        for i in [1,2]:            
+            if target_end_index + i >= sent_end:
+                context.append(self.word_ids["$None$"])
+            else:
+                word = tokens[target_end_index + i].lower()
+                if word in self.word_ids:
+                    context.append(self.word_ids[word])
+                else:
+                    context.append(-1)
+        not_wanted = set()
+        features = []
+        for i in range(3):
+            if context[i] != -1 and context[i+1] != -1:
+                feature_id = 0
+                feature_id = feature_id_add(feature_id,context[i],i)
+                feature_id = feature_id_add(feature_id,context[i+1],i+1)
+                if feature_id in self.feature_weights:
+                    features.append(feature_id)
+                    not_wanted.add(i)
+                    not_wanted.add(i+1)
+        for i in range(4):
+            if context[i] != -1 and i not in not_wanted:
+                feature_id = 0
+                feature_id_add(feature_id,context[i],i)
+                if feature_id in self.feature_weights:
+                    features.append(feature_id)
+        return features
+
+
+    def apply_decision_function(self,features):
+        results = [self.feature_weights["$intercept$"][0],self.feature_weights["$intercept$"][1],self.feature_weights["$intercept$"][2]]
+        feature_fraction = 1.0/len(features)
+        for feature in features:
+            for i in range(3):
+                 results[i] += feature_fraction*self.feature_weights[feature][i]
+        return results
+        
+
+    def apply_ratios(self,scores,start,end):
+        if start in self.ratio_dicts[0]:
+            scores[1] += self.ratio_dicts[0][start]
+        if end in self.ratio_dicts[1]:
+            scores[1] += self.ratio_dicts[1][end]
+
+        if start in self.ratio_dicts[2]:
+            scores[2] += self.ratio_dicts[2][start] 
+        if end in self.ratio_dicts[3]:
+            scores[2] += self.ratio_dicts[3][end]
+            
+    def tag_named_entities(self,text):
+        feature_dict = {}
+        last_s = None
+        text.tags.sort()
+        for tag in text.tags:
+            if tag.tag == "s":
+                last_s = tag
+            if tag.tag == "persName":
+                name = " ".join(text.tokens[tag.start:tag.end]).lower()
+                if name not in feature_dict:
+                    feature_dict[name] = set()
+                feature_dict[name].update(self.extract_features(text.tokens,tag.start,tag.end -1, last_s.start,last_s.end))
+        change_to_location = set()
+        remove = set()
+        for name in feature_dict:
+            scores = self.apply_decision_function(feature_dict[name])
+            scores = lr_normalize(scores)
+
+            if " " in name:
+                words = name.split(" ")
+                if words[0] in self.word_ids:
+                    start_word = self.word_ids[words[0]]
+                else:
+                    start_word = -1
+                    
+                if words[-1] in self.word_ids:
+                    end_word = self.word_ids[words[-1]]
+                else:
+                    end_word = -1        
+                #self.apply_ratios(scores,start_word,end_word)
+
+            best_class = max(range(len(scores)), key=lambda x: scores[x])
+            if best_class == 0:
+                remove.add(name)
+            elif best_class == 2:
+                change_to_location.add(name)
+        print "locations"
+        print change_to_location
+        print "others"
+        print remove
+        for i in range(len(text.tags) -1, -1,-1):
+            tag = text.tags[i]
+            if tag.tag == "persName":
+                name = " ".join(text.tokens[tag.start:tag.end]).lower()
+                if name in remove:
+                    del text.tags[i]
+                elif name in change_to_location:
+                    tag.tag = "placeName"
+                    
+                    
+                                          
+        
 
 # Tagger which tags said elements (speech in fiction and nonfiction. Finds
 # nearest name and assigns it as speaker
@@ -2987,17 +3132,23 @@ class SaidTagger():
     punct = set([",",".","?","!"])
 
     def add_initial_said_tags(self,text):
+        if text.tokens.count(u'‘') > text.tokens.count(u'“'):
+            start_quote = u'‘'
+            end_quote = u'’'
+        else:
+            start_quote = u'“'
+            end_quote = u'”'
         new_tags = []
         for tag in text.tags:
             if tag.tag == "p":
                  last_opening = None
                  seen_punct = False
                  for i in range(tag.start,tag.end):
-                    if text.tokens[i] == u'“':
+                    if text.tokens[i] == start_quote:
                         last_opening = i
                         seen_punct = False
                  
-                    elif text.tokens[i] == u'”':
+                    elif text.tokens[i] == end_quote:
                         if last_opening and seen_punct:
                             new_tags.append(Tag(last_opening,i + 1,"said",{}))
                             last_opening = None
@@ -3265,6 +3416,7 @@ class LexicalTagger:
     def __init__(self,options,tokenizer):
         self.options = options
         self.name_tagger = NameTagger(tokenizer)
+        self.named_entity_tagger = NamedEntityTagger()
         self.said_tagger = SaidTagger()
         if "tagged" in self.options and self.options["tagged"]:
             #if not standalone and self.options["tagger"] == "NLTK":
@@ -3365,6 +3517,7 @@ class LexicalTagger:
         
         if tag_dict["Genre"] == "fiction":
             self.name_tagger.add_name_tags(text)
+            self.named_entity_tagger.tag_named_entities(text)
             self.said_tagger.add_said_tags(text)
 
         for tagger in self.selected_taggers:
