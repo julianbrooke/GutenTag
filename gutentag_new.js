@@ -447,7 +447,15 @@ function toggle_prose_macro(theform) {
 	else {
 		theform.elements['prose_macro'].parentNode.parentNode.className = "withintext";
 	}
-
+	
+	if (theform.elements['fiction'].checked) {
+		document.getElementById('person_row').style = "" 
+		document.getElementById('NER_row').style = "" 
+	}
+	else {
+		document.getElementById('person_row').style = "display:none;"
+		document.getElementById('NER_row').style = "display:none;"	
+	}
 }
 
 function toggle_drama_macro(theform) {
@@ -470,6 +478,31 @@ function toggle_poetry_macro(theform) {
 	theform.elements['poetry_macro'].parentNode.parentNode.className = "withintext hidden";
 	}
 
+}
+
+function toggle_all_genres(theform) {
+if (theform.elements['all'].checked) {
+	theform.elements['poetry'].checked = true;
+   theform.elements['fiction'].checked = true;
+   theform.elements['nonfiction'].checked = true;
+   theform.elements['play'].checked = true;  
+   theform.elements['periodical'].checked = true;
+   toggle_poetry_macro(theform);
+   toggle_drama_macro(theform);
+   toggle_prose_macro(theform);
+   }
+else {
+	theform.elements['poetry'].checked = false;
+   theform.elements['fiction'].checked = false;
+   theform.elements['nonfiction'].checked = false;
+   theform.elements['play'].checked = false;  
+   theform.elements['periodical'].checked = false;
+   toggle_poetry_macro(theform);
+   toggle_drama_macro(theform);
+   toggle_prose_macro(theform);
+
+}
+   
 }
 
 function add_lexical_filter(add_button) {
@@ -554,7 +587,7 @@ function get_subcorpus_info(data) {
 		thisform = subcorpus_div.children[1];
 		var text_restriction = {};
 	 	var genres = [];
-	 	var arr = ["fiction","nonfiction","play","poetry"];
+	 	var arr = ["fiction","nonfiction","play","poetry","periodical"];
 	 	for (var i = 0; i < arr.length; i++) {
 	    if (thisform.elements[arr[i]].checked) {
 	     genres.push(arr[i]);
@@ -592,6 +625,11 @@ function get_subcorpus_info(data) {
 			text_restriction["Author Death"] = death_range;
 		}
 
+
+		if (thisform.elements['nationality'].value != 'Any') {
+			text_restriction["Author Nationality"] = thisform.elements['nationality'].value;
+			
+		}  
 
 	if (thisform.elements['text_title'].value) {
 			text_restriction["Title"] = thisform.elements['text_title'].value;
@@ -631,6 +669,14 @@ function get_subcorpus_info(data) {
 			text_restriction["Subject"] = thisform.elements['LoC_subject'].value;
 			
 		}  
+		
+		if (thisform.elements['collection'].value != "both") {
+	   	text_restriction["Collection"] = thisform.elements['collection'].value;
+	   }
+		
+	   if (thisform.elements['person'].value != "both") {
+	   	text_restriction["Person"] = thisform.elements['person'].value;
+	   }
 		
 		text_restriction["wanted_tags"] = [];
 		text_restriction["not_wanted_tags"] = [];
@@ -804,7 +850,7 @@ function load_parameters() {
 		
 			thisform = subcorpus_div.children[1];
 	
-		 	var arr = ["fiction","nonfiction","play","poetry"];
+		 	var arr = ["fiction","nonfiction","play","poetry","periodical"];
 		 	for (var j  = 0; j < arr.length; j++) {
 		     thisform.elements[arr[j]].checked = false;
 		    }
@@ -829,7 +875,7 @@ function load_parameters() {
 			}
 			
 			if ('Author Gender' in restrictions) {
-			   if (restrictions['Author Gender'] == 'male') {
+			   if (restrictions['Author Gender'] == 'M') {
 			   	thisform.elements['gender'][1].checked = true;
 			   }
 			   else {
@@ -858,6 +904,13 @@ function load_parameters() {
 			else {
 			 thisform.elements['author_death_start'].value = "";
 			 thisform.elements['author_death_end'].value = "";
+			}
+			
+			if ('Author Nationality' in restrictions) {
+			 	selectElement(thisform.elements['nationality'],restrictions['Author Nationality']);
+			}
+			else {
+			 	selectElement(thisform.elements['nationality'],"Any");
 			}
 
 			if ("Title" in restrictions) {
@@ -917,6 +970,31 @@ function load_parameters() {
 			}
 
 
+			if ('Collection' in restrictions) {
+			   if (restrictions['Collection'] == 'collection') {
+			   	thisform.elements['collection'][2].checked = true;
+			   }
+			   else {
+			   	thisform.elements['collection'][1].checked = true; 
+			  }
+			}
+			else {
+				thisform.elements['collection'][0].checked = true;
+			}
+			
+			
+			if ('Person' in restrictions) {
+			   if (restrictions['Person'] == '1st') {
+			   	thisform.elements['person'][2].checked = true;
+			   }
+			   else {
+			   	thisform.elements['person'][1].checked = true; 
+			  }
+			}
+			else {
+				thisform.elements['person'][0].checked = true;
+			}
+
 			for (var j = 0; j < restrictions["wanted_tags"].length; j++) {
 				thisform.elements[restrictions["wanted_tags"][j]].checked = true;
 			} 
@@ -968,23 +1046,35 @@ function load_parameters() {
 		 	else {
 		 		thisform.elements['lemmatized'][1].checked = true;
 		 	}
-		 	
+		 	/*
 		 	if ('not_display_tags' in data && 'persName' in data['not_display_tags']) {
 		 		thisform.elements['persName'][1].checked = true;
 		   }
 		 	else {
 		 	  thisform.elements['persName'][0].checked = true;
-		 	}
+		 	} 
+		 	*/
 		 	
 			if (data["output_format"] == "plain") {
-				thisform.elements['output_format'][0].click();
-			}
-			else {
 				thisform.elements['output_format'][1].click();
 			}
+			else {
+				thisform.elements['output_format'][0].click();
+			}
 		
+			 if (data['persName']) {
+		 		thisform.elements['persName'].checked = true;
+		 	}                        
+		 	else {
+		 		thisform.elements['persName'].checked = false;
+		 	}	 	
 		 	
-		 	
+			 if (data['placeName']) {
+		 		thisform.elements['placeName'].checked = true;
+		 	}                        
+		 	else {
+		 		thisform.elements['placeName'].checked = false;
+		 	}			 	
 		 
 		 } 
 		 else if  (data['mode'] == 'analyze') {
@@ -1051,13 +1141,14 @@ function prepare_data_for_analysis() {
 	
 	get_lexical_tags(thisform,data["lexical_tags"],data["tags_for_analysis"]);
 	
-	 	if (thisform.elements['persName'].value=="false") {
- 		data['not_display_tags'] = ['persName'];
- 	}
- 		else {
+	 	if (thisform.elements['persName'].checked) {
  		data["tags_for_analysis"].push('persName');
- 		data['not_display_tags'] = [];
- 		}
+ 		} 
+ 		
+ 		if (thisform.elements['placeName'].checked) {
+ 		data["tags_for_analysis"].push('placeName');
+ 		} 
+ 	 data['not_display_tags'] = [];
  		
  	data['output_file'] =thisform.elements['output_file'].value;
  	if (thisform.elements['maxnum'].value) {
@@ -1100,12 +1191,28 @@ function prepare_data_for_export(){
  		data['lemma'] = false;
  	}
  	
+ 	 if (thisform.elements['persName'].checked) {
+ 		data['persName'] = true;
+ 	}                        
+ 	else {
+ 		data['persName'] = false;
+ 	}
+ 	
+ 	if (thisform.elements['placeName'].checked) {
+ 		data['placeName'] = true;
+ 	}                        
+ 	else {
+ 		data['placeName'] = false;
+ 	}
+ 	data['not_display_tags'] = []
+ 	/*
  	if (thisform.elements['persName'].value=="false") {
  		data['not_display_tags'] = ['persName']
  	}
  	else {
  		data['not_display_tags'] = []
- 	}
+ 	} 
+ 	*/
  	
 	
 	data["output_format"] = thisform.elements['output_format'].value;

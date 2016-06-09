@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-version = "0.1.3"
+version = "0.1.4"
 
 standalone = False
 online = False
@@ -38,11 +38,12 @@ import copy
 import encodings
 import io
 import math
+import operator
 
 import StringIO
 import random
 import webbrowser
-from collections import defaultdict
+from collections import defaultdict,Counter
 import SocketServer
 import socket
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
@@ -122,7 +123,21 @@ def convert_roman(string):
             index += len(numeral)
     return result
 
-
+def fix_year(year_string):
+    year_string = year_string.replace("?", "")
+    year_string = year_string.replace("AD", "")
+    if "BC" in year_string:
+        BC = True
+        year_string = year_string.replace("BC"," ")
+    else:
+        BC = False
+    try:
+        year = int(year_string)
+        if BC:
+            year = -year
+    except:
+        year = "?"
+    return year
 
 # This class deals with functions for reading Project Gutenberg metadata
 class MetadataReader:
@@ -150,47 +165,39 @@ class MetadataReader:
             parts = author.split(", ")
             birth = None
             death = None
+            given = None
+            surname = None
             if len(parts) >= 2:
                 if parts[-1].count("-") == 1:
                     birth_string, death_string = parts[-1].split("-")
-                    birth_string = birth_string.replace("?", "")
-                    birth_string = birth_string.replace("AD", "")
-                    if "BC" in birth_string:
-                        BC = True
-                        birth_string = birth_string.replace("BC"," ")
-                    else:
-                        BC = False
-                    try:
-                        birth = int(birth_string)
-                        if BC:
-                            birth = -birth
-                    except:
-                        pass
-
-                    death_string = death_string.replace("?", "")
-                    death_string = death_string.replace("AD", "")
-                    if "BC" in death_string:
-                        BC = True
-                        death_string = death_string.replace("BC"," ")
-                    else:
-                        BC = False
-                    try:
-                        death = int(death_string)
-                        if BC:
-                            death = -death
-                    except:
-                        pass                   
-                    
+                    birth = fix_year(birth_string)
+                    death = fix_year(death_string)
                     parts = parts[:-1]
                 parts.reverse()
                 author = " ".join(parts)
                 if len(parts) == 2:
-                    tags["Author Given"].append(parts[0])
-                    tags["Author Surname"].append(parts[1])
-                    
+                    given = parts[0]
+                    surname = parts[1]
+                    found_names = True
+
+            if given:
+                tags["Author Given"].append(given)
+            else:
+                tags["Author Given"].append("?")
+            if surname:
+                tags["Author Surname"].append(surname)
+            else:
+                tags["Author Surname"].append("?")            
+            if birth:
+                tags["Author Birth"].append(birth)
+            else:
+                tags["Author Birth"].append("?")
+            if death:
+                tags["Author Death"].append(death)
+            else:
+                tags["Author Death"].append("?")
+
             tags["Author"].append(author)
-            tags["Author Birth"].append(birth)
-            tags["Author Death"].append(death)
 
     def get_href_and_charset(self,html_text):
         index = html_text.find("text/plain")
@@ -224,6 +231,123 @@ class MetadataReader:
         return href,charset,tag_dict
 
 
+class MetadataReaderRDF:
+
+    title_remove = ["&#13;"]
+
+    language_lookup = {"en":"English","fr":"French","es":"Spanish","de":"German","pt":"Portuguese","ja":"Japanese","zh":"Chinese","ru":"Russian","ar":"Arabic","pl":"Polish","it":"Italian","el":"Greek","he":"Hebrew","ko":"Korean","hi":"Hindi","la":"Latin","nl":"Dutch","sv":"Swedish","no":"Norweigan","fi":"Finnish"}
+
+    def get_PG_metadata(self,filename):
+        f = codecs.open(filename, encoding="utf-8")
+        tag_dict = defaultdict(list)
+        in_subject = False
+        in_creator = False
+        add_next_line_to_title = False
+        encodings = []
+        for line in f:
+            if add_next_line_to_title:
+                if "<" in line:
+                    end_index = line.find("<")
+                    add_next_line_to_title = False
+                else:
+                    end_index = -1
+                tag_dict["Title"][-1] += "\t" + line[:end_index]
+                
+            if "<dcterms:creator>" in line:
+                in_creator = True
+                full_name = None
+                birth_year = None
+                death_year = None
+                first_name = None
+                last_name = None
+            elif "</dcterms:creator>" in line:
+                if full_name:
+                    tag_dict["Author"].append(full_name)
+                    tag_dict["Author Birth"].append(birth_year)
+                    tag_dict["Author Death"].append(death_year)
+                    tag_dict["Author Given"].append(first_name)
+                    tag_dict["Author Surname"].append(last_name)
+
+            elif in_creator and "<pgterms:name>" in line:
+                start_index = line.find(">") + 1
+                end_index = line.find("<",start_index)
+                name = line[start_index:end_index]
+                #if "(" in name:
+                #    name = name[:name.find(" (")]
+                stuff = name.split(', ')
+                if len(stuff) == 2:
+                    first_name = stuff[1]
+                    last_name = stuff[0]
+            
+                stuff.reverse()
+                full_name = " ".join(stuff)
+                #print full_name
+            elif in_creator and "pgterms:birthdate" in line:
+                start_index = line.find(">") + 1
+                end_index = line.find("<",start_index)
+                birth_year = line[start_index:end_index]
+                birth_year = fix_year(birth_year)
+            elif in_creator and "pgterms:deathdate" in line:
+                start_index = line.find(">") + 1
+                end_index = line.find("<",start_index)
+                death_year = line[start_index:end_index]
+                death_year = fix_year(death_year)
+            elif "<dcterms:subject>" in line:
+                in_subject = True
+                value = None
+                is_LLC = False
+            elif "</dcterms:subject>" in line:
+                in_subject = False
+                if value:
+                    if is_LLC:
+                        tag_dict["LoC Class"].append(value)
+                    else:
+                        tag_dict["Subject"].append(value)
+            elif in_subject and "<rdf:value>" in line:
+                start_index = line.find(">") + 1
+                end_index = line.find("<",start_index)
+                value = line[start_index:end_index]
+            elif in_subject and '<dcam:memberOf rdf:resource="http://purl.org/dc/terms/LCC"/>' in line:
+                is_LLC = True
+            elif "<pgterms:file" in line and ".txt" in line:
+                if "-8" in line:
+                    encodings.append("latin-1")
+                elif "-0" in line:
+                    encodings.append("utf-8")
+                else:
+                    encodings.append("us-ascii")
+            elif "<dcterms:title>" in line:
+                start_index = line.find(">") + 1
+                end_index = line.find("<",start_index)
+                if end_index == -1:
+                    add_next_line_to_title = True
+                tag_dict["Title"].append(line[start_index:end_index])
+
+            elif "RFC4646" in line:
+                start_index = line.find(">") + 1
+                lang = line[start_index:start_index + 2]
+                if lang in self.language_lookup:
+                    tag_dict["Language"].append(self.language_lookup[lang])
+                else:
+                    tag_dict["Language"].append("Other")
+        f.close()
+        if "us-ascii" in encodings:
+            charset = "us-ascii"
+        elif "latin-1" in encodings:
+            charset = "latin-1"
+        else:
+            charset = "utf-8"
+        href = "/sup_gut/" + filename.split("/")[-1][:-3] + "zip"
+        if "Title" not in tag_dict:
+            tag_dict["Title"].append("?")
+        for i in range(len(tag_dict["Title"])):
+            for to_remove in self.title_remove:
+                tag_dict["Title"][i] = tag_dict["Title"][i].replace(to_remove,"")
+        return  href,charset,tag_dict
+        
+        
+        
+
 # this class cleans away Project Gutenberg headers and footers, including copyright and transcriber notes
 class TextCleaner:
     junk_indicators = ("project gutenberg"," etext"," e-text",
@@ -235,7 +359,8 @@ class TextCleaner:
                             " email","\\.uk","digitized", "\n\nproduced by",
                             "david reed", "\ntypographical errors corrected",
                             "\[note: there is a","etext editor's","u.s. copyright",
-                            "\nerrata"," ebook"," e-book")
+                            "\nerrata"," ebook"," e-book",
+                            "author:     ","</pre>", "\[end of","internet archive")
                 
     
     def clean_text(self,text):
@@ -298,8 +423,10 @@ class GenderClassifier:
         word = word.lower()
         if word in self.female_first_names or (len(word) > 2 and word.endswith("a")):
             return "F"
-        else:
+        elif word:
             return "M"
+        else:
+            return ""
 
 
 # this class wraps everything related to genre classification. Not actually
@@ -307,15 +434,16 @@ class GenderClassifier:
 
 class GenreClassifier:
 
-    common_words = set(["do","god","three","thou","thus","nor","says","say","said","any","all","have","had","can","one","is","are","am","be","was","were","which","on","my","how","you","the","a","it","he","she","his","her","i","they","we","at","and","but","when","there","as","who","if","under","over","after","before","this","that","all","what","to","by","in","from","such","here","with","for","of","yes","ah","oh","so","our","no", "not","some","where","now","come","go","dear","then","than","these","those","up","down","out","yours","let","your","there","january","febuary","march","april","may","june","july","august","september","october","november","december","monday","tuesday","wednesday","thursday","friday","saturday","sunday"])
+    common_words = set(["whether","poor","dear","do","god","three","thou","thus","nor","says","say","said","any","all","have","had","can","one","is","are","am","be","was","were","which","on","my","how","you","the","a","it","he","she","his","her","i","they","we","at","and","but","when","there","as","who","if","under","over","after","before","this","that","all","what","to","by","in","from","such","here","with","for","of","yes","ah","oh","so","our","no", "not","some","where","now","come","go","dear","then","than","these","those","up","down","out","yours","let","your","there","january","febuary","march","april","may","june","july","august","september","october","november","december","monday","tuesday","wednesday","thursday","friday","saturday","sunday","still","perhaps"])
     likely_delimin = set([".","-",":","<","(","_","["])
-    narrative_words = set(["said","asked","replied","answered","cried","answered","responded","added","ejaculated","rejoined","inquired"])
+    narrative_words = set(["hissed","declared","repeated","said","asked","replied","answered","cried","responded","added","screamed","wondered","reflected","pondered","ejaculated","rejoined","inquired","says","announced","offered","began","continued","mumbled","whispered","roared", "retorted", "sneered"])
     fiction_title = set(["novel","stories","story","adventures","tale","tales","mystery"])
     nonfiction_title = set(["discourses", "autobiography","biography","diary","diaries","letters","essay","essays","record","history","speech","speeches","talks","recollections","memoirs","sermons","life"])
     poetry_title = set(["poem","poetry", "verse", "ballad", "poetical","ode"])
     play_title = set(["play","drama","acts"])
     end_words = set(["the end","end","finis","fin"])
 
+    '''
     def __init__(self,decision_tree_filename):
         self.node_dict = {}
         f = open(decision_tree_filename)
@@ -325,7 +453,23 @@ class GenreClassifier:
                 self.node_dict[int(stuff[0])] = [stuff[1]]
             else:
                 self.node_dict[int(stuff[0])] = [int(stuff[1]),int(stuff[2]),stuff[3],float(stuff[4])]
-            
+    '''     
+    def __init__(self,random_forest_filename):
+        self.estimators = []
+        f = open(random_forest_filename)
+        trees = f.read().split("---------")
+        for i in range(len(trees) -1):
+            node_dict = {}
+            lines = trees[i].split("\n")
+            for j in range(len(lines) - 1):
+                stuff = lines[j].strip().split(",")
+                if len(stuff) == 2:
+                    node_dict[int(stuff[0])] = [stuff[1]]
+                else:
+                    node_dict[int(stuff[0])] = [int(stuff[1]),int(stuff[2]),stuff[3],float(stuff[4])]
+            self.estimators.append(node_dict)
+
+
 
 
     def get_feature_dict(self,text,tags):
@@ -393,6 +537,38 @@ class GenreClassifier:
         feature_dict["illustrations"] = 0
         feature_dict["avg_paragraph_len"] = 0
         feature_dict["asides_count"] = 0
+        '''
+        feature_dict["year"] = 0
+        feature_dict["month"] = 0
+        feature_dict["appendix"] = 0
+        feature_dict["contents"] = 0
+        feature_dict["cast_list"] = 0
+        feature_dict["prologue"] = 0
+        feature_dict["footnotes"] = 0
+                if line.startswith("[footnote"):
+            feature_dict["footnote"].add(i)
+
+        if line.startswith("["):
+            feature_dict["start_bracket"].add(i)                
+
+        if line.endswith("]"):
+            feature_dict["end_bracket"].add(i)
+        
+        if text_lines[i].startswith("Illustrated by") or text_lines[i].startswith("Illustrations by"):
+            feature_dict["illustrated"].add(i)
+            has_front_indicator = True
+            
+        if line.startswith("preface") or line.startswith("to the reader") or line.endswith("to the reader") or (line.startswith("history of") and "history of" not in global_tags["Title"][0].lower()):
+            feature_dict["preface"].add(i)
+            has_front_header = True
+        if line.startswith("introduction") or line.startswith("foreword"):
+            feature_dict["introduction"].add(i)
+            has_front_header = True
+        for feature in ["prologue","epilogue","appendix","afterword","glossary","bibliography","index","afterword","postscript"]:
+            if line == feature or (line.startswith(feature) and i in feature_dict["upper_case"]):
+                feature_dict[feature].add(i)
+        '''
+                    
 
         start_word_list = set()
         repeated_list = {}
@@ -423,7 +599,7 @@ class GenreClassifier:
                     curr_line  = curr_line.replace("  "," ")
                     
                 curr_line = curr_line.strip()
-                if "I " in curr_line or "I'" in curr_line or "my " in curr_line or " me " in curr_line:
+                if "I " in curr_line or "I'" in curr_line or " my " in curr_line or "My " in curr_line or " me " in curr_line or " me." in curr_line or " me," in curr_line:
                     feature_dict["I_line_count"] += 1
                 if curr_line.startswith("[Illustration"):
                     feature_dict["illustrations"] += 1
@@ -446,7 +622,7 @@ class GenreClassifier:
                     feature_dict["end"] = 1
                 if "you" in curr_line:
                     feature_dict["you_line_count"] += 1
-                if "she " in curr_line or "her " in curr_line:
+                if "She " in curr_line or " she " in curr_line or " her " in curr_line or  " her." in curr_line or " her," in curr_line :
                     feature_dict["she_line_count"] += 1
                 if "--" in curr_line:
                     feature_dict["dash_line_count"] += 1
@@ -516,19 +692,23 @@ class GenreClassifier:
 
         return feature_dict
 
-    def get_classification(self,feature_dict,node):
+    def get_classification(self,feature_dict,node,node_dict):
         if len(node) == 1:
             return node[0]
         else:
             if feature_dict[node[2]] <= node[3]:    
-                return self.get_classification(feature_dict,self.node_dict[node[0]])
+                return self.get_classification(feature_dict,node_dict[node[0]],node_dict)
             else:
-                return self.get_classification(feature_dict,self.node_dict[node[1]])
+                return self.get_classification(feature_dict,node_dict[node[1]],node_dict)
 
 
     def classify_genre(self,text,tags):
         feature_dict = self.get_feature_dict(text,tags)
-        return self.get_classification(feature_dict,self.node_dict[0])
+        classifications = []
+        for node_dict in self.estimators:
+            classifications.append(self.get_classification(feature_dict,node_dict[0],node_dict))
+        results = Counter(classifications)
+        return max(results.iteritems(),key=operator.itemgetter(1))[0]
 
 
 
@@ -567,8 +747,8 @@ class Tokenizer:
 
         self.left_double_quote = re.compile('([[\s(-]|^)"([^ ])')
         self.right_double_quote = re.compile('([^ ])"($|[])\s;,.?!-])')
-        self.left_bracket = re.compile('([,-.;?!])\[')
-        self.right_bracket = re.compile('\]([,-.?!;])')      
+        self.left_bracket = re.compile('([,-.;?!])([[(])')
+        self.right_bracket = re.compile('([\])])([,-.?!;])')      
         f = open('resources/english.pickle')
         self.sentence_tokenizer = cPickle.load(f)
         f.close()
@@ -580,7 +760,7 @@ class Tokenizer:
 
 
     def fix_brackets(self,raw_text):
-        return self.left_bracket.sub(u'\\1 [',self.right_bracket.sub(u'] \\1',raw_text))
+        return self.left_bracket.sub(u'\\1 \\2',self.right_bracket.sub(u'\\1 \\2',raw_text))
 
     def fix_sentence_quotes(self,sentences):
         for i in range(1, len(sentences)):
@@ -696,7 +876,7 @@ class Tag:
 
     def get_start_tag(self):
         if self.attributes:
-            return "<%s %s>" % (self.tag," ".join([key + '="' + unicode(value).replace("'","APS") + '"' for key,value in self.attributes.iteritems()]))                
+            return "<%s %s>" % (self.tag," ".join([key + '="' + unicode(value).replace("'","APS").replace(":","_") + '"' for key,value in self.attributes.iteritems() if not key.startswith("@")]))
         else:
             return "<%s>" % (self.tag)
 
@@ -711,6 +891,11 @@ class Tag:
     def del_attribute(self,key):
         if not self.attributes == None and key in self.attributes:
             del self.attributes[key]
+
+    def get_attribute(self,key):
+        if not self.attributes or key not in self.attributes:
+            return None
+        return self.attributes[key]
 
     def get_single_tag(self):
         if self.tag == "div" and self.attributes and "type" in self.attributes:
@@ -769,7 +954,7 @@ def has_most_features(index,features,feature_dict):
 
 class StructureTagger:
 
-    table_of_contents = set(["contents","table of contents"])
+    table_of_contents = set(["contents","table of contents", "list of stories"])
 
     numbers = {"one":1,"two":2,"three":3,"four":4,"five":5,"six":6,"seven":7,
                "eight":8,"nine":9,"ten":10,"eleven":11,"twelve":12,"thirteen":13,
@@ -787,8 +972,8 @@ class StructureTagger:
     stage_start =  re.compile("enter|exit|curtain|exeunt")
     setting_start = re.compile("setting|the time|the setting|the place|the scene|scene:|scene\.")
     setting_phrase = re.compile("takes place|is set in|the setting is|the setting of the play|the action ")
-    cities = ["London","New York","Oxford","Cambridge","Boston","Philadelphia","San Francisco","Toronto","Los Angeles","Chicago","Sydney","Auckland","Dublin"]
-    countries = ["U.S.A","U.S.","United States","United States of America","America","Canada","England","Britan","United Kingdom", "U.K.", "Australia", "New Zealand"]
+    cities = ["London","New York","Oxford","Cambridge","Boston","Philadelphia","San Francisco","Toronto","Los Angeles","Chicago","Sydney","Auckland","Dublin","Melbourne","Vancouver","Edinborough","Glasgow","Paris","Madrid","Berlin","Milan","Amsterdam"]
+    countries = ["U.S.A","U.S.","United States","United States of America","America","Canada","England","Britan","United Kingdom", "U.K.", "Australia", "New Zealand","France","Spain","Italy","Germany","The Netherlands"]
     sent_punct = set([".","?","!"])
     city = re.compile("|".join(cities).lower())
     copy_right = re.compile("all rights reserved|copyright")
@@ -815,8 +1000,8 @@ class StructureTagger:
     
     
 
-    def __init__(self,options,tokenizer):
-        self.options = options
+    def __init__(self,tokenizer):
+        #self.options = options
         self.tokenizer = tokenizer
 
     def get_structural_features(self,text_lines,global_tags):
@@ -885,6 +1070,7 @@ class StructureTagger:
         feature_dict["double_act_or_scene"] = set()
         feature_dict["start_bracket"] = set()
         feature_dict["end_bracket"] = set()
+        feature_dict["only_title"] = set()
 
         has_front_header = False
         in_front_section = False
@@ -945,19 +1131,24 @@ class StructureTagger:
                 #has_front_indicator = True
                 feature_dict["dedication"].add(i) 
 
-            if text_lines[i].startswith("By"):
+            if text_lines[i].startswith("By ") or text_lines[i].startswith("BY "):
                 has_front_indicator = True
                 feature_dict["by"].add(i)
-
 
 
             if "." in text_lines[i] and is_roman(text_lines[i][:text_lines[i].find(".")].strip()):                
                 feature_dict["starts_with_roman"].add(i)
 
+            if is_roman(text_lines[i].strip()):
+                feature_dict["starts_with_roman"].add(i)
+
+
             if text_lines[i].endswith(" PAGE"):
                 feature_dict["ends_with_page"].add(i)
                              
             line = text_lines[i].lower().strip(".:;_ ")
+
+
 
             if line.startswith("[") and "illustration" in line:
                 feature_dict["illustration"].add(i)
@@ -1000,6 +1191,11 @@ class StructureTagger:
             if (len(only_letter_line) > 5 and only_letter_line in title or (only_letter_line.startswith(title))):
                 feature_dict["title"].add(i)
                 has_front_indicator = True
+
+            if only_letter_line == title:
+                feature_dict["only_title"].add(i)
+                has_front_indicator = True
+                
             if self.published.search(line):
                 feature_dict["publisher"].add(i)
                 has_front_indicator = True
@@ -1227,12 +1423,12 @@ class StructureTagger:
     body_elements = ["prologue"]
 
 
-    def find_title(self,feature_dict):
-        last_title = 0
-        for title_loc in feature_dict["title"]:
-            if title_loc > 0 and title_loc in feature_dict["upper_case"] and title_loc -1 in feature_dict["blank_lines"] and title_loc +1 in feature_dict["blank_lines"]:
-                if title_loc > last_title:
-                    last_title = title_loc
+    def find_title(self,feature_dict,start,end):
+        last_title = start
+        for title_loc in feature_dict["only_title"]:
+            if title_loc >= start and title_loc < end and title_loc in feature_dict["upper_case"] and title_loc -1 in feature_dict["blank_lines"] and title_loc +1 in feature_dict["blank_lines"] and not title_loc in feature_dict["quoted"]:
+                if title_loc + 1 > last_title:
+                    last_title = title_loc + 1
         return last_title
 
 
@@ -1313,8 +1509,13 @@ class StructureTagger:
                                 score += 100
                         else:
                             score += 20
-
-        score -= feature_dict["not_front_lines"][loc]*2
+        i = start_index
+        while i > 0 and i not in feature_dict["not_front_lines"]:
+            i -= 1
+        if i == 0:
+            score -= feature_dict["not_front_lines"][loc]*2
+        else:
+            score -= (feature_dict["not_front_lines"][loc] - feature_dict["not_front_lines"][i])*2
         sys.stdout.flush()
         score += 10*min(blanks,3)
         return score
@@ -1333,19 +1534,19 @@ class StructureTagger:
         i = 0
         best_loc = -1
         best_score = -9999
+
         while i < len(to_check):
             for index in feature_dict[to_check[i]]:
                 if index < start_index or index >= end_index:
                     continue
                 score = self.get_front_score(feature_dict,index,to_check[i], global_tags,start_index,end_index)
-                
                 if score > best_score:
                     best_score = score
                     best_loc = index
+
             i += 1
 
-
-        title_loc = self.find_title(feature_dict)
+        title_loc = self.find_title(feature_dict,start_index,end_index)
         if title_loc > best_loc and (title_loc - start_index)/float(end_index - start_index) < 0.33:
             return title_loc
         else:
@@ -1386,7 +1587,7 @@ class StructureTagger:
         
         possible_default_closest_div = set()
         possible_default_closest_div.add(back)
-        if feature_dict["the_end"] and max(feature_dict["the_end"])/float(feature_dict["total_length"]) > 0.90:
+        if feature_dict["the_end"] and max(feature_dict["the_end"])/float(feature_dict["total_length"]) > 0.90 and max(feature_dict["the_end"]) < back:
             end_index = max(feature_dict["the_end"])
             possible_default_closest_div.add(end_index)
             end_div = Tag(-1,-1,"div",{"type":"end"})
@@ -1445,8 +1646,8 @@ class StructureTagger:
                             while i < 4 and index + i not in feature_dict["chapter"] and (index +i in feature_dict["blank_lines"] or index +i + 1 in feature_dict["blank_lines"]):
                                 i += 1
 
-                        #if closest_div - index < 10:
-                        #    continue
+                        if closest_div - index < 5:
+                            continue
 
                         all_indicies.add(index)
                         if div_type not in spans:
@@ -1493,10 +1694,10 @@ class StructureTagger:
 
     weak_match = set(["dedication","quoted","year","by","attribution","city","performance"])
     strong_match = ["series","dust_jacket","year_only","illustrated","introduction","preface","publisher","title","author","copy_right","illustration","list_of_illustrations","chapter","appendix", "afterword","endnotes","glossary","bibliography","index","character_list","act", "setting_phrase","table_of_contents","the_end","setting_word"]
-    multi_paragraph = set(["div:dustjacket","div:contents","div:introduction","div:preface","div:illustrations","div:otherbooks","div:appendix", "div:afterword","div:endnotes","div:glossary","div:bibliography","div:index","castList"])
-    superceded = {"docTitle":set(["div:otherbooks","div:contents","castList","div:preface","div:introduction"]),"div:introduction":set(["div:contents"]),"div:preface":set(["div:contents"]),"docImprint":set(["performance"])}
+    multi_paragraph = set(["div:otherbooks","div:dustjacket","div:introduction","div:preface","div:illustrations","div:appendix", "div:afterword","div:endnotes","div:glossary","div:bibliography","div:index","castList","div:contents"])
+    superceded = {"docTitle":set(["div:otherbooks","div:contents","castList","div:preface","div:introduction"]),"div:introduction":set(["div:contents"]),"div:preface":set(["div:contents"]),"docImprint":set(["performance"]),"figure":set(["div:illustrations"])}
     not_in_front = set(["div:appendix", "div:afterword","div:endnotes","div:glossary","div:bibliography","div:index"])
-    not_in_back = set(["div:introduction","div:preface","epigraph","figure","castList","set","docImprint","docTitle","byline","docDate"])
+    not_in_back = set(["div:introduction","div:preface","epigraph","castList","set","docImprint","docTitle","byline","docDate"])
 
     def find_front_and_back_elements(self,local_start,local_end,front,back,feature_dict,start_lines,end_lines,plike_start,plike_end): 
 
@@ -1564,6 +1765,8 @@ class StructureTagger:
 
                         next_para_index = None # go to next paragraph if multi_paragraph element
                         if index + 1 in feature_dict["blank_lines"]:
+                            if self.elements_mapping[element] == "div:contents" and index + 2 in feature_dict["blank_lines"] and index + 3 in feature_dict["blank_lines"] and index + 4 not in feature_dict["blank_lines"]:
+                                next_para_index = index + 4
                             if index + 2 in feature_dict["blank_lines"] and index + 3 not in feature_dict["blank_lines"]:
                                 next_para_index = index + 3
                             elif index + 2 not in feature_dict["blank_lines"]:
@@ -1780,7 +1983,7 @@ class StructureTagger:
                     max_back = index + 1
 
         has_definite_feature = False
-        for feature in ["appendix","the_end","afterword","endnotes","glossary","bibliography","index","illustrations","postscript"]:
+        for feature in ["appendix","the_end","afterword","endnotes","glossary","bibliography","index","list_of_illustrations","postscript"]:
             if feature in feature_dict:
                 for index in feature_dict[feature]:
                     if max_back < index < best_back:
@@ -1903,18 +2106,44 @@ class StructureTagger:
         footnote_ids.add(footnote_id)
         tags.append(Tag(start_index,len(tokens),"note", {"place":"bottom", "xml:id":footnote_id,"n":num}))
 
+    def match_title(self,potential_title, titles):
+        potential_title = potential_title.lower().strip()
+        if len(potential_title) < 4:
+            return -1
+        by_index = potential_title.find(" by ") 
+        if by_index != -1:
+            potential_title = potential_title[:by_index]
+        for i, title in enumerate(titles):
+            if title.startswith(potential_title):
+                return i
+        return -1
+
+    def get_top_n(self,D,n):
+        return set([word for word, pair in sorted(D.items(), key=operator.itemgetter(1),reverse=True)[:3]])
+        
+
+    def check_overlap(self,dict1,dict2,n):
+        return len(self.get_top_n(dict1,n).intersection(self.get_top_n(dict2,n))) >= 2
+        
+    common_capitalized = set(["King","Queen","Prince","Princess","Duke","Duchess"])    
+
+    capital_word_re = re.compile("[^.] ([A-Z][a-z]{2}[a-z]+)[ ,.?$]")
+
     def find_subtexts(self,text_lines,feature_dict):
         if feature_dict["table_of_contents"]:           
             header_index = min(feature_dict["table_of_contents"])
             content_lines = []
-            if header_index in feature_dict["upper_case"] and header_index/float(feature_dict["total_length"]) < 0.1:
+            if header_index/float(feature_dict["total_length"]) < 0.1:
                 i = header_index +1
                 while i in feature_dict["blank_lines"] or i in feature_dict["ends_with_page"]:
                     i += 1
 
                 count = 0
-                while count < 20 and i < len(text_lines) - 1 and not (i in feature_dict["blank_lines"] and i + 1 in feature_dict["blank_lines"]):
-                    if i in feature_dict["act"] or i in feature_dict["scene"] or i in feature_dict["chapter"] or i in feature_dict["part"] or i in feature_dict["book"] or i in feature_dict["starts_with_roman"] or i in feature_dict["blank_lines"]:
+                #count < 200 and
+                while  i < len(text_lines) - 1 and not (i in feature_dict["blank_lines"] and i + 1 in feature_dict["blank_lines"]):
+                    if i in feature_dict["act"] or i in feature_dict["scene"] or i in feature_dict["chapter"] or i in feature_dict["part"] or i in feature_dict["book"] or i in feature_dict["starts_with_roman"]:
+                        break
+                    elif i in feature_dict["blank_lines"] or i in feature_dict["introduction"] or i in feature_dict["appendix"]:
                         pass
                     else:
                         count += 1
@@ -1926,17 +2155,43 @@ class StructureTagger:
                 titles = []
                 if content_lines:
                     for content_line in content_lines:
-                        if "  " in content_line and content_line[content_line.rfind("  ") + 2:].isdigit():
-                            titles.append(content_line[:content_line.rfind("  ")].strip().lower())
-                        else:
-                            titles.append(content_line.strip().lower())
+                        #if "  " in content_line and content_line[content_line.rfind("  ") + 2:].isdigit():
+                        #    titles.append(content_line[:content_line.rfind("  ")].strip().lower())
+                        #else:
+                        titles.append(content_line.strip().lower())
+                titles_set = set(titles)
                 feature_dict["text"] = {}
+                content_lines = 0
+                last_cap_dict = None
+                current_cap_dict = None
+                too_much_overlap = False
                 if titles > 1:
                     for i in range(start_search,len(text_lines)):
-                        if i -1 in feature_dict["blank_lines"] and i + 1 in feature_dict["blank_lines"] and text_lines[i].lower() in titles:
-                            text_index = titles.index(text_lines[i].lower())
-                            feature_dict["text"][i] = text_index
-                if len(feature_dict["text"]) == 1:
+                        if ((not feature_dict["text"]) or content_lines > 4) and i not in feature_dict["blank_lines"] and i -1 in feature_dict["blank_lines"] and (i + 1 in feature_dict["blank_lines"] or (i in feature_dict["upper_case"] and i + 1 in feature_dict["upper_case"])): 
+                            match = self.match_title(text_lines[i], titles)
+                            if match != -1:
+                                
+                                feature_dict["text"][i] = match
+                                #feature_dict["text"].add(i)
+                                feature_dict["title"].add(i)
+                                content_lines = 0
+                                if last_cap_dict != None:
+                                    if self.check_overlap(current_cap_dict,last_cap_dict,3):
+                                        too_much_overlap = True
+                                        break
+                                last_cap_dict = current_cap_dict
+                                current_cap_dict = {}
+                        if not i in feature_dict["blank_lines"]:
+                            if current_cap_dict != None:
+                                match = self.capital_word_re.search(text_lines[i])
+                                if match and match.group(1) not in self.common_capitalized:
+                                    current_cap_dict[match.group(1)] = current_cap_dict.get(match.group(1),0) + 1
+                            if not i in feature_dict["upper_case"]:
+                                content_lines += 1
+                                
+                if not too_much_overlap and last_cap_dict != None and self.check_overlap(current_cap_dict,last_cap_dict,3):
+                    too_much_overlap = True
+                if len(feature_dict["text"]) == 1 or too_much_overlap:
                     feature_dict["text"] = {}
             
      
@@ -2010,7 +2265,7 @@ class StructureTagger:
 
 
     def is_part_header(self,feature_dict,lines,line_num):
-        return line_num in feature_dict["starts_with_roman"] or lines[line_num].strip().startswith("CANTO ")
+        return line_num in feature_dict["starts_with_roman"] or lines[line_num].strip().startswith("CANTO ") or lines[line_num].strip().startswith("PART ")
     
     collection_indicators = re.compile("Plays|Novels|Poems|Works|Stories")
     stage_re =  re.compile("^([^\[\(]*)[\[\(]([^\]\)]+)[\]\)](.*)$")
@@ -2020,13 +2275,40 @@ class StructureTagger:
     poetry_header_token_buffer = 50 # allow 50 tokens between poetry header and text
 
     def find_structure_and_tokenize(self,text_lines,global_tags):
+        if "English" not in global_tags["Language"]:
+            tokens = []
+            tags = []
+            temp = []
+            start_line = -1
+            paragraph_count = 0
+            sentence_count = 0
+            for i in range(len(text_lines)):
+                if text_lines[i].strip():
+                    if start_line == -1:
+                        start_line = i
+                elif start_line != -1:
+                    paragraph_count += 1
+                    sentence_count = self.paragraph_tokenize(text_lines,start_line,i,tokens,tags,paragraph_count,sentence_count)
+                    tags[-1].depth = 2
+                    tags[-1].plike = True
+                    start_line = -1
+            tags.append(Tag(0,len(tokens),"text",None))
+            tags[-1].depth = 0
+            tags.append(Tag(0,len(tokens),"body",None))
+            tags[-1].depth = 1
+            global_tags["collection"] = False 
+            return Text(tokens,tags)
 
         feature_dict = self.get_structural_features(text_lines,global_tags)
-        if self.collection_indicators.search(global_tags["Title"][0]):
-            self.find_subtexts(text_lines,feature_dict)
+        #if self.collection_indicators.search(global_tags["Title"][0]):
+        self.find_subtexts(text_lines,feature_dict)
         if not "text" in feature_dict:
             feature_dict["text"] = set()
-            
+
+        if feature_dict["text"]:
+            global_tags["collection"] = True
+        else:
+            global_tags["collection"] = False 
         tags = []
         plike_start_lines = {} #plike means are replacement for p, may require
         plike_end_lines = {}     #special tokenization/further decomposition
@@ -2080,6 +2362,8 @@ class StructureTagger:
                 end = breaks[i+1]
                 start_lines[start].append(text_tag)
                 local_front = self.find_front(feature_dict,global_tags,start_index=start,end_index=end)
+                if local_front == -1:
+                    local_front = start
                 if local_front > start:
                     front_tag = Tag(-1,-1,"front",None)
                     front_tag.depth = 3
@@ -2144,6 +2428,7 @@ class StructureTagger:
         in_plike = False
         depth = 0
         has_contents = False
+        seen_body = False
 
         for i in range(len(text_lines) + 1):
             #if i < len(text_lines):
@@ -2164,7 +2449,7 @@ class StructureTagger:
                     last_break = start_line
                     for j in range(start_line,i + 1):
                         if j == len(text_lines) or not text_lines[j] or j == i:
-                            if at_head:
+                            if at_head and not last_break in feature_dict["illustration"] and not last_break in feature_dict["footnote"]:
                                 self.no_sent_tokenize(text_lines,last_break,j,tokens)
                                 head_tag.end = len(tokens)
                                 at_head = False
@@ -2244,6 +2529,7 @@ class StructureTagger:
                     item_index.difference_update(feature_dict["ends_with_page"])
                     if not item_index:
                         plike_end_lines[i].tag = "head"
+                        plike_end_lines[i].attributes = None
                         plike_end_lines[i].depth = depth
                         plike_end_lines[i].plike = True
                         plike_end_lines[i].start = len(tokens)
@@ -2559,7 +2845,7 @@ class StructureTagger:
             
                 
             elif i == len(text_lines) or (not text_lines[i] and not new_start and not in_plike):
-                if i == start_line + 1 and start_line in feature_dict["upper_case"] and start_line not in feature_dict["illustration"]:
+                if i == start_line + 1 and start_line in feature_dict["upper_case"] and start_line not in feature_dict["illustration"] and start_line not in feature_dict["quoted"]:
                     if global_tags["Genre"] == "poetry" and start_line not in feature_dict["title"]:
                         if part_tag:
 
@@ -2615,7 +2901,7 @@ class StructureTagger:
   
                 else:
                     if global_tags["Genre"] == "poetry":
-                        if self.is_verse(feature_dict,start_line,i) and not start_line in feature_dict["footnote"]:
+                        if (self.is_verse(feature_dict,start_line,i) or (i - start_line <= 2 and poem_tag)) and not start_line in feature_dict["footnote"]:
                             paragraph_count += 1
                             if not poem_tag:
                                  poem_tag = Tag(len(tokens),-1,"lg",None)
@@ -2703,8 +2989,8 @@ class StructureTagger:
                         else:
                             sentence_count = self.paragraph_tokenize(text_lines,start_line,i,tokens,tags,paragraph_count,sentence_count)
                             paragraph_count += 1
-                            tags[-1].depth = depth
-                            tags[-1].plike = True
+                        tags[-1].depth = depth
+                        tags[-1].plike = True
                         #else:
                         #    continue
                 new_start = True
@@ -2719,35 +3005,49 @@ class StructureTagger:
                     tag.end = len(tokens)
                     depth -= 1
                     tags.append(tag)
-                    if global_tags["Genre"] == "poetry" and (tag.tag == "body" or tag.tag == "text"):
-                        if poem_tag:
-                            if part_tag:
-                                if len(stanzas) > part_start_stanzas:
-                                    part_tag.end = len(tokens)
-                                    tags.append(part_tag)
-                                    part_tag = None
+                    if tag.tag == "body" or tag.tag == "text":
+                        paragraph_count = 0
+                        sentence_count = 0
+                        if global_tags["Genre"] == "poetry":
+                            part_count = 0
+                            if poem_tag:
+                                if part_tag:
+                                    if len(stanzas) > part_start_stanzas:
+                                        part_tag.end = len(tokens)
+                                        tags.append(part_tag)
+                                        part_tag = None
+                                    else:
+                                        part_tag = None
+                                if len(stanzas) > 0:
+                                    j = -1
+                                    while tags[j].start >= stanzas[-1].end:
+                                        tags[j].depth -= 2
+                                        j -= 1
+                                    if len(stanzas) > 1:
+                                        tags.extend(stanzas)
+                                    poem_tag.end = stanzas[-1].end #len(tokens)
+                                    tags.append(poem_tag)
+                                    poem_tag = None
+                                    stanzas = []
                                 else:
-                                    part_tag = None
-                            if len(stanzas) > 0:
-                                j = -1
-                                while tags[j].start >= stanzas[-1].end:
-                                    tags[j].depth -= 2
-                                    j -= 1
-                                if len(stanzas) > 1:
-                                    tags.extend(stanzas)
-                                poem_tag.end = stanzas[-1].end #len(tokens)
-                                tags.append(poem_tag)
-                                poem_tag = None
-                                stanzas = []
-                            else:
-                                poem_tag = None
+                                    poem_tag = None
 
             if i in start_lines:
                 start_lines[i].sort()
                 for tag in start_lines[i]:
                     tag.start = len(tokens)
                     tag.depth = depth
-                    depth += 1 
+                    depth += 1
+                    
+                    if tag.tag == "body" and global_tags["Genre"] == "poetry" and global_tags["collection"]:
+                        if seen_body:
+                            poem_tag = Tag(len(tokens),-1,"lg",{"type":"poem"})
+                            poem_tag.depth = depth
+                            poem_tag_start = len(tags)
+                            poem_token_start = len(tokens)
+                        else:
+                            seen_body = True
+                        
             if i in plike_start_lines:
                 start_line = i
                 plike_start_lines[i].start = len(tokens)
@@ -2889,6 +3189,16 @@ class LexiconTagger:
 # tags names in the text, based on capitalization and frequency
 
 
+def clusterify(clusters,words):
+    cluster = set()
+    for word in words:
+        if word in clusters:
+            cluster.update(clusters[word])
+        else:
+            cluster.add(word)
+    for word in cluster:
+        clusters[word] = cluster
+    
 
 
 class NameTagger():
@@ -2896,13 +3206,13 @@ class NameTagger():
     internal_sentence = set([u'“',u'‘',":"])
     not_wanted_capitalized = set(["I","Monday","Tuesday", "Wednesday","Thursday","Friday","Saturday","Sunday","January","February","March","April","May","June","July","August","September","October","November","December","And", "So"])
 
-    count_filter = 10
-    #max_name_length = 3
-    #count_filter = 0
+    address_terms = set(["Duchess", "Madame","Mademoiselle","Lady","Dame","Count","Countess", "Dr.","Cousin","Sister", "Ms.","Duke","Mr.","Mr","Miss","Mrs.","Master", "Mistress", "Reverend", "Father", "Sir","Uncle","Aunt","Doctor","Colonel","General","Captain","Lieutenant","Sergeant", "Private","Professor","Prof."])
+
+    count_filter = 4
     max_name_length = 8
     add_thes = True
 
-    def __init__(self,tokenizer):
+    def __init__(self,tokenizer,gender_classifier):
         self.bad_names = set()
         for word in GenreClassifier.common_words:
             self.bad_names.add(word.title())
@@ -2910,25 +3220,146 @@ class NameTagger():
             if word.istitle():
                 self.bad_names.add(word)
                 self.bad_names.add(word.strip("."))
+        f = open("resources/nicknames.dat","rb")
+        self.nicknames = cPickle.load(f)
+        f.close()
 
-        #self.gender_classifier = GenderClassifier()
+        self.gender_classifier = GenderClassifier()
         self.tokenizer = tokenizer
 
+
+    def cluster_names(self,name_count_dict,name_mapping):
+        word_name_dict = {}
+        clusters = {}
+        for name in name_count_dict:
+            if name in self.nicknames:
+                for fullname in self.nicknames[name]:
+                    if fullname in name_count_dict:
+                        clusterify(clusters,[name,fullname])
+                        
+            words = name.split(" ")
+            stop = False
+            for word in words:
+                if word.lower() in GenreClassifier.common_words and not word == "the":
+                    stop = True
+            if stop:
+                continue
+            for word in words:
+                if word not in word_name_dict:
+                    word_name_dict[word] = []
+                word_name_dict[word].append(name)
+        for word in word_name_dict:
+            if word in name_count_dict:
+                starts_with = [name for name in word_name_dict[word] if name.startswith(word) and "'s" not in name]
+                if len(starts_with) == 2:
+                    clusterify(clusters,starts_with)
+
+                name_gender = self.gender_classifier.classify(word)
+
+                ends_with = [name for name in word_name_dict[word] if name.endswith(word)]
+                satisfies = []
+                counts = []
+                for name2 in ends_with:
+                    if name2 != word:
+                        words2 = name2.split()
+                        if words2[0] not in self.address_terms and self.gender_classifier.classify(words2[0]) == name_gender:
+                            satisfies.append(name2)
+                            counts.append(name_count_dict[name2])
+                if satisfies:
+                    most_common = max(range(len(counts)),key=lambda x: counts[x])
+                    most_common_first = satisfies[most_common][:satisfies[most_common].find(" ")]
+                    good = True
+                    for i in range(len(satisfies)):
+                        if i != most_common:
+                            if not counts[i]*4 < counts[most_common]:
+                                first = satisfies[i][:satisfies[i].find(" ")]
+                                if not ((first in self.nicknames and most_common_first in self.nicknames[first]) or (most_common_first in self.nicknames and first in self.nicknames[most_common_first])):
+                                    good = False                            
+                    if good:
+                        satisfies.append(word)
+                        clusterify(clusters,satisfies)            
+
+        for name in name_count_dict:
+            if " " in name:
+                words = name.split()
+                start = words[0]
+                end = words[-1]
+                if start in self.address_terms and end in word_name_dict:
+                    name_gender = self.gender_classifier.classify(start)
+                    satisfies = []
+                    counts = []
+                    multiple_address = False
+                    for name2 in word_name_dict[end]:
+                        if name2 == name or self.gender_classifier.classify(name2.split(" ")[0]) != name_gender:
+                            continue
+                        if start + " " + name2  == name:
+                            clusterify(clusters,[name,name2])
+                        elif name2.endswith(" ".join(words[1:])):
+                            if name2.split(" ")[0] in self.address_terms:
+                                multiple_address = True
+                            else:
+                                satisfies.append(name2)
+                                counts.append(name_count_dict[name2])
+                    if satisfies and not multiple_address:
+                        most_common = max(range(len(counts)),key=lambda x: counts[x])
+                        most_common_first = satisfies[most_common][:satisfies[most_common].find(" ")]
+                        good = True
+                        for i in range(len(satisfies)):
+                            if i != most_common:
+                                if not counts[i]*4 < counts[most_common]:
+                                    first = satisfies[i][:satisfies[i].find(" ")]
+                                    if not ((first in self.nicknames and most_common_first in self.nicknames[first]) or (most_common_first in self.nicknames and first in self.nicknames[most_common_first])):
+                                        good = False                            
+                        if good:              
+                            satisfies.append(name)
+                            clusterify(clusters,satisfies)                           
+                            
+                        
+        for name in clusters:
+            org = name.replace(" ","_")
+            mapped = max(clusters[name],key = lambda x: (name_count_dict[x] > self.count_filter,len([word for word in x.split(" ") if word not in self.address_terms]),name_count_dict[x])).replace(" ","_")
+            if org != mapped:
+                name_mapping[org] = mapped
+
+        return name_mapping
+
+        
+            
 
     def good_name(self,word):
         return word.istitle() and word not in self.not_wanted_capitalized
 
     def add_name_tags(self,text):
         names_count_dict = {}
-        for tag in text.tags:
-            if tag.tag == "s":
+        final_set = set()
+        name_mapping = {}
+        text.tags.sort()
+        for j in xrange(len(text.tags) + 1):
+                       
+            if j == len(text.tags) or (j!= 0 and text.tags[j].tag == "text"):
+                name_mapping = self.cluster_names(names_count_dict,name_mapping)
+        
+                for name in names_count_dict:
+                    if names_count_dict[name] > self.count_filter and name not in self.bad_names and not (self.add_thes and name.startswith("the ") and names_count_dict.get(name[4:],0) >= names_count_dict[name]):                        
+                        final_set.add(name)
+                        if self.add_thes and name.startswith("the "):
+                            capitalized = "T" + name[1:]
+                            final_set.add(capitalized)
+                            name = name.replace(" ","_")
+                            if name in name_mapping:
+                                name_mapping[capitalized.replace(" ","_")] = name_mapping[name]
+                            else:
+                                name_mapping[capitalized.replace(" ","_")] = name
+                names_count_dict = {}
+                
+            elif text.tags[j].tag == "s":
+                tag = text.tags[j]
                 in_name = False
                 start_index = -1
                 start = tag.start + 1
                 for i in range(start, tag.end):
                     if i > 0 and text.tokens[i-1] in self.internal_sentence:
                         continue
-
 
                     add_name = False
                     if text.tokens[i] and (self.good_name(text.tokens[i]) or (self.add_thes and text.tokens[i] =="the" and i < tag.end -1 and text.tokens[i+1] and self.good_name(text.tokens[i+1])) or (in_name and text.tokens[i] in self.midname_function_words and i < tag.end -1 and text.tokens[i+1] and (self.good_name(text.tokens[i+1]) or (text.tokens[i+1] in self.midname_function_words and i < tag.end -2 and text.tokens[i+2] and self.good_name(text.tokens[i+2]))))):
@@ -2952,32 +3383,14 @@ class NameTagger():
                     if len(name) != 1:
                         names_count_dict[name] = names_count_dict.get(name,0) + 1
 
-        final_set = set()
-        
-        for name in names_count_dict:
-            if names_count_dict[name] > self.count_filter and name not in self.bad_names and not (self.add_thes and name.startswith("the ") and names_count_dict.get(name[4:],0) >= names_count_dict[name]):
-                #final_set[name] = self.gender_classifier.classify(name.split(" ")[0].lower())
-                final_set.add(name)
-                if self.add_thes and name.startswith("the "):
-                    final_set.add("T" + name[1:])
-                #    final_set["T" + name[1:]] = final_set[name]
-
-        #lex_tagger = LexiconTagger(final_set,"persName","gender",self.tokenizer,case_sensitive=True,already_tokenized=True)
         lex_tagger = LexiconTagger(final_set,"persName",None,self.tokenizer,case_sensitive=True,already_tokenized=True)
         pre_tag_count = len(text.tags)
         for tag in text.tags:
             if tag.tag == "s":
                 text.tags.extend(lex_tagger.tag_span(text.tokens,tag.start,tag.end))
 
-        #add xml-id to first instance of tag
-        #i = pre_tag_count + 1
-        #done = set()
-        #while i < len(text.tags):
-        #    name = "_".join(text.tokens[text.tags[i].start:text.tags[i].end])
-        #    if name not in done:
-        #        text.tags[i].attributes["xml:id"] = name
-        #        done.add(name)
-        #    i+= 1
+
+        return name_mapping
     
 
 size_of_int = 17
@@ -3004,8 +3417,8 @@ class NamedEntityTagger():
 
     remove_plural_people = True
 
-    def __init__(self):
-        f = open("resources/NER_LR_model.data","rb")
+    def __init__(self,options):
+        f = open("resources/NER_LR_model.dat","rb")
         self.word_ids = cPickle.load(f)
         self.feature_weights = cPickle.load(f)
         for feature in self.feature_weights:
@@ -3013,6 +3426,7 @@ class NamedEntityTagger():
                 self.feature_weights[feature][i] /= 1000000
         self.ratio_dicts = cPickle.load(f)
         f.close()
+        self.options = options
 
     def extract_features(self,tokens, target_start_index, target_end_index, sent_start,sent_end):
         context = []
@@ -3056,7 +3470,7 @@ class NamedEntityTagger():
 
     def apply_decision_function(self,features):
         results = [self.feature_weights["$intercept$"][0],self.feature_weights["$intercept$"][1],self.feature_weights["$intercept$"][2]]
-        feature_fraction = 1.0/len(features)
+        feature_fraction = 1.0/max(len(features),1)
         for feature in features:
             for i in range(3):
                  results[i] += feature_fraction*self.feature_weights[feature][i]
@@ -3103,19 +3517,15 @@ class NamedEntityTagger():
                     end_word = self.word_ids[words[-1]]
                 else:
                     end_word = -1        
-                #self.apply_ratios(scores,start_word,end_word)
 
             best_class = max(range(len(scores)), key=lambda x: scores[x])
-            if best_class == 0:
+            if best_class == 0 or (best_class == 1 and not self.options.get("persName",False)) or (best_class == 2 and not self.options.get("placeName")):
                 remove.add(name)
             elif best_class == 2:
                 change_to_location.add(name)
-            elif best_class == 1 and self.remove_plural_people and name.endswith("s") and not name.endswith("ss"):
+            elif best_class == 1 and self.remove_plural_people and name.startswith("the ") and name.endswith("s") and not name.endswith("ss"):
                 remove.add(name)
-        print "locations"
-        print change_to_location
-        print "others"
-        print remove
+
         for i in range(len(text.tags) -1, -1,-1):
             tag = text.tags[i]
             if tag.tag == "persName":
@@ -3132,15 +3542,55 @@ class NamedEntityTagger():
 # Tagger which tags said elements (speech in fiction and nonfiction. Finds
 # nearest name and assigns it as speaker
 
-def fix_if_capital_the(name):
-    if name.startswith("The_"):
-        return "t" + name[1:]
+fp_narr_tag = "fp_narr"
+fp_num_cutoff = 0.01
+
+other_punct = set([",",";",":",u"—","(", ")", u"’",u"‘",u'”',u'“'])
+
+common_object_preps = set(["to","at","from","for"])
+
+def fix_referenced_name(name,name_mapping):
+    name = "_".join(name)
+    if name == "I":
+        return fp_narr_tag
+    elif name in name_mapping:
+        return name_mapping[name]
     return name
 
+def check_said(tokens,p, start_index, end_index):
+    if (start_index == p.start or (start_index > 0 and tokens[start_index -1] in StructureTagger.sent_punct)) and (end_index == p.end - 1 or tokens[end_index - 1] in StructureTagger.sent_punct or tokens[end_index - 1] in other_punct or (end_index < len(tokens) -1 and tokens[end_index + 1] in other_punct)):
+        return True
+    elif (start_index == p.start or (start_index > 0 and (tokens[start_index -1] in StructureTagger.sent_punct or tokens[start_index -1] in other_punct))) and (end_index == p.end - 1 or (tokens[end_index - 1] in StructureTagger.sent_punct or tokens[end_index - 1] == u"—")):
+        return True
+
+    return False
+
+def contains(tag1,tag2):
+    return tag1.start <= tag2.start and tag1.end >= tag2.end
+
+def is_addressed_name(tag,tokens):
+    return (tag.start > 0 and len(tokens[tag.start -1]) == 1 and not tokens[tag.start -1].isalpha()) and (tag.end < len(tokens) and len(tokens[tag.end]) == 1 and not tokens[tag.end].isalpha())
+
+def looks_like_object(tokens,tag):
+    try:
+        if tokens[tag.start -1] in common_object_preps:
+            return True
+    except:
+        pass
+    return False
+        
+    
 
 class SaidTagger():
 
+    def __init__(self,gender_classifier,options):
+        self.gender_classifier = gender_classifier
+        self.options = options
+
     punct = set([",",".","?","!"])
+
+    stop_tags = set(["p","said","text","back", "div"])
+    not_wanted_description = set(["other","man","women","boy","girl"])
 
     def add_initial_said_tags(self,text):
         if text.tokens.count(u'‘') > text.tokens.count(u'“'):
@@ -3150,44 +3600,118 @@ class SaidTagger():
             start_quote = u'“'
             end_quote = u'”'
         new_tags = []
+        text.tags.sort()
+        in_body = False
         for tag in text.tags:
-            if tag.tag == "p":
+            if tag.tag == "body":
+                in_body = True
+            if tag.tag == "back":
+                in_body = False
+            if in_body and tag.tag == "p":
                  last_opening = None
-                 seen_punct = False
                  for i in range(tag.start,tag.end):
                     if text.tokens[i] == start_quote:
                         last_opening = i
-                        seen_punct = False
                  
                     elif text.tokens[i] == end_quote:
-                        if last_opening and seen_punct:
-                            new_tags.append(Tag(last_opening,i + 1,"said",{}))
+                        if last_opening == None:
+                            if i != tag.end -1: # probably an error, fix
+                                text.tokens[i] = start_quote
+                                last_opening = i
+                        else:
+                            if check_said(text.tokens,tag,last_opening,i):
+                                new_tags.append(Tag(last_opening,i + 1,"said",{}))
                             last_opening = None
-                            
-                    elif text.tokens[i] in self.punct:
-                        seen_punct = True
+                 if last_opening:            
+                     if last_opening == tag.start:
+                         new_tags.append(Tag(tag.start,tag.end,"said",{"@continue":True}))
+                     else:
+                         new_tags.append(Tag(last_opening,tag.end,"said",{}))
         text.tags.extend(new_tags)
 
 
 
-    def add_speakers(self,text):
+    def add_speakers(self,text,name_mapping):
+        I_indicies = []
+        i = 0
         text.tags.sort()
-        current_p = None
-        current_s = None
-        closest_name = None
+        while i < len(text.tags):
+            tag = text.tags[i]
+            if tag.tag == "s":
+                last_token_index = tag.start
+                j = i + 1
+                while j < len(text.tags) and not text.tags[j].start > tag.end:
+                    if text.tags[j].tag == "said":
+                        for k in range(last_token_index, text.tags[j].start):
+                            if text.tokens[k] == "I":
+                                I_indicies.append(k)
+                        last_token_index = text.tags[j].end
+                        if text.tags[j].end > tag.end:
+                            break
+                    j += 1
+                for k in range(last_token_index, tag.end):
+                    if text.tokens[k] == "I":
+                        I_indicies.append(k)
+                i = j
+            elif tag.tag == "said":
+                j = i + 1
+                while j < len(text.tags) and not text.tags[j].start >= tag.end:
+                    j += 1
+                i = j
+            else:
+                i += 1
+        if float(len(I_indicies))/len(text.tokens) >= fp_num_cutoff:
+            for i in I_indicies:
+                text.tags.append(Tag(i,i+1,"narrator",None))
+        text.tags.sort()
+
         i = 0
         while i < len(text.tags):
             tag = text.tags[i]
-            if tag.tag == "p":
+            if tag.tag == "text" or tag.tag == "div":
+                current_p = None
+                last_p = None
+                prev_p = None
+                current_s = None
+                prev_name = None
+                closest_name = None
+                last_said = None
+                prev_said = None
+                last_addressed = None
+                i+= 1
+            elif tag.tag == "p":
+                prev_p = last_p
+                last_p = current_p
                 current_p = tag
                 i += 1
             elif tag.tag == "s":
                 current_s = tag
                 i += 1
-            elif tag.tag == "persName":
-                closest_name = tag
+            elif tag.tag == "persName" or tag.tag == "narrator":
+                if not last_said or not tag.start < last_said.end:
+
+
+
+                    if not closest_name:
+                        different_from_last = False
+                    else:
+                        different_from_last = fix_referenced_name(text.tokens[tag.start:tag.end],name_mapping) != fix_referenced_name(text.tokens[closest_name.start:closest_name.end],name_mapping)
+
+
+                    if looks_like_object(text.tokens,tag) and different_from_last:
+                        prev_name = tag
+
+                    else:               
+                        if different_from_last:
+                            prev_name = closest_name
+                        closest_name = tag
+
+
                 i += 1
             elif tag.tag == "said":
+                addressed = None
+                continued = False
+                mentioned = set()
                 if current_s and closest_name and tag.start < current_s.end and closest_name.start > current_s.start:
                     prev_same_sent = True
                 else:
@@ -3202,85 +3726,205 @@ class SaidTagger():
                     prev_distance = -1
                 j = i + 1
                 while j < len(text.tags) and not text.tags[j].start >= tag.end:
-                    if text.tags[j].tag == "s":
+                    if text.tags[j].tag == "persName":
+                        if is_addressed_name(text.tags[j],text.tokens):
+                            addressed = text.tags[j]
+                        mentioned.add("#" + fix_referenced_name(text.tokens[text.tags[j].start:text.tags[j].end], name_mapping))                                         
+                        
+                    elif text.tags[j].tag == "s":
                         current_s = text.tags[j]
                     j += 1
                 next_name = None
-                while j < len(text.tags) and text.tags[j].tag != "p" and text.tags[j].tag != "said" and not next_name:
-                    if text.tags[j].tag == "persName":
+                while j < len(text.tags) and text.tags[j].tag not in self.stop_tags:
+                    if not next_name and ((text.tags[j].tag == "persName" and not looks_like_object(text.tokens,text.tags[j])) or text.tags[j].tag == "narrator"):
                         next_name = text.tags[j]
-                    else:
-                        j += 1
+                    j += 1
+                speaker_gender = None
+                temp_speaker = None
+                try:
+                    end_index = min(text.tags[j].start,current_s.end)
+                except:
+                    end_index = current_s.end
+                for k in range(tag.end,end_index):
+                    if text.tokens[k] in GenreClassifier.narrative_words:
+                        if text.tokens[k] == "continued":
+                            continued = True
+                        if k > 0 and k < len(text.tokens):
+                            if text.tokens[k-1] == "he":
+                                speaker_gender = "M"
+                            elif text.tokens[k-1] == "she":
+                                speaker_gender = "F"
+                            elif not text.tokens[k-1].istitle() and not text.tokens[k+1].istitle():
+                                if k > 1 and text.tokens[k-2] == "the" and text.tokens[k-1] not in self.not_wanted_description:
+                                    temp_speaker = Tag(k-2,k,"persName",None)
+                                elif text.tokens[k+1] == "the" and k < len(text.tokens) - 2 and text.tokens[k+2] not in self.not_wanted_description and (text.tokens[k+3] == "." or text.tokens[k+3].endswith("ly")):
+                                    temp_speaker = Tag(k+1,k+3,"persName",None)
                 if next_name:
-                    if not closest_name:
-                        tag.add_attribute("who","#" + fix_if_capital_the("_".join(text.tokens[text.tags[j].start:text.tags[j].end])))
-                    if current_s.start < tag.end and current_s.end > next_name.start:
-                        next_same_sent = True
+                    next_name_string = "#" + fix_referenced_name(text.tokens[next_name.start:next_name.end], name_mapping)
+                if closest_name:
+                    closest_name_string = "#" + fix_referenced_name(text.tokens[closest_name.start:closest_name.end], name_mapping)
+                if temp_speaker:
+                    tag.add_attribute("who","#" + fix_referenced_name(text.tokens[temp_speaker.start:temp_speaker.end], name_mapping))
+                elif (tag.get_attribute("@continue") or continued) and last_said and last_said.get_attribute("who") and last_said.attributes["who"] not in mentioned:
+                    tag.add_attribute("who", last_said.attributes["who"])
+                elif next_name and not speaker_gender and next_name_string not in mentioned:
+                    if not closest_name or closest_name_string in mentioned:
+                        tag.add_attribute("who",next_name_string)
                     else:
-                        next_same_sent = False
-                    next_distance = text.tags[j].start - tag.end
-                    if prev_same_sent and not next_same_sent:
-                        tag.add_attribute("who","#" + fix_if_capital_the("_".join(text.tokens[closest_name.start:closest_name.end])))
-                    elif next_same_sent and not prev_same_sent or next_distance < prev_distance:
-                        tag.add_attribute("who","#" + fix_if_capital_the("_".join(text.tokens[text.tags[j].start:text.tags[j].end])))
-                    elif closest_name:
-                        tag.add_attribute("who", "#" + fix_if_capital_the("_".join(text.tokens[closest_name.start:closest_name.end])))
+                        if current_s.start < tag.end and current_s.end > next_name.start:
+                            next_same_sent = True
+                        else:
+                            next_same_sent = False
+                        next_distance = next_name.start - tag.end
+                        if prev_same_sent and not next_same_sent:
+                            tag.add_attribute("who",closest_name_string)
+                        elif next_same_sent and not prev_same_sent or next_distance < prev_distance:
+                            tag.add_attribute("who",next_name_string)
+                        elif closest_name:
+                            tag.add_attribute("who", closest_name_string)
                 else:
-                    if closest_name:
-                        tag.add_attribute("who","#" + fix_if_capital_the("_".join(text.tokens[closest_name.start:closest_name.end])))
-                i = j
+                    if last_addressed:
+                        last_addressed_string = "#" + fix_referenced_name(text.tokens[last_addressed.start:last_addressed.end], name_mapping)
+                    if last_said and contains(current_p, last_said) and last_said.get_attribute("who") and last_said.get_attribute("who") not in mentioned:
+                        tag.add_attribute("who", last_said.attributes["who"])
+                    elif last_addressed and last_p and contains(last_p,last_addressed) and last_addressed_string not in mentioned:
+                        tag.add_attribute("who", last_addressed_string)
+                    elif closest_name:
+ 
+
+                        if prev_name:
+                            prev_name_string =  "#" + fix_referenced_name(text.tokens[prev_name.start:prev_name.end], name_mapping)
+                        if speaker_gender and prev_name:
+                            if text.tokens[closest_name.start].lower() == "the":
+                                closest_name_gender = self.gender_classifier.classify(text.tokens[closest_name.start + 1])
+                            elif text.tokens[closest_name.start] == "I":
+                                closest_name_gender = "I"
+                            else:
+                                closest_name_gender = self.gender_classifier.classify(text.tokens[closest_name.start])
+
+                            if text.tokens[prev_name.start].lower() == "the":
+                                prev_name_gender = self.gender_classifier.classify(text.tokens[prev_name.start + 1])
+                            elif text.tokens[prev_name.start] == "I":
+                                prev_name_gender = "I"
+                            else:
+                                prev_name_gender = self.gender_classifier.classify(text.tokens[prev_name.start])
+
+
+                        if last_said and last_p and contains(last_p,last_said) and prev_said and prev_said.get_attribute("who") != last_said.get_attribute("who") and ((prev_p and contains(prev_p,prev_said)) or prev_said.start > closest_name.start) and "who" in prev_said.attributes and prev_said.attributes["who"] not in mentioned:
+                                tag.add_attribute("who", prev_said.attributes["who"])
+                        elif last_said and last_p and contains(last_p,last_said) and "who" in last_said.attributes and closest_name_string == last_said.attributes["who"] and prev_name and (not speaker_gender or prev_name_gender == speaker_gender) and not prev_name_string in mentioned:
+                                tag.add_attribute("who",prev_name_string)        
+                        elif addressed and prev_name and closest_name_string == "#" + fix_referenced_name(text.tokens[addressed.start:addressed.end], name_mapping):
+                            tag.add_attribute("who", prev_name_string)            
+                        elif speaker_gender and prev_name:
+                            if closest_name_gender != speaker_gender and prev_name_gender == speaker_gender and prev_name_string not in mentioned:
+                                tag.add_attribute("who", prev_name_string)
+                            elif closest_name_string not in mentioned:
+                                tag.add_attribute("who", closest_name_string)
+                        else:
+                            if closest_name_string not in mentioned:
+                                tag.add_attribute("who", closest_name_string)
+                if addressed:
+                    last_addressed = addressed
+
+                prev_said = last_said
+                last_said = tag
+                i += 1
             else:
                 i += 1
+
+        text.tags = [tag for tag in text.tags if tag.tag != "narrator"]
                         
-    def add_said_tags(self,text):
+    def add_said_tags(self,text,name_mapping):
         self.add_initial_said_tags(text)
-        self.add_speakers(text)
+        if self.options.get("persName",False):
+            self.add_speakers(text,name_mapping)
 
 class CharacterListBuilder:
 
-    def __init__(self):
-        self.gender_classifier = GenderClassifier()
+    def __init__(self, gender_classifier):
+        self.gender_classifier = gender_classifier
 
 
-    def build_character_list_and_add_refs(self,text,text_tag_index):
+    def build_character_list_and_add_refs(self,text,text_tag_index,xmlids,name_mapping):
         text_tag = text.tags[text_tag_index]
-        characters = set()
         i = text_tag_index + 1
+        character_mapping = {}
         while i < len(text.tags) and text.tags[i].start < text_tag.end:
             tag = text.tags[i]
             if tag.tag == "said":
                 if "who" in tag.attributes:
-                    characters.add(tag.attributes["who"][1:])
+                    char = tag.attributes["who"][1:]
+                    if char not in character_mapping:
+                        rep = char
+                        count = 2
+                        changed = False
+                        while rep in xmlids:
+                            if ":" not in rep:
+                                rep = rep + ":" + str(count)
+                            else:
+                                rep = rep[:rep.find(":")] + ":" + str(count)
+                            count+= 1
+                            changed = True
+                        if changed:
+                            tag.attributes["who"] = "#" + rep
+                        character_mapping[char] = rep                        
             i+= 1
-        characters = {character:[] for character in characters}
-        for character in characters:
-            name_tokens = character.replace("_"," ").split()
+
+
+        characters = {character:[] for character in character_mapping.values()}
+        for character in character_mapping:
+            name_tokens = character.split("_")
             if name_tokens[0] == "the":
                 first_word = name_tokens[1]
             else:
                 first_word = name_tokens[0]
             gender = self.gender_classifier.classify(first_word.lower())
-            characters[character].append(gender)
+            characters[character_mapping[character]].append(gender)
+            characters[character_mapping[character]].append(set())
+            if character == fp_narr_tag:
+                characters[character_mapping[fp_narr_tag]].append(9999)
+            else:
+                characters[character_mapping[character]].append(0)
         i = text_tag_index + 1
         while i < len(text.tags) and text.tags[i].start < text_tag.end:
             tag = text.tags[i]
             if tag.tag == "persName":
-                rep =  fix_if_capital_the("_".join(text.tokens[tag.start:tag.end]))
-                if rep in characters:
-                    tag.attributes = {"corresp":"#" + rep}
-            i+= 1      
+                rep = fix_referenced_name(text.tokens[tag.start:tag.end],name_mapping)
+                if rep in character_mapping:
+                    tag.attributes = {"corresp":"#" + character_mapping[rep]}
+                    characters[character_mapping[rep]][-1] += 1
+                    original = "_".join(text.tokens[tag.start:tag.end])
+                    if original != rep and not original.startswith("The_"):
+                        characters[character_mapping[rep]][1].add(original)
+            i+= 1
+        for character in characters:
+            characters[character][1] = list(characters[character][1])
         return characters
         
         
 
 
-    def build_character_lists(self,text,tag_dict):
-        #character_lists = []
-        # TODO: add support for multiple character lists
+    def build_character_lists(self,text,tag_dict,name_mapping):
         text.tags.sort()
-        character_list = self.build_character_list_and_add_refs(text,0)
-        if character_list:
-            tag_dict["Characters"] = [character_list]
+        if tag_dict["collection"]:
+            tag_dict["Characters"] = []
+            count = 1
+            xmlids = set()
+            for i in range(1,len(text.tags)):
+                tag = text.tags[i]
+                if tag.tag== "text":
+                    character_list = self.build_character_list_and_add_refs(text,i,xmlids,name_mapping)                    
+                    if character_list:
+                        xmlids.update(character_list)
+                        tag.attributes = {"xml:id":"text%d" % count}
+                        tag_dict["Characters"].append(character_list)
+                        count +=1    
+
+        else:
+            character_list = self.build_character_list_and_add_refs(text,0,set(),name_mapping)
+            if character_list:
+                tag_dict["Characters"] = [character_list]
         
 
 
@@ -3425,11 +4069,12 @@ class LemmatizerSimple:
 
 class LexicalTagger:
 
-    def __init__(self,options,tokenizer):
+    def __init__(self,options,tokenizer,gender_classifier):
         self.options = options
-        self.name_tagger = NameTagger(tokenizer)
-        self.named_entity_tagger = NamedEntityTagger()
-        self.said_tagger = SaidTagger()
+        if self.options.get("persName",False) or self.options.get("placeName",False):
+            self.name_tagger = NameTagger(tokenizer,gender_classifier)
+            self.named_entity_tagger = NamedEntityTagger(options)
+        self.said_tagger = SaidTagger(gender_classifier,options)
         if "tagged" in self.options and self.options["tagged"]:
             #if not standalone and self.options["tagger"] == "NLTK":
             #    self.pos_tagger = NLTKPOSTagger()
@@ -3439,9 +4084,9 @@ class LexicalTagger:
         self.internal_taggers = {}
 
         year_tagger = RegexTagger(StructureTagger.year,"date")
-        city_tagger = LexiconTagger(StructureTagger.cities,"placeName",None,tokenizer)
+        city_tagger = LexiconTagger(StructureTagger.cities,"settlement",None,tokenizer)
         self.footnote_tagger = FootnoteTagger()
-        country_tagger = LexiconTagger(StructureTagger.countries,"placeName",None,tokenizer)
+        country_tagger = LexiconTagger(StructureTagger.countries,"country",None,tokenizer)
         self.internal_taggers["docImprint"] = [year_tagger,city_tagger,country_tagger]
         self.internal_taggers["docDate"] = [year_tagger]
         
@@ -3523,25 +4168,26 @@ class LexicalTagger:
         return new_tags 
 
     def do_lexical_tagging(self,text,tag_dict):
+        name_mapping = {}
+        if "English" not in tag_dict["Language"]:
+            return text, name_mapping
         text.tags.extend(self.do_internal_tagging(text))
 
         self.footnote_tagger.add_footnote_tags(text)
         
         if tag_dict["Genre"] == "fiction":
-            self.name_tagger.add_name_tags(text)
-            self.named_entity_tagger.tag_named_entities(text)
-            self.said_tagger.add_said_tags(text)
+            if self.options.get("persName",False) or self.options.get("placeName",False):
+                name_mapping = self.name_tagger.add_name_tags(text)
+                self.named_entity_tagger.tag_named_entities(text)
+            self.said_tagger.add_said_tags(text,name_mapping)
+            
 
         for tagger in self.selected_taggers:
             text.tags.extend(tagger.tag_span(text.tokens,0,len(text.tokens)))
-        
+    
 
         if self.selected_lemma_taggers or ("lemma" in self.options and self.options["lemma"]):
             lemma_tokens = self.lemmatizer.lemmatize_all(text.tokens)
-
-            
-        for tagger in self.selected_lemma_taggers:
-           text.tags.extend(tagger.tag_span(lemma_tokens,0,len(lemma_tokens))) 
 
         if "tagged" in self.options and self.options["tagged"]:
             pos_tags = self.pos_tagger.tag(text.tokens)
@@ -3551,7 +4197,11 @@ class LexicalTagger:
                 text.tokens[i] = "%s/%s" % (text.tokens[i],pos_tags[i])
         elif "lemma" in self.options and self.options["lemma"]:
             text.tokens = lemma_tokens
-        return text
+            
+        for tagger in self.selected_lemma_taggers:
+           text.tags.extend(tagger.tag_span(lemma_tokens,0,len(lemma_tokens))) 
+
+        return text, name_mapping
 
 
 TEI_header_template = u''' <teiHeader>
@@ -3561,7 +4211,7 @@ TEI_header_template = u''' <teiHeader>
     <author>**AUTHOR OF TEXT**</author>
     <respStmt>
      <resp>TEI generated by GutenTag v**version num** <link target="http://www.projectgutentag.org" /></resp>
-     <resp>Source text from Project Gutenberg <link target="http://www.gutenberg.org/cache/epub/**TEXT NO**/pg**TEXT NO**.txt" /> </resp>
+     <resp>Source text from Project Gutenberg **PG COUNTRY**<link target="http://**PG LINK**" /> </resp>
      <resp>Project GutenTag is directed by </resp>
      <persName>Julian Brooke</persName>
      <persName>Adam Hammond</persName>
@@ -3629,36 +4279,41 @@ author_info_full_template = u'''     <person>
       <sex>**AUTHOR GENDER, M or F or NA**</sex>
       <birth>
        <date>**AUTHOR BIRTH DATE, IN FORMAT YYYY-MM-DD**</date>
-       <country>**COUNTRY OF AUTHOR BIRTH**</country>
-       <settlement>**CITY/TOWN OF AUTHOR BIRTH**</settlement>
+       <placeName>**PLACE OF AUTHOR BIRTH**</placeName>
       </birth>
       <death>
        <date>**AUTHOR DEATH DATE, IN FORMAT YYYY-MM-DD**</date>
-       <country>**COUNTRY OF AUTHOR DEATH**</country>
-       <settlement>**CITY/TOWN OF AUTHOR DEATH**</settlement>
+       <placeName>**PLACE OF AUTHOR DEATH**</placeName>
       </death>
+      <nationality>**AUTHOR NATIONALITY**</nationality>
      </person>
 '''
 
 character_entry_template = u'''     <person xml:id="**CHAR ID**">
-      <persName>**CHAR NAME**</persName>
+      <persName>**CHAR NAME****CHAR ALIAS LIST**</persName>
       <sex>**CHAR GENDER**</sex>
      </person>
 '''
 
-character_list_template = u'''   <particDesc ana="character_list">
+character_alias_template ="       <addName>**CHAR ALIAS**</addName>\n"
+
+character_list_template = u'''   <particDesc ana="character_list"**TEXT ID**>
     <listPerson>
 **CHAR ENTRIES**
     </listPerson>
    </particDesc>
 '''
 
+PG_USA_link= "www.gutenberg.org/cache/epub/**TEXT NO**/pg**TEXT NO**.txt"
+PG_AUS_link= "gutenberg.net.au/ebooks**TEXT FIRST 2**/**TEXT NO**.txt"
+PG_CAN_link= "www.gutenberg.ca/ebooks/**TEXT FILENAME PART**/**TEXT FILENAME**"
 
-author_pairs = [["**AUTHOR BIRTH DATE, IN FORMAT YYYY-MM-DD**","Author Birth"],["**AUTHOR DEATH DATE, IN FORMAT YYYY-MM-DD**","Author Death"],["**AUTHOR OF TEXT**","Author"],["**AUTHOR FIRST NAME**","Author Given"],["**AUTHOR LAST NAME**","Author Surname"],["**AUTHOR GENDER, M or F or NA**","Author Gender"]]
 
-header_pairs = [["**AUTHOR OF TEXT**","Author"],["**TITLE OF TEXT**","Title"],["**COUNTRY WHERE TEXT WAS PUBLISHED**","Publication Country"],["**YEAR OF PUBLICATION**","Publication Date"],["**LOC CODE**","LoC Class"],["**SPELL OUT LANGUAGE NAME**", "Language"], ["**TEXT NO**", "Num"]]
+author_pairs = [["**AUTHOR BIRTH DATE, IN FORMAT YYYY-MM-DD**","Author Birth"],["**AUTHOR DEATH DATE, IN FORMAT YYYY-MM-DD**","Author Death"],["**AUTHOR OF TEXT**","Author"],["**AUTHOR FIRST NAME**","Author Given"],["**AUTHOR LAST NAME**","Author Surname"],["**AUTHOR GENDER, M or F or NA**","Author Gender"],["**PLACE OF AUTHOR BIRTH**","Author Birthplace"],["**PLACE OF AUTHOR DEATH**","Author Deathplace"],["**AUTHOR NATIONALITY**","Author Nationality"]]
 
-blanks = ["**NAME OF PUBLISHER**","**CITY WHERE TEXT WAS PUBLISHED**","**CITY/TOWN OF AUTHOR DEATH**","**COUNTRY OF AUTHOR DEATH**","**CITY/TOWN OF AUTHOR BIRTH**","**COUNTRY OF AUTHOR BIRTH**"]
+header_pairs = [["**AUTHOR OF TEXT**","Author"],["**TITLE OF TEXT**","Title"],["**COUNTRY WHERE TEXT WAS PUBLISHED**","Publication Country"],["**YEAR OF PUBLICATION**","Publication Date"],["**LOC CODE**","LoC Class"],["**SPELL OUT LANGUAGE NAME**", "Language"], ["**TEXT NO**", "Num"],["**NAME OF PUBLISHER**", "Publisher"],["**CITY WHERE TEXT WAS PUBLISHED**", "Publication City"]]
+
+blanks = []
 
 language_lookup = {"English":"en","French":"fr","German":"de","Spanish":"es","Chinese":"zh","Dutch":"nl","Italian":"it","Japanese":"ja","Danish":"da","Norweigan":"no","Swedish":"sv","Finnish":"fi"}
 
@@ -3666,13 +4321,33 @@ def output_header(fout, tag_dict):
 
     TEI_header = TEI_header_template.replace("**version num**",version)
     for pair in header_pairs:
-        if pair[1] in tag_dict and tag_dict[pair[1]]:
+        if pair[1] in tag_dict and tag_dict[pair[1]] and tag_dict[pair[1]] != None:
             try:
                 TEI_header = TEI_header.replace(pair[0],tag_dict[pair[1]])
             except:
-                TEI_header = TEI_header.replace(pair[0],tag_dict[pair[1]][0])
+                TEI_header = TEI_header.replace(pair[0],unicode(tag_dict[pair[1]][0]))
         else:
             blanks.append(pair[0])
+
+    if "PG" in tag_dict:
+        if tag_dict["PG"] == "PGC":
+            TEI_header = TEI_header.replace("**PG COUNTRY**","Canada ")
+            part_filename = tag_dict["filename"][:tag_dict["filename"].find("-0")]
+            link = PG_CAN_link.replace("**TEXT FILENAME**",tag_dict["filename"]).replace("**TEXT FILENAME PART**",part_filename)
+        elif tag_dict["PG"] == "PGA":
+            TEI_header = TEI_header.replace("**PG COUNTRY**","Australia ")
+            link =PG_AUS_link.replace("**TEXT NO**",tag_dict["Num"])
+            if tag_dict["Num"][0].isdigit() and not tag_dict["Num"][:2] == "OO":
+                link =link.replace("**TEXT FIRST 2**",tag_dict["Num"][:2])
+            else:
+                link =link.replace("**TEXT FIRST 2**",tag_dict["Num"])
+
+
+    else:
+        TEI_header = TEI_header.replace("**PG COUNTRY**","")
+        link =PG_USA_link.replace("**TEXT NO**",tag_dict["Num"])
+
+    TEI_header = TEI_header.replace("**PG LINK**",link) 
 
     if tag_dict["Language"][0] in language_lookup:
         TEI_header = TEI_header.replace("**2-letter language code**",language_lookup[tag_dict["Language"][0]])
@@ -3691,8 +4366,9 @@ def output_header(fout, tag_dict):
         for i in range(len(tag_dict["Author"])):
             curr_string = template
             for pair in author_pairs:
-                if pair[1] in tag_dict and tag_dict[pair[1]]:
+                if pair[1] in tag_dict and tag_dict[pair[1]] and tag_dict[pair[1]][i] != None:
                     curr_string = curr_string.replace(pair[0],unicode(tag_dict[pair[1]][i]))
+
                 else:
                     curr_string = curr_string.replace(pair[0],"")
             author_bits.append(curr_string)
@@ -3708,17 +4384,39 @@ def output_header(fout, tag_dict):
         
     if "Characters" in tag_dict:
         character_list_bits = []
+        count = 1
+        character_counts = {}
         for character_list in tag_dict["Characters"]:
             character_list_string = character_list_template
+            if len(tag_dict["Characters"]) == 1:
+                character_list_string = character_list_string.replace("**TEXT ID**","")
+            else:
+                character_list_string = character_list_string.replace('**TEXT ID**',' corresp="#text%d"' % count)
             character_bits = []
-            for character in character_list:
+            characters = character_list.keys()
+            characters.sort(cmp=lambda x, y:cmp(character_list[x][-1],character_list[y][-1]), reverse=True)
+            for character in characters:
                 character_entry = character_entry_template
-                character_entry = character_entry.replace("**CHAR ID**",character.replace("'","APS"))
-                character_entry = character_entry.replace("**CHAR NAME**",character.replace("_"," "))
+                character_entry = character_entry.replace("**CHAR ID**",character.replace("'","APS").replace(":","_"))
+                if character_list[character][1]:
+                    alias_list_bits = ["\n"]
+                    for alias in character_list[character][1]:
+                        alias_list_bits.append(character_alias_template.replace("**CHAR ALIAS**",alias.replace("_"," ")))
+                    alias_list_bits.append("      ")
+                    character_entry = character_entry.replace("**CHAR ALIAS LIST**","".join(alias_list_bits))
+                                               
+                else:
+                    character_entry = character_entry.replace("**CHAR ALIAS LIST**","")
+
+                if character == fp_narr_tag:
+                    character_entry = character_entry.replace("**CHAR NAME**","(First Person Narrator)")
+                else:
+                    character_entry = character_entry.replace("**CHAR NAME**",character.split(":")[0].replace("_"," "))
                 character_entry = character_entry.replace("**CHAR GENDER**",character_list[character][0])
                 character_bits.append(character_entry)
                                         
-            character_list_bits.append(character_list_template.replace("**CHAR ENTRIES**\n",u"".join(character_bits)))
+            character_list_bits.append(character_list_string.replace("**CHAR ENTRIES**\n",u"".join(character_bits)))
+            count += 1
 
         TEI_header = TEI_header.replace("**CHAR LISTS**\n","".join(character_list_bits))
                     
@@ -3876,6 +4574,11 @@ def output_text(text,fout,options,tag_dict):
     output_elements = True
     outputted_tokens = False
     for i in range(len(text.tokens) + 1):
+        try:
+            if text.tags[tag_loc].start == -1:
+                tag_loc += 1
+        except:
+            pass
         split_count = 0
         if i in end_indicies:
             end_indicies[i].reverse()
@@ -3893,6 +4596,7 @@ def output_text(text,fout,options,tag_dict):
                 output_elements = remove_from_tag_path(tag_path,options,genre)
                 start_indicies[tag.start].remove(tag)
             del end_indicies[i]
+        
                 
         while tag_loc < len(text.tags) and i == text.tags[tag_loc].start:
             if text.tags[tag_loc].end not in end_indicies:
@@ -3915,6 +4619,7 @@ def output_text(text,fout,options,tag_dict):
                     fout.write("\n")
             tag_loc += 1
 
+
     return outputted_tokens
 
            
@@ -3922,25 +4627,21 @@ def output_text(text,fout,options,tag_dict):
 
 class GutenTextTagger:
 
-    cities = ["London","New York","Oxford","Cambridge","Boston","Philadelphia","San Francisco","Toronto","Los Angeles","Chicago","Sydney","Auckland"]
-    countries = ["U.S.A","U.S.","United States","United States of America","America","Canada","England","Britan","United Kingdom", "U.K.", "Australia", "New Zealand"]
-
-    place_mappings = {"dublin":"IR","london":"UK","new york":"US","oxford":"UK","cambridge":"UK","boston":"US","philadelphia":"US","san francisco":"US","toronto":"CAN","los angeles":"US","chicago":"US","sydney":"AUS","auckland":"NZ","USA":"US","U.S.A":"US", "united states":"US","america":"US","canada":"CAN","england":"UK","ireland":"IR","britain":"UK","united kingdom":"UK", "u.k.":"UK", "australia":"AUS", "new zealand":"NZ"}
-
     title_page_elements = set(["byline","docAuthor", "docDate", "docEdition", "docImprint", "docTitle", "epigraph", "titlePart"])
-    title_page_allowed = set(["p","placeName","figure","date","span"])
+    title_page_allowed = set(["p","placeName","figure","date","span","settlement","country"])
     add_p_tags = set(["figure","epigraph","otherbooks","dedication","set"])
 
     def __init__(self,options):
         self.text_cleaner = TextCleaner()
-        if options["mode"] == "tag_genres_and_get_pub_info":
-            self.genre_classifier = GenreClassifier("genre_decision_tree.txt")
+        if "build" in options:
+            #self.genre_classifier = GenreClassifier("genre_decision_tree.txt")
+            self.genre_classifier = GenreClassifier("genre_random_forest.txt")
         tokenizer = Tokenizer()
         self.gender_classifier = GenderClassifier()
-        self.structure_tagger = StructureTagger(options,tokenizer)
-        self.lexical_tagger =  LexicalTagger(options,tokenizer)
-        if options["output_format"] == "TEI":
-            self.character_list_builder = CharacterListBuilder()
+        self.structure_tagger = StructureTagger(tokenizer)
+        self.lexical_tagger =  LexicalTagger(options,tokenizer,self.gender_classifier)
+        if ("build" in options or options["mode"] == "export") and options["output_format"] == "TEI":
+            self.character_list_builder = CharacterListBuilder(self.gender_classifier)
         self.options = options
 
 
@@ -3954,6 +4655,10 @@ class GutenTextTagger:
         title_start_index = -1
         for i in range(len(text.tags)):
             tag = text.tags[i]
+
+            if tag.start == tag.end or tag.start == -1 or tag.end == -1:
+                remove_indicies.append(i)
+                continue
 
             if tag.start < front_end and tag.tag in self.title_page_elements:
                 if title_start_index == -1:
@@ -3974,7 +4679,9 @@ class GutenTextTagger:
                 new_tag.plike = True
                 tag.plike = False
                 new_tags.append(new_tag)
-            if tag.tag == "docTitle":
+
+                
+            elif tag.tag == "docTitle":
                 new_tag = Tag(tag.start,tag.end,"titlePart",None)
                 new_tags.append(new_tag)
             elif tag.tag == "head":
@@ -4003,8 +4710,14 @@ class GutenTextTagger:
         remove_indicies.sort(reverse=True)
         for i in remove_indicies:
             del text.tags[i]
+
+        
                 
         text.tags.extend(new_tags)
+
+
+        for i in range(len(text.tags)):
+            tag = text.tags[i]
         return text
             
 
@@ -4013,13 +4726,27 @@ class GutenTextTagger:
         href = tag_dict["href"]
         charset = tag_dict["charset"]
         print href
+        success = False
         try:
             my_zip = zipfile.ZipFile(self.options["corpus_dir"] + href.upper())
             if not my_zip.namelist()[0].endswith(".txt"):
                 return None,tag_dict
             f = my_zip.open(my_zip.namelist()[0])
             raw_text = f.read().decode(charset)
+            success = True
         except:
+            for encoding in ["latin-1","utf-8"]:
+                    if encoding != charset:
+                        try:
+                            f.close()
+                            f = my_zip.open(my_zip.namelist()[0])
+                            raw_text = f.read().decode(encoding)
+                            success = True
+                            break
+                        except:
+                            pass
+
+        if not success:
             print "fail"
             return None,tag_dict
         f.close()
@@ -4033,37 +4760,40 @@ class GutenTextTagger:
         cleaned_text = cleaned_text.splitlines()
         if self.options["mode"] == "genre_training":
             tag_dict["genre_features"] = self.genre_classifier.get_feature_dict(cleaned_text,tag_dict)
-        elif self.options["mode"] == "tag_genres_and_get_pub_info":
+        elif "build" in self.options:
             tag_dict["Genre"] =  self.genre_classifier.classify_genre(cleaned_text,tag_dict)
       
+      
+        text = self.structure_tagger.find_structure_and_tokenize(cleaned_text,tag_dict)     
             
-        text = self.structure_tagger.find_structure_and_tokenize(cleaned_text,tag_dict)
-
-
-            
-        text = self.lexical_tagger.do_lexical_tagging(text,tag_dict)
+        text,name_mapping = self.lexical_tagger.do_lexical_tagging(text,tag_dict)
 
         text = self.final_tag_fixes(text)
 
-        if self.options["output_format"] == "TEI" and tag_dict["Genre"] == "fiction":
-            self.character_list_builder.build_character_lists(text,tag_dict)
 
-        if self.options["mode"] == "tag_genres_and_get_pub_info":
+        if ("build" in self.options or self.options["mode"] == "export") and self.options["output_format"] == "TEI" and tag_dict["Genre"] == "fiction":           
+            self.character_list_builder.build_character_lists(text,tag_dict,name_mapping)
+
+
+        if "build" in self.options:
             dates = set()
+            cities = set()
             countries = set()
             for tag in text.tags:
                 if tag.tag == "date":
                     dates.add(text.tokens[tag.start])
-                elif tag.tag == "place":
-                    place = " ".join(text.tokens[tag.start:tag.end]).lower()
-                    for check_place in self.place_mappings:
-                        if check_place in place:
-                            countries.add(self.place_mappings[check_place])
+                elif tag.tag == "settlement":
+                    cities.add(" ".join(text.tokens[tag.start:tag.end]))
+                elif tag.tag == "country":
+                    countries.add(" ".join(text.tokens[tag.start:tag.end]))
                     
-            if dates:
-                tag_dict["Publication Date"] = min(dates)
-            if countries:
-                tag_dict["Publication Country"] = list(countries)        
+            tag_dict["Publication Date"] = list(dates)
+            tag_dict["Publication Country"] = list(countries)
+            tag_dict["Publication City"] = list(cities)
+            tag_dict["1stperson"] = False
+            if "Characters" in tag_dict and len(tag_dict["Characters"]) >= 1 and fp_narr_tag in tag_dict["Characters"][0]:
+                tag_dict["1stperson"] = True
+                    
 
         return text,tag_dict
     
@@ -4136,6 +4866,7 @@ def guten_process(options,sendQ,returnQ,output_lock,fout):
         tag_dict = sendQ.get()
         text, tag_dict = tagger.process_text(tag_dict)
         
+        
         options["not_wanted_tags"] = set(options["subcorpus" + str(tag_dict["subcorpus"]) + "_restrictions"]["not_wanted_tags"])
         options["wanted_tags"] = set(options["subcorpus" + str(tag_dict["subcorpus"]) + "_restrictions"]["wanted_tags"])
         if text:
@@ -4195,7 +4926,12 @@ class GutenTag:
             options["corpus_dir"] = f.read()
             f.close()
 
-        self.total_texts = 30000  ## this should be updated based on different corpora
+        if "output_dir" in options:
+            options["output_file"] = options["output_dir"]
+
+        self.total_texts = len(os.listdir(options["corpus_dir"] + "/ETEXT"))
+        if os.path.exists(options["corpus_dir"] + "/" + "ETEXT_SUP"):
+            self.total_texts += len(os.listdir(options["corpus_dir"] + "/ETEXT_SUP"))
         self.options = options
         if options["mode"] == "export" and options["output_mode"] == "single":
             fout = codecs.open(options["output_file"],"w",encoding="utf-8")
@@ -4204,11 +4940,12 @@ class GutenTag:
         else:
             fout = None
         self.metadata_reader = MetadataReader()
+        self.metadata_reader_rdf = MetadataReaderRDF()
         self.worker_threads = []
         if online:
             num_threads = cpu_count() # use the whole server
         else:
-            num_threads = cpu_count()/2 # use half the resources on the system
+            num_threads = min(cpu_count()/2,16) # use half the resources on the system
         self.sendQ = Queue()
         self.returnQ = Queue()
         self.output_lock = Lock()
@@ -4216,16 +4953,56 @@ class GutenTag:
             self.worker_threads.append(Process(target=guten_process,args=(options,self.sendQ,self.returnQ, self.output_lock,fout)))
             self.worker_threads[-1].daemon = True
             self.worker_threads[-1].start()
-        if not "genre" in options["mode"]: 
+
+        self.options["corpus"] = "PGUSA"
+        
+        for filename in os.listdir(options["corpus_dir"]):
+            if filename =="PGC":
+                self.options["corpus"] = "PGC"
+                print "PGC"
+                break
+
+            elif filename == "PGA":
+                self.options["corpus"] = "PGA"
+                print "PGA"
+                break
+
+        
+        if self.options["corpus"] == "PGUSA" and not "build" in options:
             f = open("resources/GT_textinfo.dat","rb")
+            self.info_lookup = cPickle.load(f)
+            self.collection_list = cPickle.load(f)
+            self.firstp_list = cPickle.load(f)
+            f.close()
+        elif self.options["corpus"] == "PGC":
+            f = open("resources/GT_textinfo_C.dat","rb")
+            self.info_lookup = cPickle.load(f)
+            #if not "build" in options:
+            #    self.collection_list = cPickle.load(f)
+            #    self.firstp_list = cPickle.load(f)
+            f.close()
+        elif self.options["corpus"] == "PGA":
+            f = open("resources/GT_textinfo_A.dat","rb")
+            self.info_lookup = cPickle.load(f)
+            #if not "build" in options:
+            #    self.collection_list = cPickle.load(f)
+            #    self.firstp_list = cPickle.load(f)
+            f.close()               
+            '''
             self.genre_lookup = cPickle.load(f)
             self.publication_date_lookup = cPickle.load(f)
             self.publication_country_lookup = cPickle.load(f)
+            self.nationality_lookup = cPickle.load(f)
             f.close()
+            '''
         else:
+            self.info_lookup = {}
+            '''
             self.genre_lookup = {}
             self.publication_date_lookup = {}
             self.publication_country_lookup = {}
+            self.nationality_lookup = {}
+            '''
 
 
         self.gender_classifier = GenderClassifier()
@@ -4269,43 +5046,86 @@ class GutenTag:
                 if not any([restrictions[restriction][0] <= entry <= restrictions[restriction][1] for entry in tags.get(restriction,[])]):
                     return False
             elif restriction == "Genre":
-                if not "Genre" in tags or tags["Genre"] not in restrictions["Genre"]:
-                    return False
+                if "English" in tags["Language"] and (not "Genre" in tags or tags["Genre"] not in restrictions["Genre"]):
+                    return False                    
     
-            elif not any([restrictions[restriction].lower() in entry.lower() for entry in tags.get(restriction,[])]):
+            elif not any([restrictions[restriction].lower() in entry.lower() for entry in tags.get(restriction,[]) if entry != None]):
                 return False
         return True
 
-    def setup_tag_dict(self,html):
-        num = html[:html.find(".")]
-        ##### remove this!!!!!!!!!!!!!!! ##############
-        #self.options["subcorpus1_restrictions"]["Num"] = set([13075,16064,13855])
-        #self.options["subcorpus1_restrictions"]["Num"] = set([5055])
-        #self.options["subcorpus1_restrictions"]["Num"] = set([1008,10031])
-        #self.options["subcorpus1_restrictions"]["Num"] = set([2946,158])
-        ####
 
+    def setup_tag_dict(self,filename):
+
+                ##### remove this!!!!!!!!!!!!!!! ##############
+        #self.options["subcorpus1_restrictions"]["Num"] = set([635,637,673])
+        #self.options["subcorpus1_restrictions"]["Num"] = set([158,29401])
+        #self.options["subcorpus1_restrictions"]["Num"] = set([49227])
+        #self.options["subcorpus1_restrictions"]["Num"] = set([47735])
+        #self.options["subcorpus1_restrictions"]["Num"] = set([41827,33946,50309])
+        ####
+              
+        num = filename[:filename.find(".")].lower()
         if "Num" in self.options["subcorpus1_restrictions"] and int(num) not in self.options["subcorpus1_restrictions"]["Num"]:
             return None
-        href, charset,tag_dict = self.metadata_reader.get_PG_metadata(self.options["corpus_dir"] + "/ETEXT/"+ html)           
-        tag_dict["Num"] = num
-        tag_dict["Author Gender"] = []
-        tag_dict["href"] = href
-        tag_dict["charset"] = charset
+        if self.options["corpus"] == "PGC" or self.options["corpus"] == "PGA":
+            tag_dict = copy.copy(self.info_lookup[num])
+            tag_dict["PG"] = self.options["corpus"]
+        else:
+            if filename.endswith(".rdf"):
+                href, charset,tag_dict = self.metadata_reader_rdf.get_PG_metadata(self.options["corpus_dir"] + "/ETEXT_SUP/"+ filename)
+            else:
+                href, charset,tag_dict = self.metadata_reader.get_PG_metadata(self.options["corpus_dir"] + "/ETEXT/"+ filename)           
+            tag_dict["Num"] = num
+            tag_dict["Author Gender"] = []
+            tag_dict["href"] = href
+            tag_dict["charset"] = charset
+            if self.options["mode"] == "genre_training" and not tag_dict["Subject"]:
+                return None
+            if "build" in self.options:
+                tag_dict["Genre"] = "fiction"
+
+            if not "build" in self.options and num in self.info_lookup:
+                
+                tag_dict["Genre"] = self.info_lookup[num][0]
+                if len(self.info_lookup[num]) > 1:
+                    if self.info_lookup[num][1]:
+                        tag_dict["Publication Date"] = self.info_lookup[num][1]
+
+                    if self.info_lookup[num][2]:
+                        tag_dict["Publication Country"] = self.info_lookup[num][2]
+
+                    if self.info_lookup[num][3]:
+                        tag_dict["Publication City"] = self.info_lookup[num][2]
+
+                    if self.info_lookup[num][4]:
+                        tag_dict["Author Gender"] = self.info_lookup[num][4][0]
+                        tag_dict["Author Nationality"] = self.info_lookup[num][4][1]
+                        tag_dict["Author Birthplace"] = self.info_lookup[num][4][2]
+                        tag_dict["Author Deathplace"] = self.info_lookup[num][4][3]  
+
+
+                    if not "build" in self.options:
+                        if tag_dict["Num"] in self.collection_list:
+                            tag_dict["Collection"] = ["collection"]
+                        else:
+                            tag_dict["Collection"] = ["noncollect"]
+
+                        if tag_dict["Num"] in self.firstp_list:
+                            tag_dict["Person"] = ["1st"]
+                        else:
+                            tag_dict["Person"] = ["3rd"] 
+
         tag_dict["user_id"] = self.options["id"]
         tag_dict["total_texts"] = self.total_texts
-        for author in tag_dict["Author"]:
-            tag_dict["Author Gender"].append(self.gender_classifier.classify(author.split(" ")[0]))
         if "maxnum" in self.options:
             tag_dict["maxnum"] = self.options["maxnum"]
-        if self.options["mode"] == "genre_training" and not tag_dict["Subject"]:
-            return None
-        if num in self.genre_lookup:
-            tag_dict["Genre"] = self.genre_lookup[num]
-        if num in self.publication_date_lookup:
-            tag_dict["Publication Date"] = self.publication_date_lookup[num]
-        if num in self.publication_country_lookup:
-            tag_dict["Publication Country"] = self.publication_country_lookup[num]
+        if not tag_dict["Author Gender"]:
+            for author in tag_dict["Author"]:
+                tag_dict["Author Gender"].append(self.gender_classifier.classify(author.split(" ")[0]))
+        if not "build" in self.options:
+            if tag_dict["Author"] and tag_dict["Author"][0] == "Various" and "No." in tag_dict["Title"][0]:
+                tag_dict["Genre"] = "periodical"          
+            
         return tag_dict
         
 
@@ -4321,6 +5141,9 @@ class GutenTag:
         count = 0
         problem_count = 0
         filenames = os.listdir(self.options["corpus_dir"] + "/" + "ETEXT")
+        if os.path.exists(self.options["corpus_dir"] + "/" + "ETEXT_SUP"):
+            filenames.extend(os.listdir(self.options["corpus_dir"] + "/" + "ETEXT_SUP"))
+                          
         if self.options["randomize_order"]:
             random.shuffle(filenames)
         i = 0
@@ -4328,13 +5151,13 @@ class GutenTag:
         not_done = True
         while  i < len(filenames) and ("maxnum" not in self.options or count < self.options["maxnum"]):
             while  i < len(filenames) and active < len(self.worker_threads) and ("maxnum" not in self.options  or active < self.options["maxnum"] - count):
-                html = filenames[i]
-                print html
-                tag_dict = self.setup_tag_dict(html)
+                filename = filenames[i]
+                print filename
+                tag_dict = self.setup_tag_dict(filename)
                 if not tag_dict:
                     i+= 1
                     continue
-                tag_dict["progress"] = i      
+                tag_dict["progress"] = i
                 for j in range(1, self.options["num_subcorpora"] + 1):
                     if tag_dict["href"] and self.satisfy_basic_tag_restrictions(tag_dict,self.options["subcorpus" + str(j)+ "_restrictions"]):
                         tag_dict = copy.copy(tag_dict)
@@ -4445,7 +5268,7 @@ class GutentagRequestHandler(SocketServer.BaseRequestHandler):
                 else:
                     options["maxnum"] = min(options["maxnum"],online_max_texts)
             
-            if not online and options["mode"] == "export" and not os.path.exists(options["output_dir"]):
+            if not online and options["mode"] == "export" and options["output_mode"] == "multiple" and not os.path.exists(options["output_dir"]):
                 os.mkdir(options["output_dir"])
             main_Q.put(options)
 
@@ -4478,6 +5301,16 @@ def insert_dynamic(text):
     return text
 
 def process_main_page(text):
+    try:
+        f = open("corpus_path.txt")
+        corpus = f.read()
+        f.close()
+        if "PGC" in os.listdir(corpus):
+            text = text.replace("gutentaglogo.png","gutentaglogo_can.png")
+        elif "PGA" in os.listdir(corpus):
+            text = text.replace("gutentaglogo.png","gutentaglogo_aus.png")
+    except:
+        pass
     if online:
         return text.replace("Output directory (will be created)","Output filename (.zip extension will be added)").replace('class="saveparams"','class="hidden"').replace('class="loadsaved"','class="hidden"') 
     else:
@@ -4663,6 +5496,8 @@ class GT_API:
     
     def get_text_TEI_string(self,text,text_info):
         temp = StringIO.StringIO()
+        self.options["not_wanted_tags"] = set(self.options["subcorpus" + str(text_info["subcorpus"]) + "_restrictions"]["not_wanted_tags"])
+        self.options["wanted_tags"] = set(self.options["subcorpus" + str(text_info["subcorpus"]) + "_restrictions"]["wanted_tags"])
         output_text(text,temp,self.options,text_info)
         return temp.getvalue()
 
