@@ -44,8 +44,8 @@
         <div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">+</div><p>Format</p></div>
         <div class="defineframe hidden">
         	<div class="defineframebaby">                                                                                                                                                                
-                    <input type="radio" name="output_format" value="plain" onclick="document.getElementById('exportlexical').className='subdefine hidden'';" checked="checked" />Plain Text (UTF-8) 
-                    <input type="radio" name="output_format" value="TEI" onclick="document.getElementById('exportlexical').className='subdefine';"  />TEI XML 
+                    <input type="radio" name="output_format" value="TEI" onclick="document.getElementById('exportlexical').className='subdefine';" checked="checked"  />TEI XML (UTF-8)
+                     <input type="radio" name="output_format" value="plain" onclick="document.getElementById('exportlexical').className='subdefine hidden';" />Tokenized Plain Text (UTF-8) 
         		</div>
           </div>
 
@@ -59,7 +59,7 @@
                 	<table class="exportswitches">
                         <tr>
                         <td>
-                        Lemmatization
+                        Lemmatization:
                         </td>
                         <td>
                                 <input type="radio" name="lemmatized" value="true"/>On
@@ -83,21 +83,21 @@
         
 </div>
 
-<div class="subdefine hidden" id="exportlexical">
+<div class="subdefine" id="exportlexical">
 
  
         <div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">+</div> <p>Add Lexical Tags</p></div>
         <div class="defineframe hidden">
                 	<div class="defineframebaby">
                 	<table>
-                	                    			<tr>
+                	                    			<tr id="NER_row" style="display:none;">
           			<td>
 
-                           Person Names:
+                           Tag Named Entities (with <a href="http://people.eng.unimelb.edu.au/tbaldwin/pubs/acl2016-ner.pdf">LitNER</a>):
                                                    </td>
                         <td>
-                                <input type="radio" name="persName" value="true"/>Yes
-                                <input type="radio" name="persName" value="false" checked="checked" />No
+                                <input type="checkbox" name="persName" /> People (will assign speakers and build list of characters)
+                                <input type="checkbox" name="placeName" /> Locations
                         </td>
                         </tr>
                                 </table>
@@ -247,12 +247,13 @@
           
                        <table>
                                
-                    <tr>
+                    <tr>                                                                                                                                                                 
+                             <td><input type="checkbox" name="fiction" onclick="toggle_prose_macro(this.form);" value=""/>Prose fiction</td>
                             <td><input type="checkbox" name="poetry"  onclick="toggle_poetry_macro(this.form);" value=""/>Poetry  </td>
                             <td><input type="checkbox" name="play"  onclick="toggle_drama_macro(this.form);" value=""/>Drama</td>
-                            <td><input type="checkbox" name="fiction" onclick="toggle_prose_macro(this.form);" value=""/>Prose fiction</td>
                     <td><input type="checkbox" name="nonfiction" onclick="toggle_prose_macro(this.form);"  value=""/>Prose non-fiction </td>
-                    
+                    <td><input type="checkbox" name="periodical"  value=""/>Periodicals </td>       
+                     <td><input type="checkbox" name="all" onclick="toggle_all_genres(this.form);" value=""/>All</td>                
                     </tr>
                        </table>
         </div>
@@ -307,20 +308,59 @@
                                     </tr>
                                
                              	<td>  
-                             	        <span title="Guessed based on first name">Author Gender*:</span>
+                             	        <span title="Derived automatically">Author Gender*:</span>
                                     </td>                  
                                     
                                     
                                     <td> 
                                     <input type="radio" name ="gender" value="both"  checked>  Either
-                            		<input type="radio" name ="gender" value="male"> Just male
-                            		<input type="radio" name ="gender" value="female">  Just female
+                            		<input type="radio" name ="gender" value="M"> Just male
+                            		<input type="radio" name ="gender" value="F">  Just female
                                    </td>
-                                    </tr>             
+                                    </tr>    
+                                    
+                                         <tr>
+                <td><span title="Derived from wikipedia">Author Nationality*:</span></td>
+        <td> <select name="nationality">  
+                	<option value="Any">Any</option>
+        			<option value="American">American</option>
+        			<option value="English">English</option>        
+        			<option value="Irish">Irish</option>
+        			<option value="Canadian">Canadian</option>
+        			<option value="Australian">Australian</option>
+        			<option value="Scottish">Scottish</option>
+        			<option value="Welsh">Welsh</option> 
+         			<option value="New Zealander">New Zealander</option>        			       			       			        			
+        			<option value="French">French</option>
+        			<option value="German">German</option>
+        			<option value="Italian">Italian</option>     
+        			<option value="Spanish">Spanish</option>
+         			<option value="Portuguese">Portuguese</option>       			
+        			<option value="Russian">Russian</option>
+        			<option value="Polish">Polish</option>
+        			<option value="Dutch">Dutch</option>
+        			<option value="Belgian">Belgian</option>
+        			<option value="Swedish">Swedish</option>
+         			<option value="Danish">Danish</option> 
+				<option value="Norwegian">Norwegian</option>     
+				<option value="Finnish">Finnish</option>   			
+ 				<option value="Austrian">Austrian</option>
+ 				<option value="Swiss">Swiss</option>
+ 				<option value="Hungarian">Hungarian</option>
+ 				<option value="Greek">Greek</option>
+        			<option value="Roman">Roman</option>  
+        			<option value="Arabic">Arabic</option>	
+    				<option value="South African">South African</option>	
+ 				<option value="Indian">Indian</option>  	
+ 				<option value="Chinese">Chinese</option>  
+ 				<option value="Japanese">Japanese</option>		   			        			
+         </select>
+        </td>
+        </tr>
+         
                                         
                                     </table>
-  
-	               </div>
+     	               </div>
         </div>
 </div>
 <div class="subdefine" id="text">
@@ -348,7 +388,7 @@
         </tr>
         
         <tr>
-                <td> <span title="Only English supported for genre/structural tagging">Language*:</span></td>
+                <td> <span title="Only English supported for genre/structural/lexical tagging">Language*:</span></td>
         <td> <select name="lang"> 
         			<option value="English">English</option>
         			<option value="French">French</option>
@@ -382,12 +422,12 @@
         
         <td> <select name="publication_country"> 
         			<option>Any</option>
-        			<option value="US">U.S.A.</option>
-        			<option value="UK">the UK</option>
-        			<option value="CAN">Canada</option>
-        			<option value="AUS">Australia</option>
-        			<option value="NZ">New Zealand</option>
-        			 <option value="IR">Ireland</option>
+        			<option value="U.S.A.">U.S.A.</option>
+        			<option value="United Kingdom">United Kingdom</option>
+        			<option value="Canada">Canada</option>
+        			<option value="Australia">Australia</option>
+        			<option value="New Zealand">New Zealand</option>
+        			 <option value="Ireland">Ireland</option>
          </select>
         </td>
 
@@ -443,13 +483,40 @@
          <td>
             <input type="text" name="LoC_subject" name="" value=""/>
 		</td>
-        </tr>           
-                </table>
+        </tr>    
+                  <tr>
+        <td>       
+
+                             	        <span title="Derived automatically">Collections (anthologies, etc.)*:</span>
+                                    </td>                  
+                                    
+                                    
+                                    <td> 
+                                    <input type="radio" name ="collection" value="both"  checked>  All texts
+                            		<input type="radio" name ="collection" value="noncollect"> Exclude collections
+                            		<input type="radio" name ="collection" value="collection">  Only collections
+                                   </td>
+                                    </tr> 
+                                    
+                                    <tr id="person_row" style="display:none;">
+                                    <td>   
+                                    
+                                      <span title="Derived automatically">Type of  narrator (prose fiction)*:</span>               
+                                    
+                                    </td>  
+                                    <td> 
+                                    <input type="radio" name ="person" value="both" checked>  All texts
+                            		<input type="radio" name ="person" value="3rd"> Only 3rd person
+                            		<input type="radio" name ="person" value="1st">  Only 1st person
+                                   </td>
+                                    </tr>             
+                                        
+                                    </table>
+
                 
 			</div>
             </div>
 			
-
 </div>
 
 <div class="subdefine" id="withintext">

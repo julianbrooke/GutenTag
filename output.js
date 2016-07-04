@@ -433,7 +433,7 @@ function add_one_to_count(subcorpus_num) {
 function add_title_and_author (title,author,subcorpus_num) {
 	p = document.createElement('p');	
 	//p.appendChild(document.createTextNode(author + ",<em>" + title + "</em>"))
-	p.innerHTML = author + ", <em>" + title + "</em>"
+	p.innerHTML = author + "; <em>" + title + "</em>"
 	document.getElementById("subdefine" + subcorpus_num).appendChild(p);
 }
 
@@ -449,7 +449,7 @@ function add_full_text(title,author,subcorpus_num,text) {
 
 	p = document.createElement('p');	
 	//p.appendChild(document.createTextNode(author + ",<em>" + title + "</em>"))
-	p.innerHTML = 	author + ", <em>" + title + "</em>"
+	p.innerHTML = 	author + "; <em>" + title + "</em>"
 	header.appendChild(toggle);
 	header.appendChild(p);
 	text_body = document.createElement('div');
@@ -631,7 +631,7 @@ function query_server_for_progress() {
 							author = 'Various'
 						}
 						else {
-							author = curr_result['Author'][0]
+							author = curr_result['Author'].join()
 						}
 						if ('text' in curr_result) {
 							add_full_text(curr_result['Title'][0],author,curr_result['subcorpus'],curr_result['text'])
