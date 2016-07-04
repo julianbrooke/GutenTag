@@ -804,28 +804,7 @@ class Tokenizer:
                 elif sentence[i+1] == "." and not (sentence[i+2] == u"”" or sentence[i+2] == u'’'):
                     sentence[i] += "."
                     del sentence[i+1]
-                '''
-                elif sentence[i+1] ==  u'‘':
-                    found = False
-                    for j in range(i+3,len(sentence)):
-                        if sentence[j] == u'’':
-                            found = True
-                    if not found:
-                        print sentence
-                        print [raw_text]
-                        sentence[i+1] += sentence[i+2]
-                        del sentence[i+2]
-                elif sentence[i+1] ==  u'’':
-                    found = False
-                    for j in range(i,-1,-1):
-                        if sentence[j] == u'‘':
-                            found = True
-                    if not found:
-                        print sentence
-                        print [raw_text]
-                        sentence[i] += sentence[i+1]
-                        del sentence[i+1]
-                '''
+
                 if sentence[i+1].startswith("hYpppHeN"):
                     sentence= sentence[:i+1] + ["-"] + [sentence[i+1][8:]] + sentence[i+2:]
                 if sentence[i+1].endswith("hYpppHeN"):
@@ -1084,7 +1063,6 @@ class StructureTagger:
         title = self.non_letters.sub("",global_tags["Title"][0].lower())  
         blank_count = 0
         for i in range(len(text_lines)):
-            #print [text_lines[i]]
             if not text_lines[i]:
                 feature_dict["blank_lines"].add(i)
                 blank_count += 1
@@ -2431,8 +2409,6 @@ class StructureTagger:
         seen_body = False
 
         for i in range(len(text_lines) + 1):
-            #if i < len(text_lines):
-            #    print [text_lines[i]]
 
             if i == front_index + 1 or i == back_index + 1:
                 sentence_count = 1
@@ -4959,12 +4935,10 @@ class GutenTag:
         for filename in os.listdir(options["corpus_dir"]):
             if filename =="PGC":
                 self.options["corpus"] = "PGC"
-                print "PGC"
                 break
 
             elif filename == "PGA":
                 self.options["corpus"] = "PGA"
-                print "PGA"
                 break
 
         
@@ -5386,7 +5360,6 @@ class GutentagWebserver(BaseHTTPRequestHandler):
 
 
                 elif "get_" in self.path: # update results page
-                    #print "updating_results"
                     if "get_zip" in self.path:
                         self.send_header('Content-type',	'application/octet-stream')
                         self.end_headers()
