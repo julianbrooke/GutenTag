@@ -4180,6 +4180,36 @@ class LexicalTagger:
         return text, name_mapping
 
 
+##
+
+def stump(text,tags):
+    return 0
+
+def percent_female_dialogue(text,info):
+    all_characters = {}
+    if "Characters" not in info or not info["Characters"]:
+        return 0
+    else:
+        for i in range(len(info["Characters"])):
+            all_characters.update(info["Characters"][i])
+                  
+    total_dialogue = 0.0
+    female_dialogue = 0.0
+    
+    for tag in text.tags:
+        if tag.tag == "said":
+            said_amount = tag.end - tag.start
+            total_dialogue += said_amount
+            if "who" in tag.attributes:
+                char_id = tag.attributes["who"][1:]
+                if all_characters[char_id][0] == 'F':
+                    female_dialogue += said_amount
+    #print places
+    return  female_dialogue/total_dialogue
+    
+
+textual_measures = {"Stumpy":[stump,[]], "Percent Female Dialogue":[percent_female_dialogue, ["persName"]]}
+
 TEI_header_template = u''' <teiHeader>
   <fileDesc>
    <titleStmt>
@@ -4608,7 +4638,10 @@ class GutenTextTagger:
     add_p_tags = set(["figure","epigraph","otherbooks","dedication","set"])
 
     def __init__(self,options):
-        self.text_cleaner = TextCleaner()
+        if "nonPG" in options:
+            self.genre_classifier = GenreClassifier("genre_random_forest.txt")
+        else:
+            self.text_cleaner = TextCleaner()
         if "build" in options:
             #self.genre_classifier = GenreClassifier("genre_decision_tree.txt")
             self.genre_classifier = GenreClassifier("genre_random_forest.txt")
@@ -4616,7 +4649,7 @@ class GutenTextTagger:
         self.gender_classifier = GenderClassifier()
         self.structure_tagger = StructureTagger(tokenizer)
         self.lexical_tagger =  LexicalTagger(options,tokenizer,self.gender_classifier)
-        if ("build" in options or options["mode"] == "export") and options["output_format"] == "TEI":
+        if (options["mode"] == "analyze" and options["persName"]) or (("build" in options or options["mode"] == "export" or options["mode"] == "get_texts") and options["output_format"] == "TEI"):
             self.character_list_builder = CharacterListBuilder(self.gender_classifier)
         self.options = options
 
@@ -4676,7 +4709,7 @@ class GutenTextTagger:
                     else:
                         tag.tag = "p"
                     #pass
-            elif tag.tag == "s":
+            elif self.options["mode"] != "get_texts" and tag.tag == "s":
                 remove_indicies.append(i)
             elif tag.tag == "front":
                 front_end = tag.end
@@ -4699,45 +4732,60 @@ class GutenTextTagger:
 
     def process_text(self,tag_dict):
         start = time.time()
-        href = tag_dict["href"]
-        charset = tag_dict["charset"]
-        print href
-        success = False
-        try:
-            my_zip = zipfile.ZipFile(self.options["corpus_dir"] + href.upper())
-            if not my_zip.namelist()[0].endswith(".txt"):
-                return None,tag_dict
-            f = my_zip.open(my_zip.namelist()[0])
-            raw_text = f.read().decode(charset)
-            success = True
-        except:
-            for encoding in ["latin-1","utf-8"]:
-                    if encoding != charset:
-                        try:
-                            f.close()
-                            f = my_zip.open(my_zip.namelist()[0])
-                            raw_text = f.read().decode(encoding)
-                            success = True
-                            break
-                        except:
-                            pass
+        if "nonPG" in self.options:
+            cleaned_text = tag_dict["raw_text"].splitlines()
+            del tag_dict["raw_text"]
+            if "Author" not in tag_dict:
+                tag_dict["Author"] = ["Unknown Author"]
+            if "Title" not in tag_dict:
+                tag_dict["Title"] = ["Unknown Title"]
+            if "Genre" not in tag_dict:
+                tag_dict["Genre"] = "fiction"
+                #tag_dict["Genre"] =  self.genre_classifier.classify_genre(cleaned_text,tag_dict)
+            if "Language" not in tag_dict:
+                tag_dict["Language"] = "English"
 
-        if not success:
-            print "fail"
-            return None,tag_dict
-        f.close()
-        cleaned_text = self.text_cleaner.clean_text(raw_text)
-        clean_time = time.time() - start
-        text_restrictions = self.options["subcorpus" + str(tag_dict["subcorpus"]) + "_restrictions"]
-        if "lexical_restrictions" in text_restrictions:
-            for phrase in text_restrictions["lexical_restrictions"]:
-                if phrase not in cleaned_text:
+      
+        else:
+            href = tag_dict["href"]
+            charset = tag_dict["charset"]
+            print href
+            success = False
+            try:
+                my_zip = zipfile.ZipFile(self.options["corpus_dir"] + href.upper())
+                if not my_zip.namelist()[0].endswith(".txt"):
                     return None,tag_dict
-        cleaned_text = cleaned_text.splitlines()
-        if self.options["mode"] == "genre_training":
-            tag_dict["genre_features"] = self.genre_classifier.get_feature_dict(cleaned_text,tag_dict)
-        elif "build" in self.options:
-            tag_dict["Genre"] =  self.genre_classifier.classify_genre(cleaned_text,tag_dict)
+                f = my_zip.open(my_zip.namelist()[0])
+                raw_text = f.read().decode(charset)
+                success = True
+            except:
+                for encoding in ["latin-1","utf-8"]:
+                        if encoding != charset:
+                            try:
+                                f.close()
+                                f = my_zip.open(my_zip.namelist()[0])
+                                raw_text = f.read().decode(encoding)
+                                success = True
+                                break
+                            except:
+                                pass
+
+            if not success:
+                print "fail"
+                return None,tag_dict
+            f.close()
+            cleaned_text = self.text_cleaner.clean_text(raw_text)
+            clean_time = time.time() - start
+            text_restrictions = self.options["subcorpus" + str(tag_dict["subcorpus"]) + "_restrictions"]
+            if "lexical_restrictions" in text_restrictions:
+                for phrase in text_restrictions["lexical_restrictions"]:
+                    if phrase not in cleaned_text:
+                        return None,tag_dict
+            cleaned_text = cleaned_text.splitlines()
+            if self.options["mode"] == "genre_training":
+                tag_dict["genre_features"] = self.genre_classifier.get_feature_dict(cleaned_text,tag_dict)
+            elif "build" in self.options:
+                tag_dict["Genre"] =  self.genre_classifier.classify_genre(cleaned_text,tag_dict)
       
       
         text = self.structure_tagger.find_structure_and_tokenize(cleaned_text,tag_dict)     
@@ -4746,8 +4794,7 @@ class GutenTextTagger:
 
         text = self.final_tag_fixes(text)
 
-
-        if ("build" in self.options or self.options["mode"] == "export") and self.options["output_format"] == "TEI" and tag_dict["Genre"] == "fiction":           
+        if (tag_dict["Genre"] == "fiction"  and ((self.options["mode"] == "analyze" and self.options["persName"]) or (("build" in self.options or self.options["mode"] == "export" or self.options["mode"] == "get_texts") and self.options["output_format"] == "TEI"))):
             self.character_list_builder.build_character_lists(text,tag_dict,name_mapping)
 
 
@@ -4770,7 +4817,6 @@ class GutenTextTagger:
             if "Characters" in tag_dict and len(tag_dict["Characters"]) >= 1 and fp_narr_tag in tag_dict["Characters"][0]:
                 tag_dict["1stperson"] = True
                     
-
         return text,tag_dict
     
 
@@ -4786,39 +4832,50 @@ def do_analysis(text,options,tag_dict):
         genre = "prose"
     else:
         genre = tag_dict["Genre"]
+        
+    if "tags_for_analysis"  in options and options["tags_for_analysis"]:
 
-    tag_dict["analysis_results"] = {}
-    for tag_type in options["tags_for_analysis"]:
-        tag_dict["analysis_results"][tag_type] = []
+        tag_dict["lexicon_results"] = {}
+        for tag_type in options["tags_for_analysis"]:
+            tag_dict["lexicon_results"][tag_type] = []
+            
 
-    include_tags = True
-    for i in range(len(text.tokens) + 1):
-        if i in end_indicies:
-            if include_tags:
-                token_count += i - span_start
-                span_start = i
-            for tag in end_indicies[i]:
-                include_tags = remove_from_tag_path(tag_path,options,genre)
-            del end_indicies[i]
-                
-        while tag_loc < len(text.tags) and i == text.tags[tag_loc].start:
-            tag = text.tags[tag_loc]
-            if include_tags:
-                token_count += i - span_start
-                span_start = i           
-            if tag.end not in end_indicies:
-                end_indicies[tag.end] = []
-            end_indicies[tag.end].append(tag)
-            include_tags = add_to_tag_path(tag,tag_path,options,genre)
-            if include_tags:
-                if tag.get_single_tag() in options["tags_for_analysis"]:
-                    if tag.attributes and "value" in tag.attributes:
-                        tag_dict["analysis_results"][tag.get_single_tag()].append(tag.attributes["value"])
-                    else:
-                        tag_dict["analysis_results"][tag.get_single_tag()].append(1)                    
+        include_tags = True
+        for i in range(len(text.tokens) + 1):
+            if i in end_indicies:
+                if include_tags:
+                    token_count += i - span_start
+                    span_start = i
+                for tag in end_indicies[i]:
+                    include_tags = remove_from_tag_path(tag_path,options,genre)
+                del end_indicies[i]
                     
-            tag_loc += 1
+            while tag_loc < len(text.tags) and i == text.tags[tag_loc].start:
+                tag = text.tags[tag_loc]
+                if include_tags:
+                    token_count += i - span_start
+                    span_start = i           
+                if tag.end not in end_indicies:
+                    end_indicies[tag.end] = []
+                end_indicies[tag.end].append(tag)
+                include_tags = add_to_tag_path(tag,tag_path,options,genre)
+                if include_tags:
+                    if tag.get_single_tag() in options["tags_for_analysis"]:
+                        if tag.attributes and "value" in tag.attributes:
+                            tag_dict["lexicon_results"][tag.get_single_tag()].append(tag.attributes["value"])
+                        else:
+                            tag_dict["lexicon_results"][tag.get_single_tag()].append(1)                    
+                        
+                tag_loc += 1
+
+    if "measures" in options and options["measures"]:
+        tag_dict["measure_results"] = {}
+        for measure in options["measures"]:
+            tag_dict["measure_results"][measure] = textual_measures[measure][0](text,tag_dict)
+        if token_count == 0:
+            token_count = len(text.tokens)
     tag_dict["token_count"] = token_count
+    #print tag_dict
 
 
 def get_filename(tag_dict,options):
@@ -4890,6 +4947,64 @@ def guten_process(options,sendQ,returnQ,output_lock,fout):
             returnQ.put(False)
 
 
+class OtherTag:
+    def __init__(self,options):
+        if options["mode"] == "export" and options["output_mode"] == "single":
+            fout = codecs.open(options["output_file"],"w",encoding="utf-8")
+            if options["output_format"] == "TEI":
+                fout.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+        else:
+            fout = None    
+        self.worker_threads = []
+        if online:
+            num_threads = cpu_count() # use the whole server
+        else:
+            num_threads = min(cpu_count()/2,16) # use half the resources on the system
+        self.sendQ = Queue()
+        self.returnQ = Queue()
+        self.output_lock = Lock()
+        for i in range(num_threads):
+            self.worker_threads.append(Process(target=guten_process,args=(options,self.sendQ,self.returnQ, self.output_lock,fout)))
+            self.worker_threads[-1].daemon = True
+            self.worker_threads[-1].start()
+
+
+
+    def __del__(self):
+        for worker_thread in self.worker_threads:
+            worker_thread.terminate()
+
+    def iterate_over_texts(self,f):
+        try:
+            my_zip = zipfile.ZipFile(f)
+            active_count = 0
+            for name in my_zip.namelist():
+                 if name.endswith("/"):
+                     continue
+                 f_in = my_zip.open(name)
+                 tag_dict = {}
+                 tag_dict["raw_text"] = f_in.read().decode("utf-8")
+                 tag_dict["subcorpus"] = 1
+                 tag_dict["filename"] = name
+                 self.sendQ.put(tag_dict)
+                 active_count += 1
+        except:
+            tag_dict = {}
+            tag_dict["raw_text"] = f
+            tag_dict["subcorpus"] = 1
+            self.sendQ.put(tag_dict)
+            active_count = 1
+        count = 0
+        while active_count > 0:
+            result = self.returnQ.get()
+            if result:
+                count += 1
+                yield result
+            active_count -= 1
+        print "SUCCESSFUL COUNT"
+        print count 
+       
+         
 
 # the main GutenTag class, iterates through the corpus and check if texts
 # satisfy restrictions
@@ -5236,6 +5351,10 @@ class GutentagRequestHandler(SocketServer.BaseRequestHandler):
             options = json.loads(self.data)
             options["output_mode"] = "multiple"
             options["tagger"] = "simple"
+            if "measures" in options and options["measures"]:
+                for measure in options["measures"]:
+                    for tag in textual_measures[measure][1]:
+                        options[tag] = True
             if online:
                 if not "maxnum" in options:
                     options["maxnum"] = online_max_texts
@@ -5272,6 +5391,8 @@ def insert_dynamic(text):
             new_options = "\n".join(["<option>" + filename + "</option>" for filename in user_lists])
             text = text.replace("<!-- user lists -->", new_options)
 
+    new_options = "\n".join(["<option>" + measure + "</option>" for measure in textual_measures])
+    text = text.replace("<!-- measures -->", new_options)
     return text
 
 def process_main_page(text):
@@ -5473,6 +5594,30 @@ class GT_API:
         self.options["wanted_tags"] = set(self.options["subcorpus" + str(text_info["subcorpus"]) + "_restrictions"]["wanted_tags"])
         output_text(text,temp,self.options,text_info)
         return temp.getvalue()
+
+
+class OT_API:
+
+    def __init__(self,options_path):
+        f = open(options_path)
+        self.options = json.loads(f.read())
+        f.close()
+        self.options["mode"] = "get_texts"
+        self.options["nonPG"] = True
+        #print self.options
+        self.ot = OtherTag(self.options)
+
+    def cycle_through_texts(self,filename):
+        if filename.endswith(".zip"):
+            f = open(filename,"rb")
+        else:
+            f = filename
+        for info in self.ot.iterate_over_texts(f):
+            text = info["text"]
+            del info["text"]
+            yield text, info
+        
+    
 
 ###
     

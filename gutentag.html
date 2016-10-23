@@ -160,28 +160,31 @@
 <div class="subdefine" id="analysis1">
  
  
-        <div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">+</div> <p>Add Lexical Tags</p></div>
+        <div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">+</div> <p>Add Lexicon</p></div>
         <div class="defineframe hidden">
                 	<div class="defineframebaby">
                 	
-                		<table>
-                	                    			<tr>
-          			<td>
-
-                           Person Names:
-                                                   </td>
-                        <td>
-                                <input type="radio" name="persName" value="true"/>Yes
-                                <input type="radio" name="persName" value="false" checked="checked" />No
-                        </td>
-                        </tr>
-                                </table>
+                	<div> </div>
 
           <table class="linebyline" id="analyzelexicontable">
         </table>
         <div class="addline" data="0" id="analyzelexiconaddbutton" onclick="add_lexical_tag('analyze');">+</div>
         </div>
        
+        </div>
+        </div>
+          <div class="subdefine" id="analysis2">      
+                <div class="subdefineheader" onclick="open_or_close(this);"><div class="toggler">+</div> <p>Add Textual Measure</p></div>
+        <div class="defineframe hidden">
+                	<div class="defineframebaby">
+                	
+
+          <table class="linebyline" id="measuretable">
+        </table>
+        <div class="addline" data="0" id="measureaddbutton" onclick="add_measure();">+</div>
+        </div>
+       
+        </div>
         </div>
         
         <div class="subdefine" id="analyzeoutput">
@@ -211,10 +214,6 @@
 </div>
     </form>
     
-        </div>
-               
-
-</form>  
 <div class="analyzefooter"></div>
 </div>
 
@@ -710,6 +709,16 @@
         </tr>
         </table>
 
+
+<table class="linebyline hidden">
+    	<tr id="measuretemplate">
+ 		<td><select name="measuremain">
+ 			<option value="none">Select a Measure</option>
+                 <!-- measures -->
+                 </select>
+        </td>
+        </tr>
+        </table>
 
 <table class="linebyline hidden">
     	<tr id="lexicaltagtemplate">

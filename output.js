@@ -4,7 +4,9 @@ user_id = -1
 bar_progress = 0
 text_count = 0
 running_lexicon_counts = {}
-running_totals = {}
+running_token_totals = {}
+running_measure_counts = {}
+running_document_totals = {}
 zip_filename = ""
 query_count = 0
 
@@ -472,22 +474,35 @@ function isEmpty(obj) {
     return true;
 }
 
-function add_to_current_analysis_and_update(analysis_results, token_count, subcorpus) {
+function add_to_current_analysis_and_update(lexicon_results, measure_results, token_count, subcorpus) {
 	//alert('adding to');
 	if (!(subcorpus in running_lexicon_counts)) {
-	 	running_lexicon_counts[subcorpus] = {}
-		running_totals[subcorpus] = 0
+	 	running_lexicon_counts[subcorpus] = {};
+	   running_measure_counts[subcorpus] = {};
+		running_token_totals[subcorpus] = 0;
+		running_document_totals[subcorpus] = 0;
+		
 	}
-	for (var lexicon in analysis_results) {
+	
+	for (var lexicon in lexicon_results) {
 		//alert("adding to running_counts")
 		if (!(lexicon in running_lexicon_counts[subcorpus])) {
 		 	running_lexicon_counts[subcorpus][lexicon] = 0
 		} 
-		for (j= 0; j < analysis_results[lexicon].length; j++) {
+		for (j= 0; j < lexicon_results[lexicon].length; j++) {
 			//alert("add one")
-			running_lexicon_counts[subcorpus][lexicon] += analysis_results[lexicon][j]
+			running_lexicon_counts[subcorpus][lexicon] += lexicon_results[lexicon][j]
 		} 
 	}
+	
+	for (var measure in measure_results) {
+		//alert("adding to running_counts")
+		if (!(measure in running_measure_counts[subcorpus])) {
+		 	running_measure_counts[subcorpus][measure] = 0
+		} 
+		running_measure_counts[subcorpus][measure] += measure_results[measure]
+	}
+	
 	//alert("done")
 		
 	box = document.getElementById("subdefine" + subcorpus)
@@ -497,16 +512,31 @@ function add_to_current_analysis_and_update(analysis_results, token_count, subco
 		 	p = document.createElement('p');
 		 	box.appendChild(p);
 		}
+		
+		for (var measure in running_measure_counts[subcorpus])  {
+			//alert("adding p")
+		 	p = document.createElement('p');
+		 	box.appendChild(p);
+		}
 	}
-	running_totals[subcorpus] +=token_count
+	running_token_totals[subcorpus] +=token_count
+	running_document_totals[subcorpus] += 1
 	count = 0
 	for (var lexicon in running_lexicon_counts[subcorpus]) {
 		//alert("filling p")	
 		//alert(running_lexicon_counts[subcorpus][lexicon])
 		//alert(running_totals[subcorpus])
-		box.children[count].innerHTML = lexicon + ": " + running_lexicon_counts[subcorpus][lexicon]/running_totals[subcorpus]
+		box.children[count].innerHTML = lexicon + ": " + running_lexicon_counts[subcorpus][lexicon]/running_token_totals[subcorpus]
 		count += 1
 	}
+	for (var measure in running_measure_counts[subcorpus]) {
+		//alert("filling p")	
+		//alert(running_lexicon_counts[subcorpus][lexicon])
+		//alert(running_totals[subcorpus])
+		box.children[count].innerHTML = measure + ": " + running_measure_counts[subcorpus][measure]/running_document_totals[subcorpus]
+		count += 1
+	}
+	
 }
 
 function update_status_bar(tag_dict) {      
@@ -611,12 +641,12 @@ function query_server_for_progress() {
 					update_status_bar(curr_result);
 				}
 				else {
-				     if ('analysis_results' in curr_result) {
+				     if ('lexicon_results' in curr_result ||'measure_results' in curr_result ) {
 				     //alert('in analysis  section')
 					add_one_to_count(curr_result['subcorpus'])
 
 					update_status_bar(curr_result);
-					add_to_current_analysis_and_update(curr_result['analysis_results'], curr_result['token_count'], curr_result['subcorpus']);
+					add_to_current_analysis_and_update(curr_result['lexicon_results'], curr_result['measure_results'], curr_result['token_count'], curr_result['subcorpus']);
 					
 					}
 					
