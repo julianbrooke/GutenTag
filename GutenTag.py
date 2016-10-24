@@ -5020,7 +5020,12 @@ class GutenTag:
         if "output_dir" in options:
             options["output_file"] = options["output_dir"]
 
-        self.total_texts = len(os.listdir(options["corpus_dir"] + "/ETEXT"))
+        if "total_texts" not in options:
+            self.total_texts = 0
+        else:
+            self.total_texts = options["total_texts"]
+
+        self.total_texts += len(os.listdir(options["corpus_dir"] + "/ETEXT"))
         if os.path.exists(options["corpus_dir"] + "/" + "ETEXT_SUP"):
             self.total_texts += len(os.listdir(options["corpus_dir"] + "/ETEXT_SUP"))
         self.options = options
@@ -5293,14 +5298,36 @@ def sub_guten_process(options,result_Q):
     if online and options["mode"] == "export":
         output_file = io.BytesIO()
         local_zipfile = zipfile.ZipFile(output_file,"w",zipfile.ZIP_DEFLATED)
-    gr = GutenTag(options)
-    for tags in gr.iterate_over_texts():
-        if tags:
-            if online and options["mode"] == "export" and "filename" in tags:
-                local_zipfile.writestr(tags["filename"].encode("utf-8"),tags["text"].encode("utf-8"))
-                del tags["filename"]
-                del tags["text"]
-            result_Q.put(tags)
+    if "multi_corpus_path.txt" in os.listdir("."):
+        f = open("multi_corpus_path.txt")
+        options["total_texts"] = 0
+        for line in f:
+            line = line.strip()
+            options["corpus_dir"] = line
+            gr = GutenTag(options)
+            options["total_texts"] = gr.total_texts
+            
+            for tags in gr.iterate_over_texts():
+                if tags:
+                    if online and options["mode"] == "export" and "filename" in tags:
+                        local_zipfile.writestr(tags["filename"].encode("utf-8"),tags["text"].encode("utf-8"))
+                        del tags["filename"]
+                        del tags["text"]
+                    result_Q.put(tags)            
+
+
+    else:
+        print "bad"
+        print kfjdsfkj
+                                        
+        gr = GutenTag(options)
+        for tags in gr.iterate_over_texts():
+            if tags:
+                if online and options["mode"] == "export" and "filename" in tags:
+                    local_zipfile.writestr(tags["filename"].encode("utf-8"),tags["text"].encode("utf-8"))
+                    del tags["filename"]
+                    del tags["text"]
+                result_Q.put(tags)
     output_dict = {"user_id":options["id"],"done":True}
     if online and options["mode"] == "export":
         local_zipfile.close()
