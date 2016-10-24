@@ -5301,6 +5301,8 @@ def sub_guten_process(options,result_Q):
     if "multi_corpus_path.txt" in os.listdir("."):
         f = open("multi_corpus_path.txt")
         options["total_texts"] = 0
+        if options["mode"] == "analyze":
+            fout = open("analysis_details.csv","w")
         for line in f:
             line = line.strip()
             options["corpus_dir"] = line
@@ -5313,13 +5315,16 @@ def sub_guten_process(options,result_Q):
                         local_zipfile.writestr(tags["filename"].encode("utf-8"),tags["text"].encode("utf-8"))
                         del tags["filename"]
                         del tags["text"]
-                    result_Q.put(tags)            
+                    if options["mode"] == "analyze" and "measure_results" in tags:
+                        fout.write("%s,%f\n" % (tags["Title"][0].replace(",",""), tags["measure_results"][tags["measure_results"].keys()[0]]))
+                    result_Q.put(tags)
+                    
 
-
+        if options["mode"] == "analyze":
+            fout.close()
+        
     else:
-        print "bad"
-        print kfjdsfkj
-                                        
+                  
         gr = GutenTag(options)
         for tags in gr.iterate_over_texts():
             if tags:
@@ -5358,9 +5363,10 @@ def main_guten_process(main_Q,result_Q):
 class GutentagRequestHandler(SocketServer.BaseRequestHandler):
    
     def handle(self):
-        self.data = self.request.recv(4096).strip()
-        if self.data.startswith("id:"):
-            ID = self.data.split(":")[1]
+        response = self.request.recv(4096)
+            
+        if response.startswith("id:"):
+            ID = response.split(":")[1]
             if ID in download_dict:
                 self.request.sendall(download_dict[ID])
                 del download_dict[ID]
@@ -5375,7 +5381,11 @@ class GutentagRequestHandler(SocketServer.BaseRequestHandler):
                 results_dict[ID] = []
                 
         else:
-            options = json.loads(self.data)
+            data_string = StringIO.StringIO()
+            while response:
+                data_string.write(response)
+                response = self.request.recv(4096)
+            options = json.loads(data_string.getvalue().strip())
             options["output_mode"] = "multiple"
             options["tagger"] = "simple"
             if "measures" in options and options["measures"]:
@@ -5486,7 +5496,7 @@ class GutentagWebserver(BaseHTTPRequestHandler):
                         page_id = options["id"]
                         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                         sock.connect(("localhost", port))
-                        sock.send(cgi_dict["data"])
+                        sock.sendall(cgi_dict["data"])
                         sock.close()
 
                         f = open("output.html")
