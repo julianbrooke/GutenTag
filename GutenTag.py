@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-version = "0.1.4"
+version = "0.1.5"
 
 standalone = False
-online = False
+online = True
 
 online_max_texts = 500
 http_port = 8000
@@ -4182,8 +4182,171 @@ class LexicalTagger:
 
 ##
 
-def stump(text,tags):
+l_prefixes = set(['un', 'im', 'in', 'ir', 'il', 're','dis','mis','out', 'be','co','de','fore','inte','pre', 'sub', 'tran', 'anti', 'auto', 'bi', 'counter', 'dis', 'ex', 'hyper', 'in', 'mal', 'mis', 'mini', 'mono', 'neo', 'poly', 'pseud', 'semi', 'supe', 'sur', 'tele', 'tri', 'ultr', 'unde'])
+l_suffixes = set(["ize", 'ise', 'ate', 'fy', 'en', 'tion', 'sion', 'ment', 'ant', 'age', 'al', 'ence', 'ance', 'ery', 'ism', 'ship', 'ity', 'ness', 'cy', 'ive', 'ous', 'less', 'able', 'ible'])
+
+
+def is_latinate(word):
+    for i in range(2,4):
+        if len(word) > i + 2 and word[:i] in l_prefixes or word[-i:] in l_suffixes:
+            return 1
     return 0
+
+def get_tag_lengths(text,S):
+     lengths = []
+     for tag in text.tags:
+         if tag.tag == S:
+            lengths.append(tag.end - tag.start)
+     return lengths
+
+def avg_commas(text,info):
+    comma_count  = 0
+    sentence_count = 0
+    for tag in text.tags:
+        if tag.tag == "s":
+            for i in range(tag.start,tag.end):
+                if text.tokens[i] == ",":
+                    comma_count += 1
+            sentence_count += 1
+    if sentence_count == 0:
+        return 0
+    return comma_count/float(sentence_count)
+
+def percent_latinate(text,info):
+    if len(text.tokens) == 0:
+        return 0
+    return sum([is_latinate(token.lower()) for token in text.tokens])/float(len(text.tokens))
+
+    
+
+def total_length(text,info):
+    return len(text.tokens)
+
+def word_length(text,info):
+    if len(text.tokens) == 0:
+        return 0
+    return sum([len(word) for word in text.tokens])/float(len(text.tokens))
+                
+                
+    
+
+def sentence_length(text,info):
+    sentence_lengths = get_tag_lengths(text,"s")
+    if sentence_lengths:
+        return sum(sentence_lengths)/float(len(sentence_lengths))
+    else:
+        return 0
+    
+def sentence_variance(text,info):
+    sentence_lengths = get_tag_lengths(text,"s")
+    if sentence_lengths:
+        avg_sentence_length = sum(sentence_lengths)/float(len(sentence_lengths))
+        return (sum([(length - avg_sentence_length)**2 for length in sentence_lengths])/len(sentence_lengths))**(0.5)
+    else:
+        return 0
+
+def paragraph_length(text,info):
+    paragraph_lengths = get_tag_lengths(text,"p")
+    if paragraph_lengths:
+        return sum(paragraph_lengths)/float(len(paragraph_lengths))
+    else:
+        return 0
+    
+def paragraph_variance(text,info):
+    paragraph_lengths = get_tag_lengths(text,"p")
+    if paragraph_lengths:
+        avg_paragraph_length = sum(paragraph_lengths)/float(len(paragraph_lengths))
+        return (sum([(length - avg_paragraph_length)**2 for length in paragraph_lengths])/len(paragraph_lengths))**(0.5)              
+    else:
+        return 0
+
+def get_pos(text,info):
+    if "pos_tags" not in info:
+        tagger = SimplePOSTagger()
+        info["pos_tags"] =  tagger.tag(text.tokens)
+    return info["pos_tags"]
+
+
+def get_nouns(text,info):
+    if len(text.tokens) == 0:
+        return 0
+    tags = get_pos(text,info)
+    count = 0
+    for tag in tags:
+        if tag.startswith("N"):
+            count += 1
+
+    return count/float(len(text.tokens))
+
+def get_verbs(text,info):
+    if len(text.tokens) == 0:
+        return 0
+    tags = get_pos(text,info)
+    count = 0
+    for tag in tags:
+        if tag.startswith("VB"):
+            count += 1
+
+    return count/float(len(text.tokens))
+
+
+def get_adjectives(text,info):
+    if len(text.tokens) == 0:
+        return 0
+    tags = get_pos(text,info)
+    count = 0
+    for tag in tags:
+        if tag.startswith("JJ"):
+            count += 1
+
+    return count/float(len(text.tokens))
+
+
+def get_adverbs(text,info):
+    if len(text.tokens) == 0:
+        return 0
+    tags = get_pos(text,info)
+    count = 0
+    for tag in tags:
+        if tag.startswith("RB"):
+            count += 1
+
+    return count/float(len(text.tokens))
+
+def get_lexical_density(text,info):
+    if len(text.tokens) == 0:
+        return 0
+    tags = get_pos(text,info)
+    count = 0
+    for tag in tags:
+        if tag.startswith("N") or tag.startswith("VB") or tag.startswith("JJ") or tag.startswith("RB"):
+            count += 1
+    return count/float(len(text.tokens))
+
+def percent_female_characters(text,info):
+    all_characters = {}
+    female_characters = 0
+    if "Characters" not in info or not info["Characters"]:
+        return 0
+    else:
+        for i in range(len(info["Characters"])):
+            all_characters.update(info["Characters"][i])
+
+    for character in all_characters:
+        if all_characters[character][0] == 'F':
+            female_characters += 1
+    return female_characters/float(len(all_characters))
+
+def percent_dialogue(text,info):
+    if len(text.tokens) == 0:
+        return 0
+    total_dialogue = 0.0
+    for tag in text.tags:
+        if tag.tag == "said":
+            said_amount = tag.end - tag.start
+            total_dialogue += said_amount
+    
+    return total_dialogue/len(text.tokens)    
 
 def percent_female_dialogue(text,info):
     all_characters = {}
@@ -4205,10 +4368,146 @@ def percent_female_dialogue(text,info):
                 if all_characters[char_id][0] == 'F':
                     female_dialogue += said_amount
     #print places
+    if total_dialogue == 0:
+        return 0
     return  female_dialogue/total_dialogue
+
+
+style_dict = {}
+
+def load_style_dict():
+    f = codecs.open("built_in_lexicons/sixstyleplus.txt",encoding="utf-8")
+    styles = f.readline().strip().split()[1:]
+    for line in f:
+        stuff = line.strip().split()
+        word = stuff[0]
+        style_dict[word] = [float(num) for num in stuff[1:]]
+        
+    f.close()
+
+def get_style_average(style_dict,words):
+    total = [0.0]*6
+    count = 0
+    for word in words:
+        for i in range(6):
+            total[i] += style_dict[word][i]
+        count += 1
+    if count:
+        for i in range(6):
+            total[i]/=count
+    return total, count
+
+
+word_sample_size = 1000
+samples = 50
+min_character_words = 200
+
+def calculate_stylistic_distance(set1,set2,style_dict):
+    set1words = set1
+    set2words = set2
+    total_diff = 0.0
+    for j in range(samples):
+        if len(set1words) > word_sample_size:
+            set1sample = random.sample(set1words,word_sample_size)
+        else:
+            set1sample = set1words
+
+        if len(set2words) > word_sample_size:
+            set2sample = random.sample(set2words,word_sample_size)
+        else:
+            set2sample = set2words
+            
+        set1avg,count1 = get_style_average(style_dict,set1sample)
+        set2avg,count2 = get_style_average(style_dict,set2sample)
+        for i in range(6):
+            total_diff += abs(set1avg[i] - set2avg[i])
+    total_diff /= 6*samples
+    return total_diff, len(set1words), len(set2words)
+
+def get_combined_set(characters,character_speech_dict):
+    combo_set = set()
+    for character in characters:
+        combo_set.update(character_speech_dict[character])
+    return combo_set
+
+def get_character_speech(text):
+    character_dict = defaultdict(set)
+    for tag in text.tags:
+        if tag.tag == "said" and "who" in tag.attributes:
+            character_dict[tag.attributes["who"]].update([word.lower() for word in text.tokens[tag.start:tag.end]])
+    for character in character_dict:
+        character_dict[character].intersection_update(style_dict)
+    return character_dict
+            
+
+def dialogism(text,info):
+    if not style_dict:
+        load_style_dict()
+    characters = get_character_speech(text)
+    f = lambda x: len(characters[x])
+    most_common_character = max(characters,key=f)
+    cluster1 = [most_common_character]
+    cluster2 = characters.keys()
+    cluster2.remove(most_common_character)
+    dist, tempn1,tempn2 = calculate_stylistic_distance(get_combined_set(cluster1,characters),get_combined_set(cluster2,characters),style_dict)
+    if tempn1 < word_sample_size or tempn2 < word_sample_size:
+        curr_p = dist*min(tempn1,tempn2)/max(tempn1,tempn2)
+    else:
+        curr_p = dist
+
+    done = False
+    while not done:
+        best = None
+        best_p = 0.0
+        if len(cluster2) > 1:
+            for i in range(len(cluster2)):
+                temp_cluster1 = cluster1 + [cluster2[i]]
+                temp_cluster2 = cluster2[:i] + cluster2[i+1:]                
+                dist, tempn1,tempn2 = calculate_stylistic_distance(get_combined_set(temp_cluster1,characters),get_combined_set(temp_cluster2,characters),style_dict)
+                if tempn1 < word_sample_size or tempn2 < word_sample_size:
+                    p = dist*min(tempn1,tempn2)/max(tempn1,tempn2)
+                else:
+                    p = dist
+
+                if p > best_p:
+                    best = cluster2[i]
+                    best_p = p                    
+
+        if len(cluster1) > 1:
+            for i in range(len(cluster1)):
+                temp_cluster2 = cluster2 + [cluster1[i]]
+                temp_cluster1 = cluster1[:i] + cluster1[i+1:]
+                dist, tempn1,tempn2 = calculate_stylistic_distance(get_combined_set(temp_cluster1,characters),get_combined_set(temp_cluster2,characters),style_dict)
+                if tempn1 < word_sample_size or tempn2 < word_sample_size:
+                    p = dist*min(tempn1,tempn2)/max(tempn1,tempn2)
+                else:
+                    p = dist
+
+                if p > best_p:
+                    best = cluster1[i]
+                    best_p = p
+
+        if best and (best_p > curr_p):
+            if best in cluster1:
+                cluster1.remove(best)
+                cluster2.append(best)
+            else:
+                cluster2.remove(best)
+                cluster1.append(best)
+            curr_p = best_p
+
+        else:
+
+            done = True
+
+    set1 =get_combined_set(cluster1,characters)
+    set2 = get_combined_set(cluster2,characters)
+    return calculate_stylistic_distance(set1,set2,style_dict)[0]  
     
 
-textual_measures = {"Stumpy":[stump,[]], "Percent Female Dialogue":[percent_female_dialogue, ["persName"]]}
+
+#textual_measures = {"Stumpy":[stump,[]], "Percent Female Dialogue":[percent_female_dialogue, ["persName"]]}
+textual_measures = {"Length of text":[total_length,[]],"Average length of words":[word_length,[]],"Average length of sentence":[sentence_length,[]],"Average variance in sentence length":[sentence_variance,[]],"Average length of paragraph":[paragraph_length,[]],"Average variance in paragraph length":[paragraph_variance,[]],"Average number of commas per sentence":[avg_commas,[]],"Percent of text Latinate words":[percent_latinate ,[]], "Lexical density":[get_lexical_density,[]], "Percent of text adverbs":[get_adverbs,[]],"Percent of text adjectives":[get_adjectives,[]], "Percent of text verbs":[get_verbs,[]],"Percent of text nouns":[get_nouns,[]],"Percent of characters which are female":[percent_female_characters, ["persName"]], "Percent of text which is dialogue":[percent_dialogue, ["persName"]], "Percent dialogue by female characters":[percent_female_dialogue, ["persName"]], "Character dialogism (stylistic diversity measure)":[dialogism, ["persName"]]}
 
 TEI_header_template = u''' <teiHeader>
   <fileDesc>
@@ -4649,7 +4948,7 @@ class GutenTextTagger:
         self.gender_classifier = GenderClassifier()
         self.structure_tagger = StructureTagger(tokenizer)
         self.lexical_tagger =  LexicalTagger(options,tokenizer,self.gender_classifier)
-        if (options["mode"] == "analyze" and options["persName"]) or (("build" in options or options["mode"] == "export" or options["mode"] == "get_texts") and options["output_format"] == "TEI"):
+        if (options["mode"] == "analyze" and options.get("persName",False)) or (("build" in options or options["mode"] == "export" or options["mode"] == "get_texts") and options["output_format"] == "TEI"):
             self.character_list_builder = CharacterListBuilder(self.gender_classifier)
         self.options = options
 
@@ -4709,7 +5008,7 @@ class GutenTextTagger:
                     else:
                         tag.tag = "p"
                     #pass
-            elif self.options["mode"] != "get_texts" and tag.tag == "s":
+            elif self.options["mode"] != "get_texts" and self.options["mode"] != "analyze" and tag.tag == "s":
                 remove_indicies.append(i)
             elif tag.tag == "front":
                 front_end = tag.end
@@ -4788,13 +5087,15 @@ class GutenTextTagger:
                 tag_dict["Genre"] =  self.genre_classifier.classify_genre(cleaned_text,tag_dict)
       
       
-        text = self.structure_tagger.find_structure_and_tokenize(cleaned_text,tag_dict)     
+        text = self.structure_tagger.find_structure_and_tokenize(cleaned_text,tag_dict)
+        if len(text.tokens) == 0:
+            return text,tag_dict
             
         text,name_mapping = self.lexical_tagger.do_lexical_tagging(text,tag_dict)
 
         text = self.final_tag_fixes(text)
 
-        if (tag_dict["Genre"] == "fiction"  and ((self.options["mode"] == "analyze" and self.options["persName"]) or (("build" in self.options or self.options["mode"] == "export" or self.options["mode"] == "get_texts") and self.options["output_format"] == "TEI"))):
+        if (tag_dict["Genre"] == "fiction"  and ((self.options["mode"] == "analyze" and self.options.get("persName",False)) or (("build" in self.options or self.options["mode"] == "export" or self.options["mode"] == "get_texts") and self.options["output_format"] == "TEI"))):
             self.character_list_builder.build_character_lists(text,tag_dict,name_mapping)
 
 
@@ -4827,55 +5128,73 @@ def do_analysis(text,options,tag_dict):
     end_indicies = {}
     tag_loc = 0
     token_count = 0
+    remove_count = 0
+    if "measures" in options and options["measures"] and not (len(options["measures"]) == 1 and options["measures"][0] == "none") and "not_wanted_tags" in options:
+        filtered_text = True
+        filtered_tokens = []
+        filtered_tags = []
+    else:
+        filtered_text = False
 
     if "fiction" in tag_dict["Genre"]:
         genre = "prose"
     else:
         genre = tag_dict["Genre"]
         
-    if "tags_for_analysis"  in options and options["tags_for_analysis"]:
+    if ("tags_for_analysis" in options and options["tags_for_analysis"]):
 
         tag_dict["lexicon_results"] = {}
         for tag_type in options["tags_for_analysis"]:
             tag_dict["lexicon_results"][tag_type] = []
             
-
+    if ("tags_for_analysis" in options and options["tags_for_analysis"]) or filtered_text:
         include_tags = True
         for i in range(len(text.tokens) + 1):
             if i in end_indicies:
-                if include_tags:
-                    token_count += i - span_start
-                    span_start = i
                 for tag in end_indicies[i]:
                     include_tags = remove_from_tag_path(tag_path,options,genre)
                 del end_indicies[i]
                     
             while tag_loc < len(text.tags) and i == text.tags[tag_loc].start:
-                tag = text.tags[tag_loc]
-                if include_tags:
-                    token_count += i - span_start
-                    span_start = i           
+                tag = text.tags[tag_loc]          
                 if tag.end not in end_indicies:
                     end_indicies[tag.end] = []
                 end_indicies[tag.end].append(tag)
                 include_tags = add_to_tag_path(tag,tag_path,options,genre)
                 if include_tags:
-                    if tag.get_single_tag() in options["tags_for_analysis"]:
+                    if filtered_text:
+                        filtered_tags.append(Tag(tag.start - remove_count, tag.end - remove_count,tag.tag,tag.attributes))
+                    if "tags_for_analysis" in options and tag.get_single_tag() in options["tags_for_analysis"]:
                         if tag.attributes and "value" in tag.attributes:
                             tag_dict["lexicon_results"][tag.get_single_tag()].append(tag.attributes["value"])
                         else:
                             tag_dict["lexicon_results"][tag.get_single_tag()].append(1)                    
                         
                 tag_loc += 1
+            if include_tags and i != len(text.tokens):
+                token_count += 1
+                if filtered_text:
+                    filtered_tokens.append(text.tokens[i])
+            else:
+                remove_count += 1
 
-    if "measures" in options and options["measures"]:
+    if filtered_text:
+        text = Text(filtered_tokens,filtered_tags)        
+
+    if "measures" in options and options["measures"] and not (len(options["measures"]) == 1 and options["measures"][0] == "none"):       
         tag_dict["measure_results"] = {}
         for measure in options["measures"]:
+            if measure == "none":
+                continue
+
             tag_dict["measure_results"][measure] = textual_measures[measure][0](text,tag_dict)
+        if "pos_tags" in tag_dict:
+            del tag_dict["pos_tags"]
         if token_count == 0:
             token_count = len(text.tokens)
     tag_dict["token_count"] = token_count
-    #print tag_dict
+    #print tag_dict["Title"]
+    #print tag_dict["token_count"]
 
 
 def get_filename(tag_dict,options):
@@ -4894,7 +5213,7 @@ def guten_process(options,sendQ,returnQ,output_lock,fout):
         if options["output_format"] == "TEI":
             file_suffix = ".xml"
         else:
-            file_suffix = ".txt" 
+            file_suffix = ".txt"
     while True:
         tag_dict = sendQ.get()
         text, tag_dict = tagger.process_text(tag_dict)
@@ -5012,10 +5331,6 @@ class OtherTag:
 class GutenTag:
 
     def __init__(self,options):
-        if "corpus_dir" not in options:
-            f = open("corpus_path.txt")
-            options["corpus_dir"] = f.read()
-            f.close()
 
         if "output_dir" in options:
             options["output_file"] = options["output_dir"]
@@ -5232,7 +5547,10 @@ class GutenTag:
                 
     
     def iterate_over_texts(self):
-        count = 0
+        if "text_count" in self.options:
+            count = self.options["text_count"]
+        else:
+            count = 0
         problem_count = 0
         filenames = os.listdir(self.options["corpus_dir"] + "/" + "ETEXT")
         if os.path.exists(self.options["corpus_dir"] + "/" + "ETEXT_SUP"):
@@ -5266,7 +5584,7 @@ class GutenTag:
                     tag_dict["notactive"] = True
                     yield tag_dict
 
-            if active == len(self.worker_threads) or ("maxnum" in self.options and active == self.options["maxnum"] - count):
+            if active >= len(self.worker_threads) or ("maxnum" in self.options and active == self.options["maxnum"] - count):
                 try:
                     tag_dict = self.returnQ.get(timeout=100)
                 except:
@@ -5293,54 +5611,81 @@ class GutenTag:
         print count 
       
 
+def get_details_header(options):
+    headers = ["text"]
+    if "tags_for_analysis" in options:
+        for lexicon in options["tags_for_analysis"]:
+            headers.append(lexicon)
+    if "measures" in options:
+        for measure in options["measures"]:
+            if measure == "none":
+                continue
+            headers.append(measure)
+    return ",".join(headers) + "\n"
+
+
+def get_details_line(tag_dict,options):
+    line = [get_filename(tag_dict,options)]
+    if "tags_for_analysis" in options:
+        for lexicon in options["tags_for_analysis"]:
+            line.append(str(sum(tag_dict["lexicon_results"][lexicon])/float(tag_dict["token_count"])))
+    if "measures" in options:
+        for measure in options["measures"]:
+            if measure == "none":
+                continue            
+            line.append(str(tag_dict["measure_results"][measure]))    
+    return ",".join(line) + "\n"
+
 # the main thread
 def sub_guten_process(options,result_Q):
     if online and options["mode"] == "export":
-        output_file = io.BytesIO()
-        local_zipfile = zipfile.ZipFile(output_file,"w",zipfile.ZIP_DEFLATED)
-    if "multi_corpus_path.txt" in os.listdir("."):
-        f = open("multi_corpus_path.txt")
-        options["total_texts"] = 0
-        if options["mode"] == "analyze":
-            fout = open("analysis_details.csv","w")
-        for line in f:
-            line = line.strip()
-            options["corpus_dir"] = line
-            gr = GutenTag(options)
-            options["total_texts"] = gr.total_texts
-            
-            for tags in gr.iterate_over_texts():
-                if tags:
-                    if online and options["mode"] == "export" and "filename" in tags:
-                        local_zipfile.writestr(tags["filename"].encode("utf-8"),tags["text"].encode("utf-8"))
-                        del tags["filename"]
-                        del tags["text"]
-                    if options["mode"] == "analyze" and "measure_results" in tags:
-                        fout.write("%s,%f\n" % (tags["Title"][0].replace(",",""), tags["measure_results"][tags["measure_results"].keys()[0]]))
-                    result_Q.put(tags)
-                    
+        fout = io.BytesIO()
+        local_zipfile = zipfile.ZipFile(fout,"w",zipfile.ZIP_DEFLATED)
 
-        if options["mode"] == "analyze":
-            fout.close()
-        
-    else:
-                  
+    elif options["mode"] == "analyze" and "output_file" in options:
+        if online:
+            fout = StringIO.StringIO()
+        else:
+            fout = codecs.open(options["output_file"] + ".csv","w", encoding="utf-8")
+
+        fout.write(get_details_header(options))
+    options["total_texts"] = 0      
+    paths = []
+    f = open("corpus_path.txt")
+    for line in f:
+        paths.append(line.strip())
+    texts_so_far = 0           
+    for path in paths:
+        options["corpus_dir"] = path
+        options["text_count"] = texts_so_far
         gr = GutenTag(options)
+        options["total_texts"] += gr.total_texts
         for tags in gr.iterate_over_texts():
             if tags:
                 if online and options["mode"] == "export" and "filename" in tags:
                     local_zipfile.writestr(tags["filename"].encode("utf-8"),tags["text"].encode("utf-8"))
                     del tags["filename"]
                     del tags["text"]
+
+                elif "output_file" in options and options["mode"] == "analyze":
+                    fout.write(get_details_line(tags,options))
+
                 result_Q.put(tags)
+                texts_so_far += 1
     output_dict = {"user_id":options["id"],"done":True}
     if online and options["mode"] == "export":
         local_zipfile.close()
-        output_dict["zipfile"] = output_file.getvalue()
+        output_dict["zipfile"] = fout.getvalue()
         if "output_dir" in options:
             output_dict["filename"] = options["output_dir"] + ".zip"
         else:
             output_dict["filename"] = "gutentag_result.zip"
+    elif options["mode"] == "analyze" and "output_file" in options:
+        if online:
+            output_dict["filename"] = options["output_file"] + ".csv"
+            output_dict["zipfile"] = fout.getvalue() # not actually zipfile
+        else:
+            fout.close()
     result_Q.put(output_dict)
 
 
@@ -5390,6 +5735,8 @@ class GutentagRequestHandler(SocketServer.BaseRequestHandler):
             options["tagger"] = "simple"
             if "measures" in options and options["measures"]:
                 for measure in options["measures"]:
+                    if measure == "none":
+                        continue
                     for tag in textual_measures[measure][1]:
                         options[tag] = True
             if online:
@@ -5427,10 +5774,15 @@ def insert_dynamic(text):
         if user_lists:
             new_options = "\n".join(["<option>" + filename + "</option>" for filename in user_lists])
             text = text.replace("<!-- user lists -->", new_options)
-
-    new_options = "\n".join(["<option>" + measure + "</option>" for measure in textual_measures])
+          
+def insert_measures(text):
+    measures = textual_measures.keys()
+    measures.sort()
+    new_options = "\n".join(["<option>" + measure + "</option>" for measure in measures])
     text = text.replace("<!-- measures -->", new_options)
     return text
+
+
 
 def process_main_page(text):
     try:
@@ -5443,6 +5795,8 @@ def process_main_page(text):
             text = text.replace("gutentaglogo.png","gutentaglogo_aus.png")
     except:
         pass
+
+    text = insert_measures(text)
     if online:
         return text.replace("Output directory (will be created)","Output filename (.zip extension will be added)").replace('class="saveparams"','class="hidden"').replace('class="loadsaved"','class="hidden"') 
     else:

@@ -1124,11 +1124,13 @@ function load_parameters() {
 		  	if ('maxnum' in data) {
 		 		 thisform.elements['maxnum'].value = data['maxnum'].toString();
 		 	}
-		 	
-		 	thisform.elements['randomize_order'].checked = data['randomize_order'];
+		 	if ('randomize_order' in data) {
+		 		thisform.elements['randomize_order'].checked = data['randomize_order'];
+		 	}
 
-
-			thisform.elements['output_file'].value = data['output_file'];
+			if ('output_file' in data) {
+				thisform.elements['output_file'].value = data['output_file'];
+			}
 	
 		 	//if ('not_display_tags' in data) {
 		 	//	thisform.elements['persName'][1].checked = true;
@@ -1192,8 +1194,9 @@ function prepare_data_for_analysis() {
 	
 	
  	data['not_display_tags'] = [];
- 		
- 	data['output_file'] =thisform.elements['output_file'].value;
+ 	if (thisform.elements['output_file'].value) {	
+ 		data['output_file'] =thisform.elements['output_file'].value;
+ 	}
  	if (thisform.elements['maxnum'].value) {
  		data['maxnum'] = parseInt(thisform.elements['maxnum'].value);
  	}

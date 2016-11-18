@@ -9,6 +9,7 @@ running_measure_counts = {}
 running_document_totals = {}
 zip_filename = ""
 query_count = 0
+doing_analysis = false
 
 is_safari = /Version\/[\d\.]+.*Safari/.test(navigator.userAgent)
 
@@ -526,14 +527,14 @@ function add_to_current_analysis_and_update(lexicon_results, measure_results, to
 		//alert("filling p")	
 		//alert(running_lexicon_counts[subcorpus][lexicon])
 		//alert(running_totals[subcorpus])
-		box.children[count].innerHTML = lexicon + ": " + running_lexicon_counts[subcorpus][lexicon]/running_token_totals[subcorpus]
+		box.children[count].innerHTML = lexicon + ": " + parseFloat(running_lexicon_counts[subcorpus][lexicon]/running_token_totals[subcorpus].toFixed(4))
 		count += 1
 	}
 	for (var measure in running_measure_counts[subcorpus]) {
 		//alert("filling p")	
 		//alert(running_lexicon_counts[subcorpus][lexicon])
 		//alert(running_totals[subcorpus])
-		box.children[count].innerHTML = measure + ": " + running_measure_counts[subcorpus][measure]/running_document_totals[subcorpus]
+		box.children[count].innerHTML = measure + ": " + parseFloat((running_measure_counts[subcorpus][measure]/running_document_totals[subcorpus]).toFixed(4))
 		count += 1
 	}
 	
@@ -601,17 +602,24 @@ function query_server_for_progress() {
 				//alert(i);
 				curr_result = results[i];
 				if ('done' in curr_result) {
-					//alert("found_done")
+					//alert("found_done");
 					if ('filename' in curr_result) {
 						zip_filename = curr_result["filename"]
-					
+					   //alert("has filename");
 					 	var xhr = CreateXmlHttpObject( );
 					 	xhr.responseType = 'blob';
+					 	if (doing_analysis) {
+					 	//alert("here");
 
 
- 						xhr.open( "GET", "get_zip.cgi?id=" + user_id, true); 
-					 	//xmlHttpRqst.open( "GET", "get_results.cgi", false );
-						
+ 							xhr.open( "GET", "get_csv.cgi?id=" + user_id, true); 
+					 		//xmlHttpRqst.open( "GET", "get_results.cgi", false );
+					 		}					 	
+					 	else {
+
+ 							xhr.open( "GET", "get_zip.cgi?id=" + user_id, true); 
+					 		//xmlHttpRqst.open( "GET", "get_results.cgi", false );
+					   }
 
 						xhr.onload = function (e) {
 						  if (xhr.readyState === 4) {
@@ -643,6 +651,7 @@ function query_server_for_progress() {
 				else {
 				     if ('lexicon_results' in curr_result ||'measure_results' in curr_result ) {
 				     //alert('in analysis  section')
+				   doing_analysis = true;
 					add_one_to_count(curr_result['subcorpus'])
 
 					update_status_bar(curr_result);
