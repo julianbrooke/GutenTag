@@ -3,7 +3,7 @@
 version = "0.1.5"
 
 standalone = False
-online = True
+online = False
 
 online_max_texts = 500
 http_port = 8000
@@ -4441,6 +4441,7 @@ def get_character_speech(text):
             
 
 def dialogism(text,info):
+    start_time = time.time()
     if not style_dict:
         load_style_dict()
     characters = get_character_speech(text)
@@ -4497,7 +4498,9 @@ def dialogism(text,info):
             curr_p = best_p
 
         else:
+            done = True
 
+        if time.time() - start_time > 60:
             done = True
 
     set1 =get_combined_set(cluster1,characters)
