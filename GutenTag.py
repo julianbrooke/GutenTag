@@ -406,27 +406,226 @@ class TextCleaner:
 
 # This guesses at the gender of a person based on their name         
 class GenderClassifier:
+    male_pronouns = set(["he","his","him","himself"])
+    female_pronouns = set(["she","her","herself"])
+    boundary_tags = set(["said","p","div"])
+    must_male = set(["mr","sir"])
+    must_female = set(["mrs","madame","miss","lady"])
+    prefix_count_cutoff = 5
+    suffix_count_cutoff = 5
+    prefix_effect = 0.5
+    name_shape_add = 10
+
+
+
+    def add_to_suffix_ratio_dict(self,word,i,add_new=True):
+        for j in range(len(word)):
+            suffix = word[j:]
+            if suffix not in self.suffix_ratio_dict:
+                if add_new:
+                    self.suffix_ratio_dict[suffix] = [0,0]
+                else:
+                    continue
+            self.suffix_ratio_dict[suffix][i] += 1
+
+    def remove_from_suffix_ratio_dict(self,word,i):
+        for j in range(len(word)):
+            suffix = word[j:]
+            if suffix in self.suffix_ratio_dict:
+                self.suffix_ratio_dict[suffix][i] -= 1
+                if sum(self.suffix_ratio_dict[suffix]) == 0:
+                    del self.suffix_ratio_dict[suffix]
+
+
+
+    def add_to_prefix_ratio_dict(self,word,i,add_new=True):
+        for j in range(len(word)):
+            prefix = word[:-j]
+            if prefix not in self.prefix_ratio_dict:
+                if add_new:
+                    self.prefix_ratio_dict[prefix] = [0,0]
+                else:
+                    continue
+
+                self.prefix_ratio_dict[prefix] = [0,0]
+            self.prefix_ratio_dict[prefix][i] += 1
+
+    def remove_from_prefix_ratio_dict(self,word,i):
+        for j in range(len(word)):
+            prefix = word[:-j]
+            if prefix in self.prefix_ratio_dict:
+                self.prefix_ratio_dict[prefix][i] -= 1
+                if sum(self.prefix_ratio_dict[prefix]) == 0:
+                    del self.prefix_ratio_dict[prefix]
+
+    
     def __init__(self):
         f = open("resources/femaleFirstNames.txt")
         self.female_first_names = set()
         for line in f:
             self.female_first_names.add(line.strip())
         f.close()
-        '''
-        f = open("maleFirstNames.txt")
+        self.male_first_names = set()
+        f = open("resources/maleFirstNames.txt")
         for line in f:
-            self.female_first_names.discard(line.strip())
+            name = line.strip()
+            if name not in self.female_first_names:
+                self.male_first_names.add(name)
+            else:
+                print name
         f.close()
-        '''
+        self.male_female_ratio = float(len(self.male_first_names))/float(len(self.female_first_names))
+        self.prefix_ratio_dict = {}
+        self.suffix_ratio_dict = {}
+        dicts = [self.male_first_names, self.female_first_names]
+        for i in [0,1]:
+            for word in dicts[i]:
+                self.add_to_prefix_ratio_dict(word,i)
+                self.add_to_suffix_ratio_dict(word,i)
+                
+        if self.suffix_count_cutoff != -1:
+            for suffix in self.suffix_ratio_dict.keys():
+                if sum(self.suffix_ratio_dict[suffix]) < self.suffix_count_cutoff:
+                    del self.suffix_ratio_dict[suffix]
+        if self.prefix_count_cutoff != -1:
+            for prefix in self.prefix_ratio_dict.keys():
+                if sum(self.prefix_ratio_dict[prefix]) < self.prefix_count_cutoff:
+                    del self.prefix_ratio_dict[prefix]
+
+
+    def get_pronoun_ratios(self,text):
+        pronoun_counts = {}
+        for i in range(len(text.tags)):
+            #if text.tags[i].tag == "persName":
+            #    print text.tags[i].tag
+            #    print text.tags[i].attributes
+            #    print text.tokens[text.tags[i].start:text.tags[i].end]
+            if text.tags[i].tag == "persName" and text.tags[i].attributes and "corresp" in text.tags[i].attributes:
+                #print "here!!!!!!!!!!!"
+                char_ID = text.tags[i].attributes["corresp"].strip("#")
+                if char_ID not in pronoun_counts:
+                    pronoun_counts[char_ID] = [0,0]
+                earliest_cutoff = len(text.tokens)
+                j = i - 1
+                curr_loc = text.tags[i].start
+                stop = False
+                while not stop and j >= 0:
+                    if text.tags[j].tag in self.boundary_tags and text.tags[j].end > curr_loc:
+                        earliest_cutoff = text.tags[j].end
+                        stop = True
+                    else:
+                        j -= 1
+                j = i + 1
+                stop = False
+                while not stop and j < len(text.tags):
+                    if text.tags[j].start >= earliest_cutoff:
+                        stop = True
+                    elif text.tags[j].tag in self.boundary_tags or text.tags[j].tag == "persName":
+                        earliest_cutoff = text.tags[j].start
+                        stop = True
+                    else:
+                        j += 1
+                #print text.tokens[text.tags[i].end:earliest_cutoff]
+                for j in range(text.tags[i].end, earliest_cutoff):
+                    word = text.tokens[j].lower()
+                    if word in self.male_pronouns:
+                        pronoun_counts[char_ID][0] += 1
+                        break
+                    elif word in self.female_pronouns:
+                        pronoun_counts[char_ID][1] += 1
+                        break
+    
+        return pronoun_counts                
+                
+                
+    def classify_by_suffix(self,word):
+        suffix = word
+        while suffix and suffix not in self.suffix_ratio_dict:
+            suffix = suffix[1:]
+        if not suffix:
+            return ""
+        else:
+            if self.suffix_ratio_dict[suffix][1] == 0 or float(self.suffix_ratio_dict[suffix][0])/self.suffix_ratio_dict[suffix][1] > self.male_female_ratio:
+                return "M"
+            else:
+                return "F"
+
+    def classify_by_prefix(self,word):
+        prefix = word
+        while prefix and prefix not in self.prefix_ratio_dict:
+            prefix = prefix[:-1]
+        if not prefix:
+            return ""
+        else:
+            if self.prefix_ratio_dict[prefix][1] == 0 or float(self.prefix_ratio_dict[prefix][0])/self.prefix_ratio_dict[prefix][1] > self.male_female_ratio:
+                return "M"
+            else:
+                return "F"
+
+    def classify_by_affix(self,word):
+        suffix = word
+        while suffix and suffix not in self.suffix_ratio_dict:
+            suffix = suffix[1:]
+        if not suffix:
+            return ""
+        prefix = word
+        while prefix and prefix not in self.prefix_ratio_dict:
+            prefix = prefix[:-1]
+        if not prefix:
+            return ""
+
+        combo = [self.prefix_ratio_dict[prefix][0]*self.prefix_effect + self.suffix_ratio_dict[suffix][0], self.prefix_ratio_dict[prefix][1]*self.prefix_effect + self.suffix_ratio_dict[suffix][1]]
+
+        if combo[1] == 0 or float(combo[0])/combo[1] > self.male_female_ratio:
+            return "M"
+        else:
+            return "F"
+
+
+    def classify_by_pronoun(self,pronoun_counts,name):
+        name_tokens = name.split("_")
+        if name_tokens[0] == "the":
+            first_word = name_tokens[1]
+        else:
+            first_word = name_tokens[0]
+
+        first_word = first_word.lower().strip(".")
+        if first_word in self.must_male:
+            return "M"
+        elif first_word in self.must_female:
+            return "F"
+        name_result = self.classify(first_word)
+        if name in pronoun_counts:
+            if name_result == "M":
+                pronoun_counts[name][0] += self.name_shape_add
+            elif name_result == "F":
+                pronoun_counts[name][1] += self.name_shape_add
+            if pronoun_counts[name][0] > pronoun_counts[name][1]:
+                return "M"
+            else:
+                return "F"
+        else:
+            return name_result
+
+
+    def classify_by_list(self,word):
+        word = word.lower()
+        if word in self.female_first_names:
+            return "F"
+        elif word in self.male_first_names:
+            return "M"
+        else:
+            return ""       
 
     def classify(self,word):
         word = word.lower()
-        if word in self.female_first_names or (len(word) > 2 and word.endswith("a")):
+        if word in self.female_first_names:
             return "F"
-        elif word:
+        elif word in self.male_first_names:
             return "M"
         else:
-            return ""
+            #return self.classify_by_suffix(word)
+            return self.classify_by_affix(word)
 
 
 # this class wraps everything related to genre classification. Not actually
@@ -3200,7 +3399,7 @@ class NameTagger():
         self.nicknames = cPickle.load(f)
         f.close()
 
-        self.gender_classifier = GenderClassifier()
+        self.gender_classifier = gender_classifier
         self.tokenizer = tokenizer
 
 
@@ -3848,15 +4047,19 @@ class CharacterListBuilder:
             i+= 1
 
 
+
+
         characters = {character:[] for character in character_mapping.values()}
         for character in character_mapping:
+            '''
             name_tokens = character.split("_")
             if name_tokens[0] == "the":
                 first_word = name_tokens[1]
             else:
                 first_word = name_tokens[0]
-            gender = self.gender_classifier.classify(first_word.lower())
-            characters[character_mapping[character]].append(gender)
+            '''
+            #gender = self.gender_classifier.classify_by_pronoun(pronoun_counts,character)
+            characters[character_mapping[character]].append("X")
             characters[character_mapping[character]].append(set())
             if character == fp_narr_tag:
                 characters[character_mapping[fp_narr_tag]].append(9999)
@@ -3874,6 +4077,10 @@ class CharacterListBuilder:
                     if original != rep and not original.startswith("The_"):
                         characters[character_mapping[rep]][1].add(original)
             i+= 1
+        pronoun_counts = self.gender_classifier.get_pronoun_ratios(text)
+        #print pronoun_counts
+        for character in characters:
+            characters[character][0] = self.gender_classifier.classify_by_pronoun(pronoun_counts,character)
         for character in characters:
             characters[character][1] = list(characters[character][1])
         return characters
@@ -5665,16 +5872,18 @@ def sub_guten_process(options,result_Q):
         options["total_texts"] += gr.total_texts
         for tags in gr.iterate_over_texts():
             if tags:
-                if online and options["mode"] == "export" and "filename" in tags:
-                    local_zipfile.writestr(tags["filename"].encode("utf-8"),tags["text"].encode("utf-8"))
-                    del tags["filename"]
-                    del tags["text"]
+                if not ("notactive" in tags and tags["notactive"]):
+                    if online and options["mode"] == "export" and "filename" in tags:
+                        local_zipfile.writestr(tags["filename"].encode("utf-8"),tags["text"].encode("utf-8"))
+                        del tags["filename"]
+                        del tags["text"]
 
-                elif "output_file" in options and options["mode"] == "analyze":
-                    fout.write(get_details_line(tags,options))
+                    elif "output_file" in options and options["mode"] == "analyze":
+                        fout.write(get_details_line(tags,options))
 
+                
+                    texts_so_far += 1
                 result_Q.put(tags)
-                texts_so_far += 1
     output_dict = {"user_id":options["id"],"done":True}
     if online and options["mode"] == "export":
         local_zipfile.close()
@@ -5777,6 +5986,7 @@ def insert_dynamic(text):
         if user_lists:
             new_options = "\n".join(["<option>" + filename + "</option>" for filename in user_lists])
             text = text.replace("<!-- user lists -->", new_options)
+    return text
           
 def insert_measures(text):
     measures = textual_measures.keys()
