@@ -17,15 +17,16 @@ else:
 
 if standalone:
     sys.frozen = True
-    my_path = sys.executable
-    if "/" in my_path:
-        my_path = my_path[:my_path.rfind("/") + 1]
-    else:
-        my_path = my_path[:my_path.rfind("\\") + 1]
-    sys.path.insert(0, my_path + "Lib")
-    if 'posix' in sys.builtin_module_names:
-        import posix
-        posix.chdir(my_path)
+    
+my_path = sys.executable
+if "/" in my_path:
+    my_path = my_path[:my_path.rfind("/") + 1]
+else:
+    my_path = my_path[:my_path.rfind("\\") + 1]
+sys.path.insert(0, my_path + "Lib")
+if 'posix' in sys.builtin_module_names:
+    import posix
+    posix.chdir(my_path)
 
 import zipfile
 import cPickle
@@ -50,8 +51,6 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from urllib import unquote,quote
 from multiprocessing import cpu_count,Queue,Process,Lock,freeze_support
 from nltk.tokenize import regexp
-if not standalone:
-    import nltk.data
 if online:
     import urllib2
 from threading import Thread
