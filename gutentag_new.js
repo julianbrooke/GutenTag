@@ -535,6 +535,24 @@ function add_lexical_tag(type) {
 	
 }
 
+function add_measure() {
+	add_button = document.getElementById('measureaddbutton');
+	var num = parseInt(add_button.getAttribute('data'));
+	var table = add_button.parentNode.children[0];
+	new_row = document.getElementById('measuretemplate').cloneNode(true);
+	table.appendChild(new_row);    
+	num += 1;
+	new_row.id = 'measurerow' + num;
+	new_row.children[0].children[0].name = new_row.children[0].children[0].name + "-" + num;
+	//for (i=0;i < 3;i++) {
+	// 	new_row.children[1].children[i].name = new_row.children[1].children[i].name + "-" + num;
+	//}
+	add_button.setAttribute('data',num.toString());
+	return new_row;
+	
+}
+
+
 function remove_all_lexical_tags(type) {
 	add_button = document.getElementById(type+'lexiconaddbutton');
 	add_button.setAttribute('data','0');
@@ -544,6 +562,17 @@ function remove_all_lexical_tags(type) {
 		 	table.removeChild(table.children[0]);
 		 }
 }
+
+function remove_all_measures() {
+	add_button = document.getElementById('measureaddbutton');
+	add_button.setAttribute('data','0');
+	var i = 1;
+	table = document.getElementById('measuretable')
+	while (table.children.length > 0) {
+		 	table.removeChild(table.children[0]);
+		 }
+}
+
 
 function reveal_sublexicon(main_tag) {
 	 var num = parseInt(main_tag.name.split("-")[1]);
@@ -560,6 +589,7 @@ function start_up() {
 	add_subcorpus();
 	add_lexical_tag('export');
 	add_lexical_tag('analyze');
+	add_measure();
 	/*
 	var fileSelector = document.createElement('input');
  	fileSelector.setAttribute('type', 'file');
@@ -711,6 +741,16 @@ function get_subcorpus_info(data) {
 		subcorpus_div = document.getElementById("subcorpus" + subcorpus_num);
 	}
 	data["num_subcorpora"] = subcorpus_num - 1;
+}
+
+function get_measures(thisform,measure_dict) {
+	num = 1;
+	while (('measuremain-' + num) in thisform.elements) {
+		var maintag = thisform.elements['measuremain-' + num];
+		var value = maintag.options[maintag.selectedIndex].value;
+		measure_dict.push(value);
+		num++;
+	}
 }
 
 function get_lexical_tags(thisform,lexical_tag_dict, for_analysis_dict) {
@@ -1084,20 +1124,30 @@ function load_parameters() {
 		  	if ('maxnum' in data) {
 		 		 thisform.elements['maxnum'].value = data['maxnum'].toString();
 		 	}
-		 	
-		 	thisform.elements['randomize_order'].checked = data['randomize_order'];
-
-
-			thisform.elements['output_file'].value = data['output_file'];
-	
-		 	if ('not_display_tags' in data) {
-		 		thisform.elements['persName'][1].checked = true;
-		   }
-		 	else {
-		 	  thisform.elements['persName'][0].checked = true;
+		 	if ('randomize_order' in data) {
+		 		thisform.elements['randomize_order'].checked = data['randomize_order'];
 		 	}
+
+			if ('output_file' in data) {
+				thisform.elements['output_file'].value = data['output_file'];
+			}
+	
+		 	//if ('not_display_tags' in data) {
+		 	//	thisform.elements['persName'][1].checked = true;
+		   //}
+		 	//else {
+		 	//  thisform.elements['persName'][0].checked = true;
+		 	//}
+		 	remove_all_measures();
+		 	if ('measures' in data) {
+			 	for (var j = 1; j <= data['measures'].length; j++) {
+			   element = add_measure()                 
+			   selectElement(element.children[0].children[0], data['measures'][j-1])
+			  }
+		  }
 		 }
 		 remove_all_lexical_tags(data['mode']); 
+		 
 
 		 for (var j = 1; j <= data['lexical_tags'].length; j++) {
 		  element = add_lexical_tag(data['mode'])                 
@@ -1136,21 +1186,17 @@ function prepare_data_for_analysis() {
  	thisform = document.getElementById('analyze_form');
 	data["lexical_tags"] = [];
 	data["tags_for_analysis"] = [];
-	
+	data["measures"] = [];
 	
 	
 	get_lexical_tags(thisform,data["lexical_tags"],data["tags_for_analysis"]);
+	get_measures(thisform,data["measures"]);
 	
-	 	if (thisform.elements['persName'].checked) {
- 		data["tags_for_analysis"].push('persName');
- 		} 
- 		
- 		if (thisform.elements['placeName'].checked) {
- 		data["tags_for_analysis"].push('placeName');
- 		} 
- 	 data['not_display_tags'] = [];
- 		
- 	data['output_file'] =thisform.elements['output_file'].value;
+	
+ 	data['not_display_tags'] = [];
+ 	if (thisform.elements['output_file'].value) {	
+ 		data['output_file'] =thisform.elements['output_file'].value;
+ 	}
  	if (thisform.elements['maxnum'].value) {
  		data['maxnum'] = parseInt(thisform.elements['maxnum'].value);
  	}
@@ -1261,8 +1307,8 @@ function do_analysis() {
 		return
 	}	
 	data = prepare_data_for_analysis();
-	if (data["tags_for_analysis"].length == 0 ) {
-		alert("You have no lexical tags for analysis");
+	if (data["tags_for_analysis"].length + data["measures"].length == 0 ) {
+		alert("No lexicons or measures selected for analysis!");
 		return;
 	}
 	data["id"] = g_id;
