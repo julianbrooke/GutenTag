@@ -17,16 +17,19 @@ else:
 
 if standalone:
     sys.frozen = True
-    
-my_path = sys.executable
-if "/" in my_path:
-    my_path = my_path[:my_path.rfind("/") + 1]
+    my_path = sys.executable
+    if "/" in my_path:
+        my_path = my_path[:my_path.rfind("/") + 1]
+    else:
+        my_path = my_path[:my_path.rfind("\\") + 1]
+    if 'posix' in sys.builtin_module_names:
+        import posix
+        posix.chdir(my_path)
 else:
-    my_path = my_path[:my_path.rfind("\\") + 1]
+    import os
+    my_path = os.getcwd() + "/"
+
 sys.path.insert(0, my_path + "Lib")
-if 'posix' in sys.builtin_module_names:
-    import posix
-    posix.chdir(my_path)
 
 import zipfile
 import cPickle
